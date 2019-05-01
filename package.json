@@ -1,0 +1,14 @@
+{
+  "name": "api-demo",
+  "version": "1.0.0",
+  "description": "数量使用npm创建api",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon run server.js"
+  },
+  "author": "shane",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
