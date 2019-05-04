@@ -1,12 +1,8 @@
 const express = require("express")
 const app = express()
-
 const port = process.env.PORT || 5000
-
-// 访问页面内容
-app.get("/",(req,res) =>{
-	res.send("hello q")
-})
+const mongoose = require("mongoose")
+const bodyParser = require("body-parser")
 
 // 监听服务器
 app.listen(port, ()=> {
@@ -14,18 +10,25 @@ app.listen(port, ()=> {
 })
 
 
+// 访问页面内容
+app.get("/",(req,res) =>{
+	res.send("hello q")
+})
+
+
 // 访问数据库
-const mongoose = require("mongoose")
-
 mongoRUI = "mongodb://localhost/admin"
-
 const DB =  mongoRUI
-
 mongoose.connect(DB,{ useNewUrlParser: true })
         .then(() => console.log("数据库连接成功"))
         .catch(err => console.log(err))
+
+// 使用bodyParser中间件
+app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.json())
 		
 // 调用简单的api接口
-
 const usersAPI = require("./router/api/users")
-app.use("/api/users",usersAPI)
+app.use("/api/users",usersAPI) 
+
+
