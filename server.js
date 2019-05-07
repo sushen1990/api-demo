@@ -17,7 +17,8 @@ app.get("/",(req,res) =>{
 
 
 // 访问数据库
-mongoRUI = "mongodb://localhost/admin"
+// mongoRUI = "mongodb://localhost/admin"
+mongoRUI = "mongodb://aly_root:d456_FJ35LLL@39.97.33.102:27899/admin"
 const DB =  mongoRUI
 mongoose.connect(DB,{ useNewUrlParser: true })
         .then(() => console.log("数据库连接成功"))
