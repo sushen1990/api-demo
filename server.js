@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
 // const port = process.env.PORT || 5000 // win测试
-const port = process.env.PORT || 3389 // 阿里云ECS服务器
+const port = process.env.PORT || 3000 // 阿里云ECS服务器
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 
@@ -18,7 +18,7 @@ app.get("/",(req,res) =>{
 
 
 // 访问数据库
-mongoRUI = "mongodb://localhost/admin"
+mongoRUI = "mongodb://aly_root:d456_FJ35LLL@127.0.0.1:27899/admin"
 // mongoRUI = "mongodb://aly_root:d456_FJ35LLL@39.97.33.102:27899/admin"
 const DB =  mongoRUI
 mongoose.connect(DB,{ useNewUrlParser: true })
