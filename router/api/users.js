@@ -2,6 +2,7 @@
 const express = require("express")
 const router = express.Router()
 const UserModel = require("../../models/User")
+const bcrypt = require("bcrypt")
 
 // $route Get api/users/test
 // @desc 测试接口是否连通
@@ -26,9 +27,20 @@ router.post("/regi",(req,res) =>{
 					 	email:req.body.name,
 					 	psd:req.body.name		
 					 })
-					 newUser.save()
-					 	   .then(user => res.json(user))
-					 	   .catch(err => res.json(err))
+					 
+				// 加密模式是10	 
+				bcrypt.genSalt(10, function(err, salt) {
+					bcrypt.hash(newUser.psd, salt, (err, hash) => {
+						// Store hash in your password DB.
+						if(err) throw err;
+						newUser.psd = hash
+						
+						newUser.save()
+							   .then(user => res.json(user))
+							   .catch(err => res.json(err))						
+					});
+				});					 
+					 
 				 }
 			 })
 			 .catch(err => res.json(err))
