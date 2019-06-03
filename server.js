@@ -2,15 +2,25 @@ const express = require("express")
 const app = express()
 // const port = process.env.PORT || 5000 // win测试
 const port = 3000 // 阿里云ECS服务器
+const fs = require("fs")
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 
+
+// 转换https服务
+const https = require("https")
+var options = {
+	key: fs.readFileSync('./static/2301701_www.sushen1990.cn.key'),
+	cert: fs.readFileSync('./static/2301701_www.sushen1990.cn.pem')
+}
+
 // 监听服务器
-app.listen(port, ()=> {
-	console.log(`服务器运行在端口[${port}]`)
-})
-
-
+// app.listen(port, ()=> {
+// 	console.log(`服务器运行在端口[${port}]`)
+// })
+// 
+https.createServer(options,app).listen(port)
+console.log(`https服务器运行在端口[${port}]`)
 // 访问页面内容
 app.get("/",(req,res) =>{
 	res.send("hello q")
