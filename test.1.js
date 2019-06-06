@@ -1,104 +1,162 @@
-//学生id绑定定位卡
-exports.student_bindLBSCard = function(req, res) {
-	var studentId = req.body.studentId;
-	var cardNum = req.body.cardNum;
-	if (!cardNum || !studentId) {
+exports.user_webLogin_code = function(req, res) {
+	var modelId = req.body.modelId;
+	var mobile = req.body.mobile;
+	if (!mobile) {
 		return res.json({
 			status: false,
-			message: 'no cardNum or studentId'
+			message: 'no mobile'
+		})
+	}
+	if (!modelId) {
+		return res.json({
+			status: false,
+			message: 'no modelId'
+		})
+	}
+	var verificationCode = req.body.verificationCode;
+	if (!verificationCode) {
+		return res.json({
+			status: false,
+			message: 'no verificationCode'
 		});
 	}
-	db.findStudentById(studentId, function(err0, doc0) {
-		if (err0) {
+	//先校验验证码
+	verificationCodeDB.findCodeByMobile(mobile, modelId, function(err, result) {
+		if (err) {
 			return res.json({
 				status: false,
-				message: err0
-			});
+				message: err
+			})
 		}
-		if (!doc0) {
+		if (!result) {
 			return res.json({
 				status: false,
-				message: 'no student data'
-			});
+				message: '验证码错误或已失效，请重新获取验证码'
+			})
 		}
-		if(!doc0.parents||doc0.parents.length==0){
+		if (result.code != verificationCode) {
 			return res.json({
 				status: false,
-				message: '该学生未绑定家长，暂时不能绑定定位卡'
-			});
+				message: '验证码错误，请重新获取验证码'
+			})
 		}
-		if(doc0.mobile && doc0.mobile.length>0){
+		var nowTime = new Date().getTime();
+		if (result.code == verificationCode && result.time < nowTime) {
 			return res.json({
 				status: false,
-				message: '该学生已经绑定过定位卡，不能重复绑定'
-			});
+				message: '验证码已失效，请重新获取验证码'
+			})
 		}
-		// var parentIds = [];
-		// var ObjectID = req.mongo.ObjectID;
-		// doc0.parents.forEach(parent => {
-		// 	parentIds.push(new ObjectID(parent))
-		// });
-		userDB.parentList(doc0.parents,function(err, users){
-			var unumber;
-			var keynum;
-			users.forEach(user => {
-				if(user._id == doc0.parents[0]){
-					unumber = user.mobile;
+		//开始获取用户
+		userDB.findUserByMobile(mobile, modelId, 1, function(err0, doc0) {
+			if (err0) {
+				return res.json({
+					status: false,
+					message: err0
+				})
+			}
+			if (!doc0) {
+				return res.json({
+					status: false,
+					message: '没有查询到该手机号，如您绑定的手机号码已更换，请联系我们'
+				})
+			}
+			var newObj = {
+				"_id": doc0._id,
+				"truename": doc0.truename,
+				"nickname": doc0.nickname,
+				"mobile": doc0.mobile,
+				"roleId": doc0.roleId,
+				"roleName": doc0.roleName,
+				"companyId": doc0.companyId,
+				"companyName": doc0.companyName,
+				"modelId": doc0.modelId,
+				"lastLoginTime": doc0.lastLoginTime,
+				"lastLoginWay": doc0.lastLoginWay,
+				"cardID": doc0.cardID,
+				"createDate": doc0.createDate,
+				"openid": doc0.openid,
+				"wechatSubscribeDate": doc0.wechatSubscribeDate,
+				"wechatSubscribe": doc0.wechatSubscribe,
+				"channelId": doc0.channelId,
+				"channelName": doc0.channelName,
+				"agentId": doc0.agentId,
+				"agentTrueName": doc0.agentTrueName,
+				"sex": doc0.sex,
+				"city": doc0.city,
+				"province": doc0.province,
+				"country": doc0.country,
+				"headimgurl": doc0.headimgurl,
+				"note": doc0.note,
+				studentInfo: {},
+				classInfo: {},
+				schoolInfo: {}
+			}
+
+			//开始获取学生班级学校等信息
+			studentDB.findStudentByParentUserId(doc0._id, modelId, function(err1, result) {
+				var uri = config.webServerHost + ':' + config.webServerPort;
+				if (config.webServerPort == 80) {
+					uri = config.webServerHost;
 				}
-				if(keynum){
-					keynum = keynum+","+user.mobile;
-				}else{
-					keynum = user.mobile;
-				}				
-			});
-			var url = "http://www.ts10000.net/intf/open/user_add.php?";
-			var key = "78a83e3be0e2be4cb1695167749f2b3a";
-			url = url+"key="+key;
-			url = url+"&name="+encodeURIComponent(doc0.truename+"的家长");
-			var md5 = crypto.createHash('md5');
-			var stringMd5 = md5.update("123456").digest('hex').toUpperCase();
-			url = url+"&pwd="+stringMd5;
-			url = url+"&number="+unumber;
-			url = url+"&tnumber="+cardNum;
-			url = url+"&tname="+encodeURIComponent(doc0.truename);
-			url = url+"&type=1";
-			request.get(url,function(err,result,body){
-				console.log("err#####",err)
-				if (err) {
+				if (err1) {
 					return res.json({
-						status: false,
-						message: err
+						status: true,
+						resources: newObj
 					});
 				}
-				console.log(body)
-				body = JSON.parse(body);
-				if(body.status===0){
-					db.bindLBSCard(studentId, cardNum, function(err, result) {
-						if (err) {
+				if (!result) {
+					return res.json({
+						status: true,
+						resources: newObj
+					});
+				}
+				newObj.studentInfo = result; //添加学生信息
+				if (result.headimgurl && !newObj.headimgurl) {
+					newObj.headimgurl = result.headimgurl;
+				}
+				if (!result.headimgurl && !newObj.headimgurl) {
+					var img_url = uri + '/images/user.png';
+					newObj.headimgurl = img_url;
+					newObj.studentInfo.headimgurl = uri + '/images/user2.png';
+				}
+				//查询班级信息
+				classDB.findClassById(result.classId, function(err2, result2) {
+					if (err2) {
+						return res.json({
+							status: true,
+							resources: newObj
+						});
+					}
+					if (!result2) {
+						return res.json({
+							status: true,
+							resources: newObj
+						});
+					}
+					newObj.classInfo = result2; //添加班级信息
+					//查询学校信息
+					schoolDB.findSchoolById(result2.schoolId, function(err3, result3) {
+						if (err3) {
 							return res.json({
-								status: false,
-								message: err
+								status: true,
+								resources: newObj
 							});
 						}
-						if(keynum && keynum.length>0){//设置亲情号
-							var newUrl ="http://www.ts10000.net/intf/open/terminal_edit.php?key=78a83e3be0e2be4cb1695167749f2b3a";
-							newUrl = newUrl+"&number="+cardNum;
-							newUrl = newUrl+"&keynum="+keynum;
-							request.get(newUrl,function(err,result,body){
-								console.log("err#####",err)
-							})
+						if (!result3) {
+							return res.json({
+								status: true,
+								resources: newObj
+							});
 						}
+						newObj.schoolInfo = result3; //添加学校信息
 						res.json({
 							status: true,
-							resources: result
+							resources: newObj
 						});
+						//老接口不再更新积分 rain-2017年12月27日15:16:30
 					});
-				}else{
-					res.json({
-						status: false,
-						message: body.msg
-					});
-				}
+				});
 			});
 		});
 	});

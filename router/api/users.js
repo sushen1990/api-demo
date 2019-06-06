@@ -36,8 +36,12 @@ router.post("/regi",(req,res) =>{
 						newUser.psd = hash
 						
 						newUser.save()
-							   .then(user => res.json(user))
-							   .catch(err => res.json(err))						
+							   .then(user => {
+								   return res.status(200).json({result:user})
+							   })
+							   .catch(err => {
+								   return res.status(300).json({result:err})
+							   })						
 					});
 				});					 
 					 
@@ -46,7 +50,14 @@ router.post("/regi",(req,res) =>{
 			 .catch(err => res.json(err))
 })
 
-
+// $route Post api/users/telLogin
+// @desc 通过手机号、验证码登录
+// @access pulic
+router.post("/getUser", (req,res) =>{
+	if(req.body.name==1){
+		
+	}
+})
 
 
 module.exports = router;
