@@ -22,4 +22,4 @@ const UserSchema = new Schema({
 	}
 })
 
-module.exports = User = mongoose.model("users",UserSchema)
+module.exports = User = mongoose.model("testUser1",UserSchema) // 这里才是mongDB中的表名

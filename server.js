@@ -28,8 +28,8 @@ app.get("/",(req,res) =>{
 
 // 访问数据库
 // mongoRUI = "mongodb://aly_root:d456_FJ35LLL@127.0.0.1:27899/admin"
-// mongoRUI = "mongodb://aly_root:d456_FJ35LLL@39.97.33.102:27899/admin"
-mongoRUI="mongodb://aly_root:d456_FJ35LLL@localhost:27899/admin"
+// mongoRUI="mongodb://aly_root:d456_FJ35LLL@localhost:27899/xiaoantong"
+mongoRUI="mongodb://xat:xat@localhost:27899/xiaoantong"
 const DB =  mongoRUI
 mongoose.connect(DB,{ useNewUrlParser: true })
         .then(() => console.log("数据库连接成功"))
