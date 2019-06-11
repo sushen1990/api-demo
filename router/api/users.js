@@ -65,31 +65,25 @@ router.post("/LoginParent", (req,res) =>{
 	let verifyCode = req.body.verifyCode;
 	
 	if (!mobile || mobile == "" || mobile == undefined) {
-        return res.status(401).json({
-            msg: '手机号码不能为空！'
-        })
+        return res.status(400).json({msg: "手机号码不能为空！", data:null})
     }
 	if (!modelId || modelId == "" || modelId == undefined) {
-        return res.status(401).json({
-            msg: '关键值不能为空！'
-        })
+        return res.status(400).json({msg: "关键值不能为空！", data:null})
     }
 	// if (!verifyCode || verifyCode == "" || verifyCode == undefined) {
-	//     return res.status(401).json({
-	//         msg: '验证码不能为空！'
+	//     return res.status(400).json({
+	//         msg: "验证码不能为空！"
 	//     })
 	// }
 	
 	const myreg = /^[1][3,4,5,7,8][0-9]{9}$/;
     if (!myreg.test(mobile)) {
-        return res.status(401).json({
-            msg: '请输入正确的手机号码！'
-        })
+        return res.status(400).json({ msg: "请输入正确的手机号码！", data:null})
     }	
 
 	userDB.findUserByMobile(mobile, modelId, 1, function(err0, doc0) {
 		if (err0) {
-			return res.status(401).json({message: err0})
+			return res.status(404).json({msg: err0, data:null})
 		}
 		
 		var newObj = {
@@ -129,14 +123,14 @@ router.post("/LoginParent", (req,res) =>{
 
 			if (err1) {
 				return res.json({
-					status: true,
-					resources: newObj
+					msg: "ok",
+					data: newObj
 				});
 			}
 			if (!result) {
 				return res.json({
-					status: true,
-					resources: newObj
+					msg: "ok",
+					data: newObj
 				});
 			}
 			newObj.studentInfo = result; //添加学生信息
@@ -145,14 +139,14 @@ router.post("/LoginParent", (req,res) =>{
 			classDB.findClassById(result.classId, function(err2, result2) {
 				if (err2) {
 					return res.json({
-						status: true,
-						resources: newObj
+						msg: "ok",
+						data: newObj
 					});
 				}
 				if (!result2) {
 					return res.json({
-						status: true,
-						resources: newObj
+						msg: "ok",
+						data: newObj
 					});
 				}
 				newObj.classInfo = result2; //添加班级信息
@@ -160,20 +154,20 @@ router.post("/LoginParent", (req,res) =>{
 				schoolDB.findSchoolById(result2.schoolId, function(err3, result3) {
 					if (err3) {
 						return res.json({
-							status: true,
-							resources: newObj
+							msg: "ok",
+							data: newObj
 						});
 					}
 					if (!result3) {
 						return res.json({
-							status: true,
-							resources: newObj
+							msg: "ok",
+							data: newObj
 						});
 					}
 					newObj.schoolInfo = result3; //添加学校信息
 					res.json({
-						status: true,
-						resources: newObj
+						msg: "ok",
+						data: newObj
 					});
 				});
 			});

@@ -186,24 +186,40 @@ const UserSchema = new Schema({
 mongoose.model('User', UserSchema);
 const User = mongoose.model('User');
 
-
+//根据手机号查询用户
+// exports.findUserByMobile = function(mobile, modelId, lastLoginWay, callback) {
+// 	User.findOne({
+// 		mobile: mobile,
+// 		modelId: modelId
+// 	}, function(err, doc) {
+// 		if (err) {
+// 			util.log('FATAL ' + err);
+// 			return callback(err, null);
+// 		}
+// 		if (doc) {
+// 			doc.lastLoginWay = lastLoginWay;
+// 			doc.lastLoginTime = new Date().getTime();
+// 			doc.save();
+// 		}
+// 		callback(null, doc);
+// 	});
+// }
 
 //根据手机号查询用户
 exports.findUserByMobile = function(mobile, modelId, lastLoginWay, callback) {
 	User.findOne({
 		mobile: mobile,
 		modelId: modelId
-	}, function(err, doc) {
-		if (err) {
-			util.log('FATAL ' + err);
-			return callback(err, null);
+	}).then(doc => {
+		
+		if(doc){
+			callback(null, doc);
+		}else{
+			return callback("当前用户不在数据库中", null);
 		}
-		if (doc) {
-			doc.lastLoginWay = lastLoginWay;
-			doc.lastLoginTime = new Date().getTime();
-			doc.save();
-		}
-		callback(null, doc);
+		
+	}).catch(err => {
+		return callback(err, null);
 	});
 }
 
@@ -212,12 +228,16 @@ exports.findUserById = function(userId, callback) {
 	User.findOne({
 		_id: userId,
 		isShow: true
-	}, function(err, doc) {
-		if (err) {
-			util.log('FATAL ' + err);
-			return callback(err, null);
+	}).then(doc => {
+		
+		if(doc){
+			callback(null, doc);
+		}else{
+			return callback("当前用户不在数据库中", null);
 		}
-		callback(null, doc);
+		
+	}).catch(err => {
+		return callback(err, null);
 	});
 }
 
