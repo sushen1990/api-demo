@@ -1,4 +1,3 @@
-
 const express = require("express")
 const router = express.Router()
 const UserModel = require("../../models/testUser")
@@ -12,7 +11,7 @@ const schoolDB = require("../../models/schoolModel.js")
 // $route Get api/users/test
 // @desc 测试接口是否连通
 // @access pulic
-router.get("/test",(req,res) =>{
+router.get("/test",(req,res) =>{ 
     res.json({msg:"hello q"})
 })
 

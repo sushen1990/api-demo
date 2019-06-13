@@ -43,6 +43,9 @@ app.use(bodyParser.json())
 const usersAPI = require("./router/api/users")
 app.use("/api/users",usersAPI) 
 
+const resApi = require("./router/api/res")
+app.use("/api/res",resApi)
+
 
 // 错误的innerHTML
 // const innerHtmlApi = require("./router/api/innerHtml")
