@@ -1,4 +1,3 @@
- const express = require("express")
  const router = express.Router()
  
  const bannerDB = require("../../models/bannerModel.js")
@@ -29,5 +28,6 @@
 		});
 	 })
  })
- 
- module.exports = router;
+
+
+module.exports = router;

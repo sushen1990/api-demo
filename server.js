@@ -39,12 +39,17 @@ mongoose.connect(DB,{ useNewUrlParser: true })
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 		
-// 调用简单的api接口
+// 用户相关
 const usersAPI = require("./router/api/users")
 app.use("/api/users",usersAPI) 
 
+// 获取banner信息之类的
 const resApi = require("./router/api/res")
 app.use("/api/res",resApi)
+
+// 定位设备
+const locationApi = require("./router/api/location")
+app.use("/api/location",locationApi)
 
 
 // 错误的innerHTML
