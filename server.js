@@ -7,6 +7,8 @@ const cors = require('cors'); //跨域
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 
+const config = require("/config.js")
+
 app.use(cors()); //解决跨域
 
 
@@ -29,7 +31,7 @@ app.get("/",(req,res) =>{
 // 访问数据库
 // mongoRUI = "mongodb://aly_root:d456_FJ35LLL@127.0.0.1:27899/admin"
 // mongoRUI="mongodb://aly_root:d456_FJ35LLL@localhost:27899/xiaoantong"
-mongoRUI="mongodb://xat:xat@localhost:27899/xiaoantong"
+mongoRUI=config.mongoRUI
 const DB =  mongoRUI
 mongoose.connect(DB,{ useNewUrlParser: true })
         .then(() => console.log("数据库连接成功"))
