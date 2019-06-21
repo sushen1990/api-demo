@@ -1,1 +1,0 @@
-const mongoRUI = "mongodb://xat:xat@localhost:27899/xiaoantong"
