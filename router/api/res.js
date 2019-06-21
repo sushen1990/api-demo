@@ -1,7 +1,7 @@
  const router = express.Router()
- 
  const bannerDB = require("../../models/bannerModel.js")
  
+ //  获取bannerList
  router.post("/bannerList", (req,res)=>{
 	 
 	let modelId = req.body.modelId;
@@ -20,7 +20,6 @@
 	bannerDB.bannerAll(modelId, page, size, function(err, row) {
 		if (err) {
 			return res.status(500).json({ msg: "系统错误，代码！"+ err, data:null})
-
 		}
 		res.status(200).json({
 			msg: "ok",

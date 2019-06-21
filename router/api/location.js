@@ -2,7 +2,12 @@
 const express = require("express");
 const router = express.Router();
 const request = require('request');
+const soap = require('soap');
+const crypto = require('crypto');
+const Helper = require('../../common/helper') 
  
+ 
+ // 根据设备手机号获取设备定位信息
 router.post("/getLocationByTel", (req,res)=>{
 	let mobile = req.body.mobile;
 	let stime = req.body.stime;
@@ -41,4 +46,44 @@ router.post("/getLocationByTel", (req,res)=>{
 	
 })
  
+ 
+router.post("/activeDevice",(req,res)=>{
+		let mobile = req.body.mobile;
+		if(!Helper.checkTel(mobile)){
+        return res.status(400).json({msg: "手机号码不能为空！", data:null})			
+		}
+		
+		var url = 'http://211.142.198.14:8050/M2M/API/Message.asmx?wsdl';
+		var t = Math.round(new Date().getTime()/1000).toString()
+		var account1 = 'A10937';
+		var sign = 'O3QZgKaskM6wZAKKsd2utO2WET4';
+		var tel = mobile;
+		var content = '#TB17299516910FFFFF013183.62.138.158:8083';
+
+		var aaa = sign+t+account1;
+		var md5=crypto.createHash("md5");
+		md5.update(aaa);
+		var str=md5.digest('hex');
+		var code1=str.toUpperCase();
+		var args = { account:account1, timestamp:t, sign:code1, msisdn: tel, content: content};
+
+
+		soap.createClient(url, function(err, client) {
+			client.SendSMS(args,function(err, result) {								
+				if (err) {
+					return res.status(500).json({ msg: "祥东系统出错！" , data:err})
+				}
+				let info = '';
+				info = result.SendSMSResult.Result[0]['Msg'];
+				if(info == '短信已提交！'){
+					res.json({
+						msg: "ok",
+						data: info
+					})
+				}else if(info == 'MSISDN 号不是所查询的集团下的用户！'){
+					return res.status(404).json({ msg: "no" , data:'当前手机号不是所查询的集团下的用户！'})
+				}		
+			});
+		});
+})
 module.exports = router;
