@@ -7,7 +7,7 @@ const cors = require('cors'); //跨域
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 
-const config = require("/config.js")
+const config = require("./config")
 
 app.use(cors()); //解决跨域
 
@@ -31,8 +31,10 @@ app.get("/",(req,res) =>{
 // 访问数据库
 // mongoRUI = "mongodb://aly_root:d456_FJ35LLL@127.0.0.1:27899/admin"
 // mongoRUI="mongodb://aly_root:d456_FJ35LLL@localhost:27899/xiaoantong"
-mongoRUI=config.mongoRUI
-const DB =  mongoRUI
+
+// mongoRUI = "mongodb://xat:xat@localhost:27899/xiaoantong";
+mongoRUI = config.mongoRUI;
+const DB =  mongoRUI ;
 mongoose.connect(DB,{ useNewUrlParser: true })
         .then(() => console.log("数据库连接成功"))
         .catch(err => console.log(err))
@@ -52,6 +54,10 @@ app.use("/api/res",resApi)
 // 定位设备
 const locationApi = require("./router/api/location")
 app.use("/api/location",locationApi)
+
+// 获取呀正码
+const veryfiCodeApi = require("./router/api/veryfiCode")
+app.use("/api/veryfiCode",veryfiCodeApi)
 
 
 // 错误的innerHTML

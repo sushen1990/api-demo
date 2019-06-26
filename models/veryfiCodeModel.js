@@ -63,6 +63,8 @@ exports.add = function(code, mobile, modelId, callback) {
 	});
 }
 
+
+// Model 中的自定义方法
 var findCodeByMobile = exports.findCodeByMobile = function(mobile, modelId, callback) {
 	VerificationCode.findOne({
 		mobile: mobile,

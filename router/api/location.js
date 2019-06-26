@@ -46,7 +46,8 @@ router.post("/getLocationByTel", (req,res)=>{
 	
 })
  
- 
+
+// 激活物联卡
 router.post("/activeDevice",(req,res)=>{
 		let mobile = req.body.mobile;
 		if(!Helper.checkTel(mobile)){
