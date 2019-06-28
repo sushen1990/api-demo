@@ -4,7 +4,7 @@ const router = express.Router();
 const request = require('request');
 const soap = require('soap');
 const crypto = require('crypto');
-const Helper = require('../../common/helper') ;
+const Helper = require('../../common/helper');
 const config = require("../../config")
 const veryfiCodeDB = require("../../models/veryfiCodeModel.js")
 
@@ -82,7 +82,6 @@ router.post("/checkVeryfiCode", (req,res) =>{
 		return res.status(400).json({msg: "验证码不能为空！", data:null})
 	};
 
-	var result1 = null;
 	// 检查验证码
 	veryfiCodeDB.findCodeByMobile(mobile, modelId, function (err, result) {
 		if (err) {
@@ -106,17 +105,17 @@ router.post("/checkVeryfiCode", (req,res) =>{
 		var nowTime = new Date().getTime();		
 		if (result.code == veryfiCode && result.time < nowTime) {
 			return res.status(404).json({
-				msg: "验证码错误，请重新获取验证码！",
+				msg: "验证码失效，请重新获取验证码！",
 				data: result
 			})
 		};
-		result1 = result;
+		res.json(
+			{msg: "ok", data:result}
+		)
 		
 	})
 
-	res.json(
-		{msg: "ok", data:result1}
-	)
+
 })
 
 module.exports = router;

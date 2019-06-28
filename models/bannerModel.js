@@ -83,7 +83,7 @@ exports.bannerAll = function(modelId, d1, d2, callback) {
 			util.log('FATAL' + err);
 			return callback(err, null);
 		}
-		Banner.count({
+		Banner.count_documents({
 			isShow: true,
 			modelId: modelId
 		}, function(err2, total) {

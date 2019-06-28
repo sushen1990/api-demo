@@ -70,6 +70,11 @@ var StudentSchema = new Schema({
 		type: String,
 		default: null
 	},
+	// 预备家长手机号 1、初始导入学生数据的家长手机号 2、 管理员家长添加的手机号。获取手机号验证码的时候需要在这里验证
+	preParentsPhones: [{
+		type: String,
+		default: null
+	}],
 	//关联家长Id
 	parents: [{
 		type: String,
@@ -111,4 +116,19 @@ exports.findStudentByParentUserId = function(parentUserId, modelId, callback) {
 		callback(null, doc);
 	});
 }
+
+//根据预备家长手机号查询数据
+exports.findStudentByPrePhone = function (phone, modelId, callback) {
+	Student.findOne({
+		preParentsPhones: phone,
+		modelId: modelId,
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}
+
 

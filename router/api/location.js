@@ -7,13 +7,18 @@ const crypto = require('crypto');
 const Helper = require('../../common/helper') 
  
  
+ 
+// 添加定位设备用户和终端 新加
+
+ 
  // 根据设备手机号获取设备定位信息
 router.post("/getLocationByTel", (req,res)=>{
 	let mobile = req.body.mobile;
 	let stime = req.body.stime;
 	let etime = req.body.etime;
 	
-	if (!mobile || mobile == "" || mobile == undefined) {
+	 if (Helper.checkReal(mobile)) {
+		 console.log(mobile);
         return res.status(400).json({msg: "定位卡终端手机号码不能为空！", data:null})
     }	
 	let url = "http://www.ts10000.net/intf/open/locrecord_lists.php?";
