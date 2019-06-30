@@ -55,8 +55,8 @@ router.post("/getLocationByTel", (req,res)=>{
 // 激活物联卡
 router.post("/activeDevice",(req,res)=>{
 		let mobile = req.body.mobile;
-		if(!Helper.checkTel(mobile)){
-        return res.status(400).json({msg: "手机号码不能为空！", data:null})			
+		if(Helper.checkTel(mobile)){
+			return res.status(400).json({msg: "手机号码不能为空！", data:null})			
 		}
 		
 		var url = 'http://211.142.198.14:8050/M2M/API/Message.asmx?wsdl';
@@ -64,7 +64,7 @@ router.post("/activeDevice",(req,res)=>{
 		var account1 = 'A10937';
 		var sign = 'O3QZgKaskM6wZAKKsd2utO2WET4';
 		var tel = mobile;
-		var content = '#TB17299516910FFFFF013183.62.138.158:8083';
+		var content = '#TB'+ mobile +'FFFFF013183.62.138.158:8083';
 
 		var aaa = sign+t+account1;
 		var md5=crypto.createHash("md5");
@@ -72,7 +72,6 @@ router.post("/activeDevice",(req,res)=>{
 		var str=md5.digest('hex');
 		var code1=str.toUpperCase();
 		var args = { account:account1, timestamp:t, sign:code1, msisdn: tel, content: content};
-
 
 		soap.createClient(url, function(err, client) {
 			client.SendSMS(args,function(err, result) {								
