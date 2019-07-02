@@ -27,7 +27,8 @@ app.get("/",(req,res) =>{
 	res.send("hello q")
 })
 
-Schedule.scheduleCronstyle()
+// 定时执行任务
+// Schedule.scheduleCronstyle()
 
 // mongoRUI="mongodb://aly_root:d456_FJ35LLL@localhost:27899/xiaoantong"
 
@@ -57,6 +58,9 @@ app.use("/api/location",locationApi)
 const veryfiCodeApi = require("./router/api/veryfiCode")
 app.use("/api/veryfiCode",veryfiCodeApi)
 
+// 订单相关
+const orderApi = require("./router/api/order.js")
+app.use("/api/order",orderApi)
 
 // 错误的innerHTML
 // const innerHtmlApi = require("./router/api/innerHtml")
