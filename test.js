@@ -1,72 +1,56 @@
-const AlipaySdk = require('alipay-sdk').default;
-const fs = require("fs") //文件
-const crypto = require("crypto") //
-
-var APP_PRIVATE_KEY_PATH = './static/app_private_key.pem';
-
-const alipaySdk = new AlipaySdk({
-    appId: '2019062865738092',
-    privateKey: fs.readFileSync(APP_PRIVATE_KEY_PATH, 'ascii'),
-}); 
-
-
-// 业务参数
-function _buildBizContent(subject, outTradeNo, totalAmount) {
-    let bizContent = {
-        subject: subject,
-        out_trade_no: outTradeNo,
-        total_amount: totalAmount,
-        product_code: 'QUICK_MSECURITY_PAY',
-    };
- 
-    return JSON.stringify(bizContent);
-
-}
-
-// 生成签名
-
-function _buildSign(paramsMap) {
-    //1.获取所有请求参数，不包括字节类型参数，如文件、字节流，剔除sign字段，剔除值为空的参数
-    let paramsList = [...paramsMap].filter(([k1, v1]) => k1 !== 'sign' && v1);
-    //2.按照字符的键值ASCII码递增排序
-    paramsList.sort();
-    //3.组合成“参数=参数值”的格式，并且把这些参数用&字符连接起来
-    let paramsString = paramsList.map(([k, v]) => `${k}=${v}`).join('&');
- 
-    let privateKey = fs.readFileSync(APP_PRIVATE_KEY_PATH, 'utf8');
-    let signType = 'RSA';
-    return _signWithPrivateKey(signType, paramsString, privateKey);
-}
-
-// 加密签名
-function _signWithPrivateKey(signType, content, privateKey) {
-    let sign;
-    if (signType.toUpperCase() === 'RSA2') {
-        sign = crypto.createSign("RSA-SHA256");
-    } else if (signType.toUpperCase() === 'RSA') {
-        sign = crypto.createSign("RSA-SHA1");
-    } else {
-        throw new Error('请传入正确的签名方式，signType：' + signType);
-    }
-    sign.update(content);
-    return sign.sign(privateKey, 'base64');
-}
-
-
-
-
-var BizContent = _buildBizContent("汇款", "23333", 19.9)
-var Sing = _buildSign(BizContent)
-// alipaySdk.exec('alipay.trade.pay', {
-//   grantType: 'authorization_code',
-//   code: 'code',
-//   biz_content: 'token'
+// const orderInfo = await model.order.findOne({
+// 	'orderStatus.status': {
+// 		$in: [1, 9]
+// 	},
+// 	orderCode: ctx.params.orderCode,
+// 	createdBy: ctx.user.userid,
+// 	isDelete: false
+// }, {
+// 	_id: 0,
+// 	orderCode: 1,
+// 	transCode: 1,
+// 	orderProducts: 1,
+// 	CNYCharge: 1
 // })
-//   .then(result => {
-//     console.log(result);
-//   })
-//   .catch(err => {
-// 	console.log(err);
-//   }) 
+// if (!orderInfo) {
+// 	throw {
+// 		status: 20001,
+// 		message: 'paying orderInfo not exists'
+// 	}
+// 	return
+// }
+const Helper = require('./common/helper') 
+const AppID = '2019062865738092';
+const APP_PRIVATE_KEY_PATH = './static/app_private_key.pem';
+const fs = require('fs');
+const crypto = require('crypto');
 
-console.log(Sing)
+let aliPaySignObj = {
+	app_id: AppID,
+	method: 'alipay.trade.app.pay',
+	charset: 'utf-8',
+	sign_type: 'RSA2',
+	timestamp: Helper.getNowYtoS(),
+	version: '1.0',
+	notify_url: "https://www.sushen1990.cn:3000",
+	biz_content: JSON.stringify({
+		body: '冰糖葫芦',
+		subject: '冰糖葫芦',
+		out_trade_no: Date.now().toString(),
+		timeout_express: '15m',
+		total_amount: 0.01,
+		product_code: 'QUICK_MSECURITY_PAY'
+	})
+};
+let signStr = '',
+	encodeStr = '';
+for (let n of Object.keys(aliPaySignObj).sort()) {
+	signStr += (n + '=' + aliPaySignObj[n] + '&');
+	encodeStr += (n + '=' + encodeURIComponent(aliPaySignObj[n]) + '&');
+}
+signStr = signStr.substring(0, signStr.length - 1);
+var signer = crypto.createSign('RSA-SHA1').update(signStr);
+let privateKey = fs.readFileSync(APP_PRIVATE_KEY_PATH,"utf-8");
+let sign = signer.sign(privateKey, 'base64')
+
+console.log(sign)

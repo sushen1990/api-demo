@@ -59,16 +59,9 @@ const veryfiCodeApi = require("./router/api/veryfiCode")
 app.use("/api/veryfiCode",veryfiCodeApi)
 
 // 订单相关
-const orderApi = require("./router/api/order.js")
+const orderApi = require("./router/api/order")
 app.use("/api/order",orderApi)
 
 //支付相关
-const payAPI = require("./router/api/pay.js")
+const payAPI = require("./router/api/pay")
 app.use("/api/pay", payAPI)
-
-// 错误的innerHTML
-// const innerHtmlApi = require("./router/api/innerHtml")
-// app.use("/api/innerHtml",innerHtmlApi) 
-
-
-
