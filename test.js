@@ -1,12 +1,13 @@
 const AlipaySdk = require('alipay-sdk').default;
 const fs = require("fs") //文件
+const crypto = require("crypto") //
 
 var APP_PRIVATE_KEY_PATH = './static/app_private_key.pem';
 
 const alipaySdk = new AlipaySdk({
     appId: '2019062865738092',
     privateKey: fs.readFileSync(APP_PRIVATE_KEY_PATH, 'ascii'),
-});
+}); 
 
 
 // 业务参数
@@ -25,7 +26,6 @@ function _buildBizContent(subject, outTradeNo, totalAmount) {
 // 生成签名
 
 function _buildSign(paramsMap) {
-	console.log(paramsMap)
     //1.获取所有请求参数，不包括字节类型参数，如文件、字节流，剔除sign字段，剔除值为空的参数
     let paramsList = [...paramsMap].filter(([k1, v1]) => k1 !== 'sign' && v1);
     //2.按照字符的键值ASCII码递增排序
@@ -38,6 +38,7 @@ function _buildSign(paramsMap) {
     return _signWithPrivateKey(signType, paramsString, privateKey);
 }
 
+// 加密签名
 function _signWithPrivateKey(signType, content, privateKey) {
     let sign;
     if (signType.toUpperCase() === 'RSA2') {

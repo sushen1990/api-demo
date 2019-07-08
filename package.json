@@ -10,6 +10,7 @@
   "author": "shane",
   "license": "ISC",
   "dependencies": {
+    "alipay-node-sdk": "^1.1.9",
     "bcrypt": "^3.0.6",
     "express": "^4.16.4"
   }
