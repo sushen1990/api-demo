@@ -206,7 +206,7 @@ const User = mongoose.model('User');
 // }
 
 //根据手机号查询用户
-exports.findUserByMobile = function(mobile, modelId, lastLoginWay, callback) {
+exports.findUserByMobile = function(mobile, modelId, callback) {
 	User.findOne({
 		mobile: mobile,
 		modelId: modelId
@@ -215,7 +215,7 @@ exports.findUserByMobile = function(mobile, modelId, lastLoginWay, callback) {
 		if(doc){
 			callback(null, doc);
 		}else{
-			return callback("当前用户不在数据库中", null);
+			return callback(modelId, null);
 		}
 		
 	}).catch(err => {

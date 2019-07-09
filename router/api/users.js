@@ -61,7 +61,7 @@ router.post("/LoginParent", (req,res) =>{
 	 
 	let mobile = req.body.mobile;
 	let modelId = req.body.modelId;
-	let verifyCode = req.body.verifyCode;
+	// let verifyCode = req.body.verifyCode;
 	
 	if (!mobile || mobile == "" || mobile == undefined) {
         return res.status(400).json({msg: "手机号码不能为空！", data:null})
@@ -80,7 +80,7 @@ router.post("/LoginParent", (req,res) =>{
         return res.status(400).json({ msg: "请输入正确的手机号码！", data:null})
     }	
 
-	userDB.findUserByMobile(mobile, modelId, 1, function(err0, doc0) {
+	userDB.findUserByMobile(mobile, modelId, function(err0, doc0) {
 		if (err0) {
 			return res.status(404).json({msg: err0, data:null})
 		}

@@ -81,32 +81,34 @@ exports.findClassById = function(classId, callback) {
 		if (!doc) {
 			return callback(null, null);
 		}
-		if (!doc.teachers) {
-			return callback(null, doc);
-		}
-		async.map(doc.teachers, function(item, cb) {
-			userDB.findUserById(item.userId, function(err1, doc1) {
-				if (err1) {
-					return cb(err1);
-				}
-				if (!doc1) {
-					return cb('no data');
-				}
-				var obj = {
-					userId: item.userId,
-					userName: item.userName,
-					headImgUrl: doc1.headimgurl,
-					classType: item.classType,
-					jobType: item.jobType
-				}
-				cb(null, obj);
-			});
-		}, function(err, results) {
-			if (err) {
-				return callback(null, doc);
-			}
-			doc.teachers = results;
-			callback(null, doc);
-		});
+		callback(null, doc);
+
+		// if (!doc.teachers) {
+		// 	return callback(null, doc);
+		// }
+		// async.map(doc.teachers, function(item, cb) {
+		// 	userDB.findUserById(item.userId, function(err1, doc1) {
+		// 		if (err1) {
+		// 			return cb(err1);
+		// 		}
+		// 		if (!doc1) {
+		// 			return cb('no data');
+		// 		}
+		// 		var obj = {
+		// 			userId: item.userId,
+		// 			userName: item.userName,
+		// 			headImgUrl: doc1.headimgurl,
+		// 			classType: item.classType,
+		// 			jobType: item.jobType
+		// 		}
+		// 		cb(null, obj);
+		// 	});
+		// }, function(err, results) {
+		// 	if (err) {
+		// 		return callback(null, doc);
+		// 	}
+		// 	doc.teachers = results;
+		// 	callback(null, doc);
+		// });
 	});
 }
