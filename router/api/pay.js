@@ -14,14 +14,16 @@ router.get("/test",(req,res) =>{
 
 router.get("/getOrderInfo", (req,res)=>{
 	
-	let order = "5cd3aec5f002b6dc1664332e";
-	var time = new Date().toLocaleDateString();
-	const out_trade_no = time + "-" + order.toUpperCase();
+	const out_trade_no = Helper.getPayOrderNo("AL");
+	const body = "校安通服务费1年";
+	const total_amount = 0.02;
+	var orderInfo = "";
+	orderInfo = payHelper.getAlipayOrderInfo(out_trade_no, body, total_amount)
 	
-	if(result == ""){
+	if(orderInfo == ""){
 		return res.status(401).json({msg: "no", data:null})
 	}else {
-		res.json({msg: "ok", data:result})
+		res.json({msg: "ok", data:orderInfo})
 	}
 
 })

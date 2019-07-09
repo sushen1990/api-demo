@@ -1,3 +1,4 @@
+const stringRandom = require('string-random');
 // 检查是否为空、null、undefined   数据正常返回false 数据错误返回true
 exports.checkReal = function(str) {
 	if (!str || str == "" || str == undefined) {
@@ -68,4 +69,25 @@ exports.getNowYtoS = function getNowFormatDate() {
             + " " + date.getHours() + seperator2 + date.getMinutes()
             + seperator2 + date.getSeconds();
     return currentdate;
+}
+
+
+// 生成唯一订单号
+exports.getPayOrderNo = function(type){
+	var date = new Date();
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    var strHour = date.getHours();	
+	var strMinutes = date.getMinutes();
+	var strSeconds = date.getSeconds();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+	var currentdate = "";
+    currentdate = date.getFullYear()  + month  + strDate + strHour + strMinutes + strSeconds + type +stringRandom(8, { letters: false })
+	
+	return currentdate;
 }

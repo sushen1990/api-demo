@@ -11,10 +11,7 @@ exports.getAlipayOrderInfo = function(out_trade_no, body, total_amount){
 	const AppID = '2019070565762733';
 	const APP_PRIVATE_KEY_PATH = './static/app_private_key.pem';	
 	const subject = "校安通服务"; //付款标题
-	const body = body; //付款内容
-	const out_trade_no = out_trade_no.up; //商户唯一订单号
-	const total_amount = total_amount; // 付款金额
-	
+
 	// 1、业务参数
 	let aliPaySignObj = {
 		alipay_sdk: "alipay-sdk-php-20161101" ,
