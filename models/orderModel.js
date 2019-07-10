@@ -20,7 +20,7 @@ var OrderSchema = new Schema({
 		type: String,
 		default : ''
 	},
-	//订单状态 0 创建订单 1 待支付 2 已支付 -1 作废
+	//订单状态 0 创建订单 1 待支付 2 已支付 3 订单正常完成 -1 作废
 	state: {
 		type: Number,
 		default: 0
@@ -45,14 +45,29 @@ var OrderSchema = new Schema({
 		type: Number,
 		default: 0
 	},
+	//订单生效时间，首次订购或者失效后重新订购为当天，订单还在生效的时候，顺延订单日期。
+	efftiveDate: {
+		type: Number,
+		default: 0
+	},
+	//订单过期时间，到期状态更改为3 已完成
+	expireDate: {
+		type: Number,
+		default: 0
+	},
 	//订单来源(如：祥东)
 	resource: {
 		type: String,
 		default: ''
 	},
-	//第三方订单号
-	three_transaction_id: {
-		type: String,
+	//支付订单号
+	out_trade_no: {
+		type: String, 
+		default: ''
+	},
+	//支付类型 1 AL 支付宝支付 2 WX 微信支付 3 CA 现金支付 4 IN 内部基金会小学 5 OT 其他
+	teade_type: {
+		type: String, 
 		default: ''
 	}
 });
@@ -63,9 +78,25 @@ var Order = mongoose.model("SmsOrder");
 
 let time = new Date().getTime();
 
+// 查找待支付订单
 exports.findOrderToPay = function(callback) {
 	Order.find({
 		state: "1"
+	}, function(err,doc){
+		if (err) {
+			return callback(err, null)
+		}else if (doc){
+			console.log(doc);
+			callback(null, doc)
+		}
+	})
+}
+
+// 根据学生ID获取订单信息
+exports.findOrderByStudentID = function(callback) {
+	Order.find({
+		state: "1",
+		
 	}, function(err,doc){
 		if (err) {
 			return callback(err, null)

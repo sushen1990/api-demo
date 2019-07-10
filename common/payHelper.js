@@ -7,9 +7,8 @@ const Helper = require('./helper')
 
 exports.getAlipayOrderInfo = function(out_trade_no, body, total_amount){
 	
-	let SIGN = "";
 	const AppID = '2019070565762733';
-	const APP_PRIVATE_KEY_PATH = './static/app_private_key.pem';	
+	const APP_PRIVATE_KEY_PATH = './static/app_private_key.pem';	// 商户秘钥路径
 	const subject = "校安通服务"; //付款标题
 
 	// 1、业务参数

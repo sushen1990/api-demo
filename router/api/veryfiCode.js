@@ -65,6 +65,7 @@ router.post("/sendVeryfiCode", (req,res)=>{
  })
 
 
+// 登录的时候验证验证码
 router.post("/checkVeryfiCode", (req,res) =>{
 	let mobile = req.body.mobile;
 	let modelId = req.body.modelId;

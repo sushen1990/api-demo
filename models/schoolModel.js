@@ -92,6 +92,34 @@ var SchoolSchema = new Schema({
 mongoose.model('school', SchoolSchema);
 const School = mongoose.model('school');
 
+
+// 创建新学校
+exports.addSchoole = function(postDate, callback) {
+	var newSchool = new School();
+	newSchool.modelId = postData.modelId;
+	newSchool.isShow = true;
+	newSchool.schoolName = postData.schoolName;
+	newSchool.createDate = new Date().getTime();
+	newSchool.proviceFirstStageName = postData.proviceFirstStageName;
+	newSchool.addressCitySecondStageName = postData.addressCitySecondStageName;
+	newSchool.addressCountiesThirdStageName = postData.addressCountiesThirdStageName;
+	newSchool.address = postData.address;
+	newSchool.contacts = postData.contacts;
+	newSchool.contactsPhone = postData.contactsPhone;
+	newSchool.schoolType = postData.schoolType;
+	newSchool.position = postData.position;
+	newSchool.info = postData.info;
+	newSchool.imageUrl = postData.imageUrl;
+	newSchool.save(function(err) {
+		if (err) {
+			util.log("FATAL:" + err);
+			callback(err);
+		} else {
+			callback(null, newSchool);
+		}
+	});
+}
+
 //根据id查询学校
 exports.findSchoolById = function(schoolId, callback) {
 	School.findOne({

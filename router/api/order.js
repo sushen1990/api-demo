@@ -17,4 +17,17 @@ router.get("/getOrderToPay", (req,res)=>{
 	})
 
 })
+
+// 创建订单
+router.post("/addOrder", (req,res)=>{
+	OrderModel.findByID(function(err,result){
+		if (err) {
+			return res.status(401).json({msg: "no", data:err})			
+		}else if (result){
+			res.json({msg: "ok", data:result})
+		}
+	})
+
+})
+
 module.exports = router;
