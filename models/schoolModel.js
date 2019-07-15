@@ -1,16 +1,13 @@
 'use strict';
-var util = require('util');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const util = require('util');
+const mongoose = require('mongoose');
+const config = require('../config');
+const Schema = mongoose.Schema;
 
-var SchoolSchema = new Schema({
+const SchoolSchema = new Schema({
 	isShow: {
 		type: Boolean,
 		default: false
-	},
-	modelId: {
-		type: String,
-		default: null
 	},
 	schoolName: {
 		type: String,
@@ -94,9 +91,8 @@ const School = mongoose.model('school');
 
 
 // 创建新学校
-exports.addSchoole = function(postDate, callback) {
-	var newSchool = new School();
-	newSchool.modelId = postData.modelId;
+exports.schoolSave = function(postData, callback) {
+	let newSchool = new School();
 	newSchool.isShow = true;
 	newSchool.schoolName = postData.schoolName;
 	newSchool.createDate = new Date().getTime();
@@ -112,7 +108,6 @@ exports.addSchoole = function(postDate, callback) {
 	newSchool.imageUrl = postData.imageUrl;
 	newSchool.save(function(err) {
 		if (err) {
-			util.log("FATAL:" + err);
 			callback(err);
 		} else {
 			callback(null, newSchool);
@@ -124,6 +119,20 @@ exports.addSchoole = function(postDate, callback) {
 exports.findSchoolById = function(schoolId, callback) {
 	School.findOne({
 		_id: schoolId,
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			util.log('FATAL ' + err);
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}
+
+//根据name查询学校
+exports.findSchoolByName = function(name, callback) {
+	School.findOne({
+		schoolName: name,
 		isShow: true
 	}, function(err, doc) {
 		if (err) {

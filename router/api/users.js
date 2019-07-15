@@ -12,7 +12,7 @@ const schoolDB = require("../../models/schoolModel.js")
 // @desc 测试接口是否连通
 // @access pulic
 router.get("/test",(req,res) =>{ 
-    res.json({msg:"hello q"})
+    res.json({msg:"hello users"})
 })
 
 // $route Post api/users/regi

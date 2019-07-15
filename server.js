@@ -65,3 +65,7 @@ app.use("/api/order",orderApi)
 //支付相关
 const payAPI = require("./router/api/pay")
 app.use("/api/pay", payAPI)
+
+//学校相关
+const schoolAPI = require("./router/api/school")
+app.use("/api/school", schoolAPI)
