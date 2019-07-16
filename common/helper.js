@@ -71,6 +71,39 @@ exports.getNowYtoS = function getNowFormatDate() {
     return currentdate;
 }
 
+ exports.getDateString = function(date,type) {
+	// 返回 YYYY-MM-DD hh:mm:ss
+	// type 精确到 year month day full
+    let seperator1 = "-";
+    let seperator2 = ":";
+    let month = date.getMonth() + 1;
+    let strDate = date.getDate();
+	
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+	let currentdate = "";
+	switch(type) {
+		case "year":
+			currentdate = date.getFullYear();
+			break;
+		case "month":
+			currentdate = date.getFullYear() + seperator1 + month;
+			break;
+		case "day":
+			currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+			break;
+		case "full":
+			currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();					
+	}
+    return currentdate;
+}
+
 
 // 生成唯一订单号
 exports.getPayOrderNo = function(type){
@@ -90,4 +123,11 @@ exports.getPayOrderNo = function(type){
     currentdate = date.getFullYear()  + month  + strDate + strHour + strMinutes + strSeconds + type +stringRandom(8, { letters: false })
 	
 	return currentdate;
+}
+
+// 转换本地时间
+exports.localDate = function(v) {
+    const d = new Date(v || Date.now());
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString();
 }

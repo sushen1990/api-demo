@@ -34,7 +34,11 @@ app.get("/",(req,res) =>{
 
 mongoRUI = config.mongoRUI;
 const DB =  mongoRUI ;
-mongoose.connect(DB,{ useNewUrlParser: true })
+mongoose.connect(DB,
+			{ useNewUrlParser: true ,
+			  useFindAndModify: false
+			}
+		)
         .then(() => console.log("数据库连接成功"))
         .catch(err => console.log(err))
 

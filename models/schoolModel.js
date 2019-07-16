@@ -15,8 +15,8 @@ const SchoolSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Number,
-		default: null
+		type: Date,
+		default: Date.now
 	},
 	//国标收货地址第一级地址
 	proviceFirstStageName: {
@@ -74,12 +74,12 @@ const SchoolSchema = new Schema({
 		}
 	}],
 	//学校介绍
-	info:{
+	info: {
 		type: String,
 		default: ''
 	},
 	//学校照片
-	imageUrl:{
+	imageUrl: {
 		type: String,
 		default: ''
 	}
@@ -141,4 +141,29 @@ exports.findSchoolByName = function(name, callback) {
 		}
 		callback(null, doc);
 	});
+}
+
+// 获取学校列表
+exports.getSchoolList = function(callback) {
+	School.find({
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}
+
+// 删除学校列表
+exports.schoolRemove = function(schoolID, callback) {
+	School.findOneAndUpdate(schoolID, {
+			isShow: false
+		},
+		function(err, doc) {
+			if (err) {
+				return callback(err, null);
+			}
+			callback(null, doc);
+		});
 }
