@@ -4,16 +4,12 @@ var async = require('async');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const userDB = require("./userModel.js")
+const schoolDB = require("./schoolModel.js")
 
 var ClassSchema = new Schema({
 	isShow: {
 		type: Boolean,
 		default: false
-	},
-	modelId: {
-		type: String,
-		default: null
 	},
 	schoolId: {
 		type: String,
@@ -29,6 +25,11 @@ var ClassSchema = new Schema({
 	},
 	//年级
 	grade: {
+		type: Number,
+		default: null
+	},
+	//班级
+	_class: {
 		type: Number,
 		default: null
 	},
@@ -68,47 +69,69 @@ var ClassSchema = new Schema({
 mongoose.model('Class', ClassSchema);
 const Class = mongoose.model('Class');
 
-//根据学校ID查询学校信息
+// 增加学校
+exports.classSave = function(postData, callback) {
+	let newClass = new Class();
+	newClass.isShow = true;
+	newClass.schoolId = postData.schoolId;
+	newClass.schoolName = postData.schoolName;
+
+	newClass.grade = postData.grade;
+	newClass._class = postData._class;
+	newClass.className = postData.className;
+	newClass.createDate = new Date().getTime();
+
+	// 验证schoolId start
+	let _id = postData.schoolId;
+	schoolDB.findSchoolById(_id, function(err, doc) {
+		if (err) {
+			return callback(err);
+		}
+		if (!doc) {
+			return callback(null, "学校不可用");
+		}
+		
+		newClass.save(function(err) {
+			if (err) {
+				return callback(err);
+			}
+			callback(null, newClass);
+
+		});
+	})
+	// 验证schoolId end
+
+
+}
+
+
+//根据ID查询班级
 exports.findClassById = function(classId, callback) {
 	Class.findOne({
 		_id: classId,
 		isShow: true
 	}, function(err, doc) {
 		if (err) {
-			util.log('FATAL ' + err);
 			return callback(err, null);
 		}
 		if (!doc) {
 			return callback(null, null);
 		}
 		callback(null, doc);
-
-		// if (!doc.teachers) {
-		// 	return callback(null, doc);
-		// }
-		// async.map(doc.teachers, function(item, cb) {
-		// 	userDB.findUserById(item.userId, function(err1, doc1) {
-		// 		if (err1) {
-		// 			return cb(err1);
-		// 		}
-		// 		if (!doc1) {
-		// 			return cb('no data');
-		// 		}
-		// 		var obj = {
-		// 			userId: item.userId,
-		// 			userName: item.userName,
-		// 			headImgUrl: doc1.headimgurl,
-		// 			classType: item.classType,
-		// 			jobType: item.jobType
-		// 		}
-		// 		cb(null, obj);
-		// 	});
-		// }, function(err, results) {
-		// 	if (err) {
-		// 		return callback(null, doc);
-		// 	}
-		// 	doc.teachers = results;
-		// 	callback(null, doc);
-		// });
 	});
+}
+
+// 根据信息查询班级
+exports.findClassByStr = function(whereStr, callback) {
+	Class.findOne(
+		whereStr,
+		function(err, doc) {
+			if (err) {
+				return callback(err);
+			}
+			if (!doc) {
+				return callback(null, null);
+			}
+			callback(null, doc);
+		});
 }

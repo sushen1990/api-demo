@@ -3,6 +3,8 @@ const router = express.Router()
 const UserModel = require("../../models/testUser")
 const bcrypt = require("bcrypt")
 
+const Helper = require('../../common/helper');
+
 const userDB = require("../../models/userModel.js")
 const studentDB = require("../../models/studentsModel.js")
 const classDB = require("../../models/classModel.js")
@@ -75,10 +77,10 @@ router.post("/LoginParent", (req,res) =>{
 	//     })
 	// }
 	
-	const myreg = /^[1][3,4,5,7,8][0-9]{9}$/;
-    if (!myreg.test(mobile)) {
-        return res.status(400).json({ msg: "请输入正确的手机号码！", data:null})
-    }	
+
+	if (Helper.checkTel(mobile)) {
+		return res.status(400).json({msg: "手机号码格式不正确！", data:null})
+	};	
 
 	userDB.findUserByMobile(mobile, modelId, function(err0, doc0) {
 		if (err0) {

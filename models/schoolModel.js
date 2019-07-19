@@ -108,21 +108,19 @@ exports.schoolSave = function(postData, callback) {
 	newSchool.imageUrl = postData.imageUrl;
 	newSchool.save(function(err) {
 		if (err) {
-			callback(err);
+			return callback(err);
 		} else {
-			callback(null, newSchool);
+			return callback(null, newSchool);
 		}
 	});
 }
 
 //根据id查询学校
 exports.findSchoolById = function(schoolId, callback) {
-	School.findOne({
-		_id: schoolId,
-		isShow: true
-	}, function(err, doc) {
+	School.findById(
+		schoolId	
+	, function(err, doc) {
 		if (err) {
-			util.log('FATAL ' + err);
 			return callback(err, null);
 		}
 		callback(null, doc);
@@ -136,7 +134,6 @@ exports.findSchoolByName = function(name, callback) {
 		isShow: true
 	}, function(err, doc) {
 		if (err) {
-			util.log('FATAL ' + err);
 			return callback(err, null);
 		}
 		callback(null, doc);
@@ -157,7 +154,7 @@ exports.getSchoolList = function(callback) {
 
 // 删除学校列表
 exports.schoolRemove = function(schoolID, callback) {
-	School.findOneAndUpdate(schoolID, {
+	School.findByIdAndUpdate(schoolID, {
 			isShow: false
 		},
 		function(err, doc) {

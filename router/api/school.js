@@ -28,33 +28,39 @@ router.post("/schoolAdd", (req, res) => {
 	let info = req.body.info;
 	let imageUrl = req.body.imageUrl;
 
-	if (!Scode || Scode != config.Scode) {
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
 		console.log(config.Scode)
 		return res.status(400).json({
-			msg: "Scode错误",
-			data: null
+			msg: "no",
+			data: "Scode错误"
 		})
 	}
-	if (!schoolName) {
+	if (Helper.checkReal(schoolName)) {
 		return res.status(400).json({
-			msg: "缺少值schoolName",
-			data: null
+			msg: "no",
+			data: "缺少值schoolName"
 		})
 	}
+	if (Helper.checkTel(contactsPhone)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "手机号码格式不正确!"
+		})
+	};
 	// 去重查询
 	schoolDB.findSchoolByName(schoolName, function(err, doc) {
 
 		if (doc) {
 			return res.status(403).json({
-				msg: "当前学校名已经被注册",
-				data: null
+				msg: "no",
+				data: "当前学校名已经被注册"
 			})
 		}
 
 		if (err) {
 			return res.status(500).json({
-				msg: "服务器内部错误,请联系后台开发人员!!!",
-				data: err
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!"
 			})
 		}
 		const postData = {
@@ -70,17 +76,18 @@ router.post("/schoolAdd", (req, res) => {
 			info: info,
 			imageUrl: imageUrl
 		}
-		console.log(postData)
+
 		schoolDB.schoolSave(postData, function(err, result) {
 			if (err) {
 				return res.status(500).json({
-					msg: "服务器内部错误,请联系后台开发人员!!!",
-					data: err
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!"
 				})
 			}
+			let data = result;
 			res.json({
 				msg: "ok",
-				resources: result
+				resources: data
 			})
 
 		})
@@ -94,26 +101,27 @@ router.post("/schoolList", (req, res) => {
 
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
 		return res.status(400).json({
-			msg: "Scode错误",
-			data: null
+			msg: "no",
+			data: "Scode错误"
 		})
 	}
-	schoolDB.getSchoolList(function(err, doc){
+	schoolDB.getSchoolList(function(err, doc) {
 		if (err) {
 			return res.status(500).json({
-				msg: "服务器内部错误,请联系后台开发人员!!!",
-				data: err
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!"
 			})
 		}
 		if (!doc) {
 			return res.status(404).json({
-				msg: "没有数据",
-				data: err
+				msg: "no",
+				data: "没有数据！"
 			})
 		}
+		let data = doc;
 		res.status(200).json({
 			msg: "ok",
-			resources: doc
+			data: data
 		})
 	})
 })
@@ -125,33 +133,34 @@ router.post("/schoolRemove", (req, res) => {
 
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
 		return res.status(400).json({
-			msg: "Scode错误",
-			data: null
+			msg: "no",
+			data: "Scode错误"
 		})
 	}
 	if (Helper.checkReal(schoolID)) {
 		return res.status(400).json({
-			msg: "schoolID错误",
-			data: null
+			msg: "no",
+			data: "schoolID错误"			
 		})
 	}
-	
-	schoolDB.schoolRemove(schoolID, function(err, doc){
+
+	schoolDB.schoolRemove(schoolID, function(err, doc) {
 		if (err) {
 			return res.status(500).json({
-				msg: "服务器内部错误,请联系后台开发人员!!!",
-				data: err
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!"
 			})
 		}
 		if (!doc) {
 			return res.status(404).json({
-				msg: "没有数据",
-				data: err
+				msg: "no",
+				data: "没有数据！"
 			})
 		}
-		res.json({
+		let data = doc;
+		res.status(200).json({
 			msg: "ok",
-			resources: doc
+			data: data
 		})
 	})
 })
