@@ -35,8 +35,8 @@ var ClassSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Number,
-		default: null
+		type: Date,
+		default: Date.now
 	},
 	//老师
 	teachers: [{

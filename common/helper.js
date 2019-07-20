@@ -29,13 +29,13 @@ exports.int6 = function() {
 
 }
 
-// 检测是否为手机号 数据正常返回false 数据错误返回true
+// 检测是否为手机号 数据正常返回true 数据错误返回false
 exports.checkTel = function(tel) {
 	let reg = /^1[0-9]{10}$/;
 	if (tel != "" && tel != undefined && tel.length == 11 && reg.test(tel)) {
-		return false
-	} else {
 		return true
+	} else {
+		return false
 	}
 }
 
