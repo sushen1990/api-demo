@@ -126,6 +126,52 @@ router.post("/schoolList", (req, res) => {
 	})
 })
 
+// 分页获取学校
+router.post("/schoolListPage", (req, res) => {
+	let Scode = req.body.Scode;
+	let page = req.body.page;
+	let size = req.body.size;
+
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	}
+	if (Helper.checkReal(page)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "page错误"
+		})
+	}
+	if (Helper.checkReal(size)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "size错误"
+		})
+	}
+	schoolDB.getSchoolListPaginate(page, size, function(err, doc) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			})
+		}
+		if (!doc) {
+			return res.status(404).json({
+				msg: "no",
+				data: "没有数据！"
+			})
+		}
+		let data = doc;
+		res.status(200).json({
+			msg: "ok",
+			data: data
+		})
+	})
+})
+
+
 // 删除学校
 router.post("/schoolRemove", (req, res) => {
 	let Scode = req.body.Scode;

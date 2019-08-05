@@ -2,7 +2,6 @@
 var util = require('util');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-const userDB = require("./userModel.js")
 
 var StudentSchema = new Schema({
 	//唯一学号
@@ -14,11 +13,18 @@ var StudentSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	truename: {
+	//创建时间
+	createDate: {
+		type: Date,
+		default: Date.now
+	},
+	//学校ID
+	schoolId: {
 		type: String,
 		default: null
 	},
-	modelId: {
+	//学校名称
+	schoolName: {
 		type: String,
 		default: null
 	},
@@ -32,15 +38,24 @@ var StudentSchema = new Schema({
 		type: String,
 		default: null
 	},
+	truename: {
+		type: String,
+		default: null
+	},
 	//出生日期
 	brithDay: {
 		type: Number,
 		default: 0
 	},
-	//创建时间
-	createDate: {
-		type: Number,
-		default: 0
+	//身份证号码
+	ChinaCardId: {
+		type: String,
+		default: null
+	},
+	//民族
+	nation: {
+		type: String,
+		default: null
 	},
 	//性别
 	sex: {
@@ -85,16 +100,7 @@ var StudentSchema = new Schema({
 		type: String,
 		default: null
 	},
-	//身份证号码
-	ChinaCardId: {
-		type: String,
-		default: null
-	},
-	//民族
-	nation: {
-		type: String,
-		default: null
-	}
+
 });
 
 //访问Student对象模型
@@ -102,11 +108,41 @@ mongoose.model('Student', StudentSchema);
 var Student = mongoose.model('Student');
 
 
+//保存学生信息
+exports.studentSave = function(postData, callback) {
+	let newStudent = new Student();
+	newStudent.isShow = true;
+	newStudent.createDate = new Date().getTime();
+
+	newStudent.schoolId = postData.schoolId;
+	newStudent.schoolName = postData.schoolName;
+	newStudent.classId = postData.schoolId;
+	newStudent.className = postData.schoolName;
+
+	newStudent.truename = postData.truename;
+	newStudent.ChinaCardId = postData.ChinaCardId;
+	newStudent.brithDay = postData.brithDay;
+	newStudent.sex = postData.sex;
+
+	newStudent.preParentsPhones = postData.preParentsPhones;
+	newStudent.parents = postData.parents;
+	newStudent.adminParent = postData.adminParent;
+
+
+	// save学生信息 start ↓
+	newStudent.save(function(err) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, newStudent);
+	});
+	// save学生信息 end   ↑
+}
+
 //根据家长id查询学生
 exports.findStudentByParentUserId = function(parentUserId, modelId, callback) {
 	Student.findOne({
 		parents: parentUserId,
-		modelId: modelId,
 		isShow: true
 	}, function(err, doc) {
 		if (err) {
@@ -118,10 +154,9 @@ exports.findStudentByParentUserId = function(parentUserId, modelId, callback) {
 }
 
 //根据预备家长手机号查询数据
-exports.findStudentByPrePhone = function (phone, modelId, callback) {
+exports.findStudentByPrePhone = function(phone, modelId, callback) {
 	Student.findOne({
 		preParentsPhones: phone,
-		modelId: modelId,
 		isShow: true
 	}, function(err, doc) {
 		if (err) {
@@ -131,4 +166,15 @@ exports.findStudentByPrePhone = function (phone, modelId, callback) {
 	});
 }
 
-
+//根据学生身份证号验证学生
+exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
+	Student.findOne({
+		ChinaCardId: ChinaCardId,
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}

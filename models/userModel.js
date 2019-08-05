@@ -37,14 +37,6 @@ const UserSchema = new Schema({
 		type: String,
 		default: null
 	},
-	modelId: {
-		type: String,
-		default: null
-	},
-	modelTitle: {
-		type: String,
-		default: null
-	},
 	lastLoginTime: {
 		type: Number,
 		default: new Date().getTime()

@@ -1,12 +1,13 @@
 'use strict';
-var util = require('util');
-var async = require('async');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const util = require('util');
+const async = require('async');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+// 分页插件
 
 const schoolDB = require("./schoolModel.js")
 
-var ClassSchema = new Schema({
+const ClassSchema = new Schema({
 	isShow: {
 		type: Boolean,
 		default: false
@@ -100,8 +101,6 @@ exports.classSave = function(postData, callback) {
 		});
 	})
 	// 验证schoolId end
-
-
 }
 
 
@@ -120,11 +119,39 @@ exports.findClassById = function(classId, callback) {
 		callback(null, doc);
 	});
 }
+// 分页获取指定学校的班级数据
+exports.getClassListPaginate = function(schoolId, page, size, callback) {
+
+	Class.find({
+		isShow: true,
+		schoolId: schoolId
+	}, function(err1, doc) {
+		if (err1) {
+			return callback(err1, null);
+		}
+		Class.countDocuments({
+			isShow: true,
+			schoolId: schoolId
+		}, function(err2, total) {
+			if (err2) {
+				return callback(err2, null);
+			}
+			let newDoc = {
+				data: doc,
+				total: total
+			}
+			callback(null, newDoc);
+		})
+	}).limit(parseInt(size)).skip((page - 1) * size).sort({
+		_id: -1
+	});
+}
 
 // 根据信息查询班级
 exports.findClassByStr = function(whereStr, callback) {
-	Class.findOne(
+	Class.find(
 		whereStr,
+		{ _id: 1, className: 1 },
 		function(err, doc) {
 			if (err) {
 				return callback(err);

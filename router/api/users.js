@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 const Helper = require('../../common/helper');
 
 const userDB = require("../../models/userModel.js")
-const studentDB = require("../../models/studentsModel.js")
+const studentDB = require("../../models/studentModel.js")
 const classDB = require("../../models/classModel.js")
 const schoolDB = require("../../models/schoolModel.js")
 
