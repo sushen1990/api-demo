@@ -36,8 +36,7 @@ const ClassSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Date,
-		default: Date.now
+		type: Date
 	},
 	//老师
 	teachers: [{
@@ -80,7 +79,11 @@ exports.classSave = function(postData, callback) {
 	newClass.grade = postData.grade;
 	newClass._class = postData._class;
 	newClass.className = postData.className;
-	newClass.createDate = new Date().getTime();
+
+	let date = new Date();
+	date.setHours(date.getHours() + 8);
+	newClass.createDate = date;
+
 
 	// 验证schoolId start
 	let _id = postData.schoolId;
@@ -91,7 +94,7 @@ exports.classSave = function(postData, callback) {
 		if (!doc) {
 			return callback(null, "学校不可用");
 		}
-		
+
 		newClass.save(function(err) {
 			if (err) {
 				return callback(err);
@@ -150,13 +153,15 @@ exports.getClassListPaginate = function(schoolId, page, size, callback) {
 // 根据信息查询班级
 exports.findClassByStr = function(whereStr, callback) {
 	Class.find(
-		whereStr,
-		{ _id: 1, className: 1 },
+		whereStr, {
+			_id: 1,
+			className: 1
+		},
 		function(err, doc) {
 			if (err) {
 				return callback(err);
 			}
-			if (!doc) {
+			if (!doc || doc.length == 0) {
 				return callback(null, null);
 			}
 			callback(null, doc);

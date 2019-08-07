@@ -13,10 +13,19 @@ var StudentSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
+	// 是否在有效期内，当前时间超过有效期的时候，自动变为false，需要续费
+	isInEffective: {
+		type: Boolean,
+		default: false
+	},
+	//有效时间截止时间点，过了这个时间就会失效。isInEffective变为false
+	effectiveDate: {
+		type: Date,
+		default: null
+	},
 	//创建时间
 	createDate: {
-		type: Date,
-		default: Date.now
+		type: Date
 	},
 	//学校ID
 	schoolId: {
@@ -112,12 +121,16 @@ var Student = mongoose.model('Student');
 exports.studentSave = function(postData, callback) {
 	let newStudent = new Student();
 	newStudent.isShow = true;
-	newStudent.createDate = new Date().getTime();
+
+
+	let date = new Date();
+	date.setHours(date.getHours() + 8);
+	newStudent.createDate = date;
 
 	newStudent.schoolId = postData.schoolId;
 	newStudent.schoolName = postData.schoolName;
 	newStudent.classId = postData.schoolId;
-	newStudent.className = postData.schoolName;
+	newStudent.className = postData.className;
 
 	newStudent.truename = postData.truename;
 	newStudent.ChinaCardId = postData.ChinaCardId;
@@ -170,6 +183,19 @@ exports.findStudentByPrePhone = function(phone, modelId, callback) {
 exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
 	Student.findOne({
 		ChinaCardId: ChinaCardId,
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}
+
+// 获取学生数据
+exports.getStudentList = function() {
+
+	Student.find({
 		isShow: true
 	}, function(err, doc) {
 		if (err) {

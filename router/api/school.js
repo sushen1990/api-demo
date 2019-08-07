@@ -29,7 +29,6 @@ router.post("/schoolAdd", (req, res) => {
 	let imageUrl = req.body.imageUrl;
 
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
-		console.log(config.Scode)
 		return res.status(400).json({
 			msg: "no",
 			data: "Scode错误"

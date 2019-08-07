@@ -19,8 +19,7 @@ const SchoolSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Date,
-		default: Date.now
+		type: Date
 	},
 	//国标收货地址第一级地址
 	proviceFirstStageName: {
@@ -99,7 +98,11 @@ exports.schoolSave = function(postData, callback) {
 	let newSchool = new School();
 	newSchool.isShow = true;
 	newSchool.schoolName = postData.schoolName;
-	newSchool.createDate = new Date().getTime();
+	
+	let date = new Date();
+	date.setHours(date.getHours() + 8);
+	newSchool.createDate = date;
+	
 	newSchool.proviceFirstStageName = postData.proviceFirstStageName;
 	newSchool.addressCitySecondStageName = postData.addressCitySecondStageName;
 	newSchool.addressCountiesThirdStageName = postData.addressCountiesThirdStageName;

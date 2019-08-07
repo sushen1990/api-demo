@@ -1,11 +1,25 @@
 const stringRandom = require('string-random');
-// 检查是否为空、null、undefined   数据正常返回false 数据错误返回true
+// 检查是否为空、null、undefined   数据错误返回true  数据正常返回false
 exports.checkReal = function(str) {
-	if (!str || str == "" || str == undefined) {
+	if (str == null || str == "" || str == undefined) {
 		return true;
 	} else {
 		return false;
 	}
+}
+
+// 检测是否为手机号 数据错误返回true  数据正常返回false
+exports.checkTel = function(tel) {
+	if (tel == null || tel == undefined || tel == "") {
+        return true;
+    }
+    let reg = /^1[0-9]{10}$/;
+    tel = tel.toString();
+    if (tel.length == 11 && reg.test(tel)) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 // 检测是否为6位数字验证码
@@ -29,15 +43,7 @@ exports.int6 = function() {
 
 }
 
-// 检测是否为手机号 数据正常返回true 数据错误返回false
-exports.checkTel = function(tel) {
-	let reg = /^1[0-9]{10}$/;
-	if (tel != "" && tel != undefined && tel.length == 11 && reg.test(tel)) {
-		return true
-	} else {
-		return false
-	}
-}
+
 
 // 随机32字符串
 exports.str32 = function() {
