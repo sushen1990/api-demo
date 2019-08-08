@@ -193,14 +193,27 @@ exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
 }
 
 // 获取学生数据
-exports.getStudentList = function() {
+exports.getStudentListPaginate = function(page, size, callback) {
 
 	Student.find({
 		isShow: true
-	}, function(err, doc) {
-		if (err) {
-			return callback(err, null);
+	}, function(err1, doc) {
+		if (err1) {
+			return callback(err1, null);
 		}
-		callback(null, doc);
+		Student.countDocuments({
+			isShow: true
+		}, function(err2, total) {
+			if (err2) {
+				return callback(err2, null);
+			}
+			let newDoc = {
+				data: doc,
+				total: total
+			}
+			callback(null, newDoc);
+		})
+	}).limit(parseInt(size)).skip((page - 1) * size).sort({
+		_id: -1
 	});
 }

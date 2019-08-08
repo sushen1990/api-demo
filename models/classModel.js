@@ -167,3 +167,29 @@ exports.findClassByStr = function(whereStr, callback) {
 			callback(null, doc);
 		});
 }
+
+// 分页获取学校测试
+exports.getSchoolListPaginate = function(page, size, callback) {
+
+	School.find({
+		isShow: true
+	}, function(err1, doc) {
+		if (err1) {
+			return callback(err1, null);
+		}
+		School.countDocuments({
+			isShow: true
+		}, function(err2, total) {
+			if (err2) {
+				return callback(err2, null);
+			}
+			let newDoc = {
+				data: doc,
+				total: total
+			}
+			callback(null, newDoc);
+		})
+	}).limit(parseInt(size)).skip((page - 1) * size).sort({
+		_id: -1
+	});
+}

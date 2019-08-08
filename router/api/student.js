@@ -7,7 +7,7 @@ const studentDB = require("../../models/studentModel.js")
 const config = require("../../config.js")
 const Helper = require('../../common/helper');
 
-// 保存班级
+// 保存学生
 router.post("/studentSave", (req, res) => {
 
 	let Scode = req.body.Scode;
@@ -86,7 +86,7 @@ router.post("/studentSave", (req, res) => {
 			// 去重查询 end   ↑ 
 
 			// 保存student信息到数据库 start ↓
-			const postData = {			
+			const postData = {
 				schoolId: schoolId,
 				schoolName: schoolName,
 				classId: classId,
@@ -114,5 +114,66 @@ router.post("/studentSave", (req, res) => {
 		}
 	);
 });
+
+// 分页获取班级 start ↓
+router.post("/studentListPage", (req, res) => {
+	let Scode = req.body.Scode;
+	let page = req.body.page;
+	let size = req.body.size;
+	let schoolId = req.body.schoolId;
+	let classId = req.body.classId;
+
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	}
+	if (Helper.checkReal(page)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "page错误"
+		})
+	}
+	if (Helper.checkReal(size)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "size错误"
+		})
+	}
+	if (Helper.checkReal(schoolId)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "schoolId错误"
+		})
+	}
+	if (Helper.checkReal(classId)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "classId错误"
+		})
+	}
+
+	classDB.getClassListPaginate(schoolId, page, size, function(err, doc) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			})
+		}
+		if (!doc || doc.length == 0) {
+			return res.status(404).json({
+				msg: "no",
+				data: "没有数据！"
+			})
+		}
+		let data = doc;
+		res.status(200).json({
+			msg: "ok",
+			data: data
+		})
+	})
+})
+// 分页获取班级 end   ↑
 
 module.exports = router;
