@@ -193,16 +193,20 @@ exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
 }
 
 // 获取学生数据
-exports.getStudentListPaginate = function(page, size, callback) {
+exports.  = function(schoolId, classId, page, size, callback) {
 
 	Student.find({
-		isShow: true
+		isShow: true,
+		schoolId: schoolId,
+		classId: classId
 	}, function(err1, doc) {
 		if (err1) {
 			return callback(err1, null);
 		}
 		Student.countDocuments({
-			isShow: true
+			isShow: true,
+			schoolId: schoolId,
+			classId: classId
 		}, function(err2, total) {
 			if (err2) {
 				return callback(err2, null);

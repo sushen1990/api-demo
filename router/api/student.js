@@ -115,7 +115,7 @@ router.post("/studentSave", (req, res) => {
 	);
 });
 
-// 分页获取班级 start ↓
+// 分页获取学生 start ↓
 router.post("/studentListPage", (req, res) => {
 	let Scode = req.body.Scode;
 	let page = req.body.page;
@@ -154,7 +154,7 @@ router.post("/studentListPage", (req, res) => {
 		})
 	}
 
-	classDB.getClassListPaginate(schoolId, page, size, function(err, doc) {
+	studentDB.getStudentListPaginate(schoolId, classId, page, size, function(err, doc) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
@@ -174,6 +174,6 @@ router.post("/studentListPage", (req, res) => {
 		})
 	})
 })
-// 分页获取班级 end   ↑
+// 分页获取学生 end   ↑
 
 module.exports = router;
