@@ -36,7 +36,7 @@ const ClassSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Date
+		type: Number
 	},
 	//老师
 	teachers: [{
@@ -79,10 +79,7 @@ exports.classSave = function(postData, callback) {
 	newClass.grade = postData.grade;
 	newClass._class = postData._class;
 	newClass.className = postData.className;
-
-	let date = new Date();
-	date.setHours(date.getHours() + 8);
-	newClass.createDate = date;
+	newClass.createDate = Date.now();
 
 
 	// 验证schoolId start

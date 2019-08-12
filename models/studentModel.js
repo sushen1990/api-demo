@@ -25,7 +25,7 @@ var StudentSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Date
+		type: Number
 	},
 	//学校ID
 	schoolId: {
@@ -122,14 +122,10 @@ exports.studentSave = function(postData, callback) {
 	let newStudent = new Student();
 	newStudent.isShow = true;
 
-
-	let date = new Date();
-	date.setHours(date.getHours() + 8);
-	newStudent.createDate = date;
-
+	newStudent.createDate = Date.now();
 	newStudent.schoolId = postData.schoolId;
 	newStudent.schoolName = postData.schoolName;
-	newStudent.classId = postData.schoolId;
+	newStudent.classId = postData.classId;
 	newStudent.className = postData.className;
 
 	newStudent.truename = postData.truename;
@@ -193,7 +189,7 @@ exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
 }
 
 // 获取学生数据
-exports.  = function(schoolId, classId, page, size, callback) {
+exports.findStudentListPaginate  = function(schoolId, classId, page, size, callback) {
 
 	Student.find({
 		isShow: true,

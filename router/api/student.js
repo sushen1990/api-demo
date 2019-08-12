@@ -154,7 +154,7 @@ router.post("/studentListPage", (req, res) => {
 		})
 	}
 
-	studentDB.getStudentListPaginate(schoolId, classId, page, size, function(err, doc) {
+	studentDB.findStudentListPaginate(schoolId, classId, page, size, function(err, doc) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",

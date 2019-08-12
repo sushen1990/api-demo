@@ -1,5 +1,6 @@
 'use strict';
 const util = require('util');
+const moment = require('moment');
 const mongoose = require('mongoose');
 const config = require('../config');
 const Schema = mongoose.Schema;
@@ -19,7 +20,7 @@ const SchoolSchema = new Schema({
 	},
 	//创建时间
 	createDate: {
-		type: Date
+		type: Number
 	},
 	//国标收货地址第一级地址
 	proviceFirstStageName: {
@@ -98,11 +99,7 @@ exports.schoolSave = function(postData, callback) {
 	let newSchool = new School();
 	newSchool.isShow = true;
 	newSchool.schoolName = postData.schoolName;
-	
-	let date = new Date();
-	date.setHours(date.getHours() + 8);
-	newSchool.createDate = date;
-	
+	newSchool.createDate = Date.now();	
 	newSchool.proviceFirstStageName = postData.proviceFirstStageName;
 	newSchool.addressCitySecondStageName = postData.addressCitySecondStageName;
 	newSchool.addressCountiesThirdStageName = postData.addressCountiesThirdStageName;
