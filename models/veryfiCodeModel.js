@@ -1,21 +1,19 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const Helper = require('../common/helper');
+const config = require("../config");
+
 
 //定义VerificationCode对象模型
-
-var VerificationCodeSchema = new Schema({
-	modelId: {
-		type: String,
-		default: null
-	},
+const VerificationCodeSchema = new Schema({
 	//验证码
-	code: {
+	veryfiCode: {
 		type: String,
 		default: null
 	},
 	//时间
 	time: {
-		type: Number,
+		type: String,
 		default: new Date().getTime()
 	},
 	//手机号
@@ -29,17 +27,16 @@ var VerificationCodeSchema = new Schema({
 mongoose.model('VerificationCode', VerificationCodeSchema);
 var VerificationCode = mongoose.model('VerificationCode');
 
-//新增
-exports.add = function(code, mobile, modelId, callback) {
+//更新数据库中的验证码
+exports.add = function(veryfiCode, mobile, callback) {
 	VerificationCode.findOne({
-		mobile: mobile,
-		modelId: modelId
+		mobile: mobile
 	}, function(err0, doc0) {
 		if (err0) {
 			return callback(err0);
 		}
 		if (doc0) {
-			doc0.code = code;
+			doc0.veryfiCode = veryfiCode;
 			doc0.time = new Date().getTime() + 5 * 60 * 1000;
 			doc0.save(function(err1) {
 				if (err1) {
@@ -47,32 +44,42 @@ exports.add = function(code, mobile, modelId, callback) {
 				}
 				callback(null, doc0);
 			});
-			return;
+		} else {
+			var newVerificationCode = new VerificationCode();
+			newVerificationCode.veryfiCode = veryfiCode;
+			newVerificationCode.mobile = mobile;
+			newVerificationCode.time = new Date().getTime() + 5 * 60 * 1000;
+			newVerificationCode.save(function(err) {
+				if (err) {
+					return callback(err);
+				}
+				callback(null, doc0);
+			});
 		}
-		var newVerificationCode = new VerificationCode();
-		newVerificationCode.modelId = modelId;
-		newVerificationCode.code = code;
-		newVerificationCode.mobile = mobile;
-		newVerificationCode.time = new Date().getTime() + 5 * 60 * 1000;
-		newVerificationCode.save(function(err) {
-			if (err) {
-				return callback(err);
-			}
-			callback(null, doc0);
-		});
+
 	});
 }
 
 
 // Model 中的自定义方法
-var findCodeByMobile = exports.findCodeByMobile = function(mobile, modelId, callback) {
+var findCodeByMobile = exports.findCodeByMobile = function(mobile, callback) {
 	VerificationCode.findOne({
-		mobile: mobile,
-		modelId: modelId
+		mobile: mobile
 	}, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		}
 		callback(null, doc);
 	});
+}
+
+function getSmsParams(mobile, veryfiCode) {
+	let params = {
+		"RegionId": "default",
+		"PhoneNumbers": mobile,
+		"SignName": "信天游",
+		"TemplateCode": "SMS_163480790",
+		"TemplateParam": '"{\"code\":\"' + veryfiCode + '\"}"'
+	};
+	return params;
 }

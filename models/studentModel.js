@@ -18,7 +18,7 @@ var StudentSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	//有效时间截止时间点，过了这个时间就会失效。isInEffective变为false
+	//有效时间截止时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳
 	effectiveDate: {
 		type: Date,
 		default: null
