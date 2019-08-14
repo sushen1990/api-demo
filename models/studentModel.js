@@ -1,14 +1,10 @@
 'use strict';
-var util = require('util');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const util = require('util');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const moment = require('moment');
 
 var StudentSchema = new Schema({
-	//唯一学号
-	studentNum: {
-		type: String,
-		default: null
-	},
 	isShow: {
 		type: Boolean,
 		default: false
@@ -20,12 +16,12 @@ var StudentSchema = new Schema({
 	},
 	//有效时间截止时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳
 	effectiveDate: {
-		type: Date,
+		type: String,
 		default: null
 	},
 	//创建时间
 	createDate: {
-		type: Number
+		type: String
 	},
 	//学校ID
 	schoolId: {
@@ -53,27 +49,16 @@ var StudentSchema = new Schema({
 	},
 	//出生日期
 	brithDay: {
-		type: Number,
-		default: 0
+		type: String
 	},
 	//身份证号码
 	ChinaCardId: {
 		type: String,
 		default: null
 	},
-	//民族
-	nation: {
-		type: String,
-		default: null
-	},
 	//性别
 	sex: {
-		type: Number,
-		default: 0
-	},
-	headimgurl: {
-		type: String,
-		default: null
+		type: String
 	},
 	note: {
 		type: String,
@@ -84,27 +69,17 @@ var StudentSchema = new Schema({
 		type: String,
 		default: null
 	},
-	//会员卡真实卡号
-	cardId: {
-		type: String,
-		default: null
-	},
-	//会员卡印刷卡号
-	cardName: {
-		type: String,
-		default: null
-	},
 	// 预备家长手机号 1、初始导入学生数据的家长手机号 2、 管理员家长添加的手机号。获取手机号验证码的时候需要在这里验证
 	preParentsPhones: [{
 		type: String,
 		default: null
 	}],
-	//关联家长Id
+	//所有家长Id
 	parents: [{
 		type: String,
 		default: null
 	}],
-	//管理家长Id
+	//管理员家长Id
 	adminParent: {
 		type: String,
 		default: null
@@ -130,12 +105,19 @@ exports.studentSave = function(postData, callback) {
 
 	newStudent.truename = postData.truename;
 	newStudent.ChinaCardId = postData.ChinaCardId;
-	newStudent.brithDay = postData.brithDay;
-	newStudent.sex = postData.sex;
-
 	newStudent.preParentsPhones = postData.preParentsPhones;
 	newStudent.parents = postData.parents;
 	newStudent.adminParent = postData.adminParent;
+
+	let card = postData.ChinaCardId;
+	let birthDay = card.substr(6, 8);
+	birthDay = moment(birthDay).valueOf();
+
+	let sex = card.substr(16, 1);
+	sex = (sex % 2 == 0) ? "女" : "男";
+	newStudent.brithDay = birthDay;
+
+	newStudent.sex = sex;
 
 
 	// save学生信息 start ↓
@@ -162,12 +144,9 @@ exports.findStudentByParentUserId = function(parentUserId, modelId, callback) {
 	});
 }
 
-//根据预备家长手机号查询数据
-exports.findStudentByPrePhone = function(phone, modelId, callback) {
-	Student.findOne({
-		preParentsPhones: phone,
-		isShow: true
-	}, function(err, doc) {
+// 根据whereStr 查找学生
+exports.findStudentByWhereStr = function(whereStr, callback) {
+	Student.findOne(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		}
@@ -189,7 +168,7 @@ exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
 }
 
 // 获取学生数据
-exports.findStudentListPaginate  = function(schoolId, classId, page, size, callback) {
+exports.findStudentListPaginate = function(schoolId, classId, page, size, callback) {
 
 	Student.find({
 		isShow: true,

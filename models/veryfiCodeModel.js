@@ -72,14 +72,3 @@ var findCodeByMobile = exports.findCodeByMobile = function(mobile, callback) {
 		callback(null, doc);
 	});
 }
-
-function getSmsParams(mobile, veryfiCode) {
-	let params = {
-		"RegionId": "default",
-		"PhoneNumbers": mobile,
-		"SignName": "信天游",
-		"TemplateCode": "SMS_163480790",
-		"TemplateParam": '"{\"code\":\"' + veryfiCode + '\"}"'
-	};
-	return params;
-}
