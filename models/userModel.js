@@ -13,10 +13,6 @@ const UserSchema = new Schema({
 		type: String,
 		default: null
 	},
-	nickname: {
-		type: String,
-		default: null
-	},
 	truename: {
 		type: String,
 		default: null
@@ -62,8 +58,7 @@ const UserSchema = new Schema({
 		default: new Date().getTime()
 	},
 	createDate: {
-		type: Number,
-		default: new Date().getTime()
+		type: String
 	},
 	openid: {
 		type: String,
@@ -178,40 +173,49 @@ const UserSchema = new Schema({
 mongoose.model('User', UserSchema);
 const User = mongoose.model('User');
 
-//根据手机号查询用户
-// exports.findUserByMobile = function(mobile, modelId, lastLoginWay, callback) {
-// 	User.findOne({
-// 		mobile: mobile,
-// 		modelId: modelId
-// 	}, function(err, doc) {
-// 		if (err) {
-// 			util.log('FATAL ' + err);
-// 			return callback(err, null);
-// 		}
-// 		if (doc) {
-// 			doc.lastLoginWay = lastLoginWay;
-// 			doc.lastLoginTime = new Date().getTime();
-// 			doc.save();
-// 		}
-// 		callback(null, doc);
-// 	});
-// }
+// 新建对象
+exports.Save = function(postData, callback) {
+	User.findOne({
+		mobile: postData.mobile,
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		};
+		if (doc) {
+			return callback(null, doc);
+		};
+
+		let newUser = new User();
+		newUser.createDate = Date.now();
+		newUser.roleName = "学生家长";
+		newUser.isShow = true;
+		newUser.truename = postData.truename;
+		newUser.mobile = postData.mobile;
+
+		newUser.save(function(err1) {
+			if (err1) {
+				return callback(err1);
+			};
+			callback(null, newUser);
+		});
+
+	});
+}
 
 //根据手机号查询用户
-exports.findUserByMobile = function(mobile, modelId, callback) {
+exports.findUserByMobile = function(mobile, callback) {
 	User.findOne({
 		mobile: mobile,
-		modelId: modelId
-	}).then(doc => {
-		
-		if(doc){
-			callback(null, doc);
-		}else{
-			return callback(modelId, null);
-		}
-		
-	}).catch(err => {
-		return callback(err, null);
+		isShow: true
+	}, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		};
+		// if (!doc) {
+		// 	return callback(null, []);
+		// };
+		callback(null, doc);
 	});
 }
 
@@ -221,15 +225,14 @@ exports.findUserById = function(userId, callback) {
 		_id: userId,
 		isShow: true
 	}).then(doc => {
-		
-		if(doc){
+
+		if (doc) {
 			callback(null, doc);
-		}else{
+		} else {
 			return callback("当前用户不在数据库中", null);
 		}
-		
+
 	}).catch(err => {
 		return callback(err, null);
 	});
 }
-

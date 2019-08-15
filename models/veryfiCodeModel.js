@@ -27,20 +27,20 @@ const VerificationCodeSchema = new Schema({
 mongoose.model('VerificationCode', VerificationCodeSchema);
 var VerificationCode = mongoose.model('VerificationCode');
 
-//更新数据库中的验证码
+//或新建、更新数据库中的验证码
 exports.add = function(veryfiCode, mobile, callback) {
 	VerificationCode.findOne({
 		mobile: mobile
 	}, function(err0, doc0) {
 		if (err0) {
-			return callback(err0);
+			return callback(err0, null);
 		}
 		if (doc0) {
 			doc0.veryfiCode = veryfiCode;
 			doc0.time = new Date().getTime() + 5 * 60 * 1000;
 			doc0.save(function(err1) {
 				if (err1) {
-					return callback(err1);
+					return callback(err1, null);
 				}
 				callback(null, doc0);
 			});
@@ -53,7 +53,7 @@ exports.add = function(veryfiCode, mobile, callback) {
 				if (err) {
 					return callback(err);
 				}
-				callback(null, doc0);
+				callback(null, newVerificationCode);
 			});
 		}
 
@@ -61,11 +61,9 @@ exports.add = function(veryfiCode, mobile, callback) {
 }
 
 
-// Model 中的自定义方法
-var findCodeByMobile = exports.findCodeByMobile = function(mobile, callback) {
-	VerificationCode.findOne({
-		mobile: mobile
-	}, function(err, doc) {
+// 查询验证码
+exports.findBywhereStr = function(whereStr, callback) {
+	VerificationCode.findOne(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		}
