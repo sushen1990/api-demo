@@ -39,6 +39,8 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 		isShow: true,
 		preParentsPhones: mobile
 	};
+	
+	// 验证手机号是否为学生预设家长手机号
 	studentDB.findStudentByWhereStr(whereStr, function(err0, result0) {
 		if (err0) {
 			return res.status(500).json({
@@ -89,8 +91,8 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 					})
 				}, (ex) => {
 					return res.status(500).json({
-						msg: "后端API错误！",
-						data: ex
+						msg: "no",
+						data: "后端API错误！"+ex
 					})
 				});
 			});
@@ -167,31 +169,27 @@ router.post("/sendVeryfiCode", (req, res) => {
 
 // 登录的时候验证验证码
 router.post("/checkVeryfiCode", (req, res) => {
+	
 	let mobile = req.body.mobile;
-	let modelId = req.body.modelId;
 	let veryfiCode = req.body.veryfiCode;
-	if (Helper.checkReal(mobile)) {
-		return res.status(400).json({
-			msg: "手机号码不能为空！",
-			data: null
-		})
-	};
+	let Scode = req.body.Scode;
+
 	if (Helper.checkTel(mobile)) {
 		return res.status(400).json({
-			msg: "手机号码格式不正确！",
-			data: null
+			msg: "no",
+			data: "手机号码需要为11位数字"
 		})
 	};
-	if (Helper.checkReal(modelId)) {
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
 		return res.status(400).json({
-			msg: "关键值不能为空！",
-			data: null
+			msg: "no",
+			data: "Scode错误"
 		})
 	};
-	if (Helper.checkReal(veryfiCode)) {
+	if (Helper.checkVeryfiCode(veryfiCode)) {
 		return res.status(400).json({
-			msg: "验证码不能为空！",
-			data: null
+			msg: "no",
+			data: "验证码需要为11位数字"
 		})
 	};
 
@@ -199,8 +197,8 @@ router.post("/checkVeryfiCode", (req, res) => {
 	veryfiCodeDB.findCodeByMobile(mobile, modelId, function(err, result) {
 		if (err) {
 			return res.status(500).json({
-				msg: "后端API错误",
-				data: err
+				msg: "no",
+				data: "后端API错误"+err
 			})
 		};
 		if (!result) {

@@ -22,6 +22,20 @@ exports.checkTel = function(tel) {
     }
 }
 
+// 检测是否为手机号 数据错误返回true  数据正常返回false
+exports.checkVeryfiCode = function(veryfiCode) {
+	if (veryfiCode == null || veryfiCode == undefined || veryfiCode == "") {
+        return true;
+    }
+    let reg = /^[0-9]{6}$/;
+    tel = tel.toString();
+    if (tel.length == 6 && reg.test(tel)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 // 检测是否为6位数字验证码
 exports.checkVerifyCode = function(verifyCode) {
 	let reg = /[0-9]{6}$/;
