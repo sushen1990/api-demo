@@ -8,6 +8,7 @@ const Helper = require('../../common/helper');
 const config = require("../../config");
 const veryfiCodeDB = require("../../models/veryfiCodeModel.js");
 const studentDB = require("../../models/studentModel.js")
+const userDB = require("../../models/userModel.js")
 const Core = require('@alicloud/pop-core'); // 阿里短信sdk
 
 router.get("/test", (req, res) => {
@@ -39,7 +40,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 		isShow: true,
 		preParentsPhones: mobile
 	};
-	
+
 	// 验证手机号是否为学生预设家长手机号
 	studentDB.findStudentByWhereStr(whereStr, function(err0, result0) {
 		if (err0) {
@@ -60,8 +61,8 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 			veryfiCodeDB.add(veryfiCode, mobile, function(err, result) {
 				if (err) {
 					return res.status(500).json({
-						msg: "后端API错误！",
-						data: err
+						msg: "no",
+						data: "服务端发生错误" + err
 					})
 				};
 				var client = new Core({
@@ -92,7 +93,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 				}, (ex) => {
 					return res.status(500).json({
 						msg: "no",
-						data: "后端API错误！"+ex
+						data: "后端API错误！" + ex
 					})
 				});
 			});
@@ -169,61 +170,88 @@ router.post("/sendVeryfiCode", (req, res) => {
 
 // 登录的时候验证验证码
 router.post("/checkVeryfiCode", (req, res) => {
-	
+
 	let mobile = req.body.mobile;
 	let veryfiCode = req.body.veryfiCode;
 	let Scode = req.body.Scode;
 
-	if (Helper.checkTel(mobile)) {
-		return res.status(400).json({
-			msg: "no",
-			data: "手机号码需要为11位数字"
-		})
-	};
+	// 参数验证 start ↓
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
 		return res.status(400).json({
 			msg: "no",
 			data: "Scode错误"
 		})
 	};
+	if (Helper.checkTel(mobile)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "手机号码需要为11位数字"
+		})
+	};
 	if (Helper.checkVeryfiCode(veryfiCode)) {
 		return res.status(400).json({
 			msg: "no",
-			data: "验证码需要为11位数字"
+			data: veryfiCode
 		})
 	};
+	// 参数验证 end   ↑
 
-	// 检查验证码
-	veryfiCodeDB.findCodeByMobile(mobile, modelId, function(err, result) {
+	let whereStr = {
+		mobile: mobile
+	};
+
+	// 检查验证码 start ↓
+	veryfiCodeDB.findBywhereStr(whereStr, function(err, result) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
-				data: "后端API错误"+err
+				data: "后端API错误" + err
 			})
 		};
 		if (!result) {
 			return res.status(404).json({
-				msg: "服务端未查询到数据，请重新申请验证码！",
-				data: result
+				msg: "no",
+				data: "验证码不存在，请重新获取"
 			})
 		};
-		if (result.code != veryfiCode) {
-			return res.status(404).json({
-				msg: "验证码错误，请重新获取验证码！",
-				data: result
+		if (result.veryfiCode != veryfiCode) {
+			return res.status(403).json({
+				msg: "no",
+				data: "验证码错误，请核对修改后重新提交!"
 			})
 		};
 		var nowTime = new Date().getTime();
-		if (result.code == veryfiCode && result.time < nowTime) {
-			return res.status(404).json({
-				msg: "验证码失效，请重新获取验证码！",
-				data: result
+		if (result.veryfiCode == veryfiCode && result.time < nowTime) {
+			return res.status(403).json({
+				msg: "no",
+				data: "验证码已过期，请重新获取验证码！"
 			})
 		};
-		res.json({
-			msg: "ok",
-			data: result
-		})
+		// 检查验证码 end   ↑
+
+		// 检查手机号是否已注册 start ↓
+		// 检查手机号是否已注册 end   ↑
+		userDB.findUserByMobile(mobile, function(err1, result1) {
+			if (err1) {
+				return res.status(500).json({
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!" + err1
+				});
+			};
+			if (!result1) {
+				res.json({
+					msg: "ok",
+					data: "新用户"
+				})
+			} else {
+				res.json({
+					msg: "ok",
+					data: "旧用户"
+				})
+			}
+		});
+		// 检查手机号是否已注册 end   ↑
+
 
 	})
 

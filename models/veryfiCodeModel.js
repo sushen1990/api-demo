@@ -37,7 +37,7 @@ exports.add = function(veryfiCode, mobile, callback) {
 		}
 		if (doc0) {
 			doc0.veryfiCode = veryfiCode;
-			doc0.time = new Date().getTime() + 5 * 60 * 1000;
+			doc0.time = new Date().getTime() + 5 * 60 * 1000; //设置5分钟以后失效
 			doc0.save(function(err1) {
 				if (err1) {
 					return callback(err1, null);

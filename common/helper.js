@@ -28,24 +28,14 @@ exports.checkVeryfiCode = function(veryfiCode) {
         return true;
     }
     let reg = /^[0-9]{6}$/;
-    tel = tel.toString();
-    if (tel.length == 6 && reg.test(tel)) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-// 检测是否为6位数字验证码
-exports.checkVerifyCode = function(verifyCode) {
-	let reg = /[0-9]{6}$/;
-	if (verifyCode != "" && verifyCode != undefined && verifyCode.length == 6 && reg.test(verifyCode)) {
-		return true
+	veryfiCode = veryfiCode.toString();
+	if (veryfiCode.length == 6 && reg.test(veryfiCode)) {
+		return false;
 	} else {
-		return false
-	}
-
+		return true;
+	};
 }
+
 
 // 生成6位数字随机验证码
 exports.int6 = function() {

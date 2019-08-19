@@ -47,8 +47,8 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 		
 // 用户相关
-const usersAPI = require("./router/api/users")
-app.use("/api/users",usersAPI) 
+const userAPI = require("./router/api/user")
+app.use("/api/user",userAPI) 
 
 // 获取banner信息之类的
 const resApi = require("./router/api/res")
