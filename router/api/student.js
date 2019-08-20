@@ -220,4 +220,48 @@ router.post("/findStudentByPrePhone", (req, res) => {
 	});
 })
 
+// 根据whereStr查找学生
+router.post("/findStudentByWhereStr", (req, res) => {
+	let Scode = req.body.Scode;
+	let mobile = req.body.mobile;
+
+	// 参数验证 start ↓
+	if (Helper.checkTel(mobile)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "手机号码需要为11位数字"
+		})
+	};
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	// 参数验证 end   ↑
+	let whereStr = {
+		isShow: true,
+		preParentsPhones: mobile
+	};
+	studentDB.findStudentByWhereStr(whereStr, function(err, result) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			})
+		};
+		if (!result) {
+			return res.status(404).json({
+				msg: "no",
+				data: "没有数据"
+			})
+		}else{
+			res.json({
+				msg: "ok",
+				data: result
+			})			
+		};
+	});
+})
+
 module.exports = router;

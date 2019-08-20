@@ -172,6 +172,7 @@ router.post("/sendVeryfiCode", (req, res) => {
 router.post("/checkVeryfiCode", (req, res) => {
 
 	let mobile = req.body.mobile;
+	let truename = req.body.truename;
 	let veryfiCode = req.body.veryfiCode;
 	let Scode = req.body.Scode;
 
@@ -193,6 +194,9 @@ router.post("/checkVeryfiCode", (req, res) => {
 			msg: "no",
 			data: veryfiCode
 		})
+	};
+	if (Helper.checkReal(truename)) {
+		truename = "家长";
 	};
 	// 参数验证 end   ↑
 
@@ -229,8 +233,13 @@ router.post("/checkVeryfiCode", (req, res) => {
 		};
 		// 检查验证码 end   ↑
 
-		// 检查手机号是否已注册 start ↓
-		// 检查手机号是否已注册 end   ↑
+		let postData = {
+			mobile: mobile,
+			truename: truename
+		};
+
+		// 检查手机号是否已注册
+
 		userDB.findUserByMobile(mobile, function(err1, result1) {
 			if (err1) {
 				return res.status(500).json({
@@ -238,24 +247,76 @@ router.post("/checkVeryfiCode", (req, res) => {
 					data: "服务器内部错误,请联系后台开发人员!!!" + err1
 				});
 			};
-			if (!result1) {
-				res.json({
-					msg: "ok",
-					data: "新用户"
-				})
+
+			// 家长预备返回信息
+			let userInfo = {
+				_id: null,
+				mobile: null,
+				truename: null,
+				studentsCount: 0,
+				studentsId: []
+			};
+
+			if (result1) {
+
+				// 手机号已注册  start ↓
+				userInfo._id = result1._id;
+				userInfo.mobile = result1.mobile;
+				userInfo.truename = result1.truename;
+				// 手机号已注册  end   ↑
+
 			} else {
+
+				// 手机号没有注册，保存新用户的数据 start ↓
+				userDB.SaveNew(postData, function(err2, result2) {
+					if (err2) {
+						return res.status(500).json({
+							msg: "no",
+							data: "服务器内部错误,请联系后台开发人员!!!" + err2
+						});
+					};
+
+					userInfo._id = result2._id;
+					userInfo.mobile = result2.mobile;
+					userInfo.truename = result2.truename;
+
+				});
+				// 手机号没有注册，保存新用户的数据  end   ↑
+
+			};
+			// 更新student的普通家长信息 start ↓
+			let condition = {
+				"$and": [{
+						"preParentsPhones": userInfo.mobile
+					},
+					{
+						"parents": {
+							"$ne": userInfo._id
+						}
+					}
+				]
+			};
+			// condition = JSON.stringify(condition);
+			let doc = {
+				parents: userInfo._id
+			}
+			studentDB.updateStudentParent(condition, doc, function(err3, result3) {
+				if (err3) {
+					return res.status(500).json({
+						msg: "no",
+						data: "服务器内部错误,请联系后台开发人员!!!" + err3
+					});
+				};
 				res.json({
 					msg: "ok",
-					data: "旧用户"
+					data: {
+						studentInfo: result3,
+						userInfo: userInfo
+					}
 				})
-			}
+			});
 		});
-		// 检查手机号是否已注册 end   ↑
-
-
-	})
-
-
-})
+	});
+});
 
 module.exports = router;

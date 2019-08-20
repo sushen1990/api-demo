@@ -1,7 +1,10 @@
 'use strict';
-var util = require('util');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const util = require('util');
+const mongoose = require('mongoose')
+require('mongoose-long')(mongoose);
+
+const Schema = mongoose.Schema;
+const SchemaTypes = mongoose.Schema.Types;
 
 
 const UserSchema = new Schema({
@@ -16,6 +19,10 @@ const UserSchema = new Schema({
 	truename: {
 		type: String,
 		default: null
+	},
+	isAdmin:{
+		type:Boolean,
+		default:false
 	},
 	roleId: {
 		type: String,
@@ -58,7 +65,7 @@ const UserSchema = new Schema({
 		default: new Date().getTime()
 	},
 	createDate: {
-		type: String
+		type: SchemaTypes.Long
 	},
 	openid: {
 		type: String,
@@ -109,7 +116,7 @@ const UserSchema = new Schema({
 		default: null
 	},
 	mobile: {
-		type: String,
+		type: SchemaTypes.Long,
 		default: null
 	},
 	password: {
@@ -174,32 +181,20 @@ mongoose.model('User', UserSchema);
 const User = mongoose.model('User');
 
 // 新建对象
-exports.Save = function(postData, callback) {
-	User.findOne({
-		mobile: postData.mobile,
-		isShow: true
-	}, function(err, doc) {
+exports.SaveNew = function(postData, callback) {
+
+	let newUser = new User();
+	newUser.createDate = Date.now();
+	newUser.roleName = "学生家长";
+	newUser.isShow = true;
+	newUser.truename = postData.truename;
+	newUser.mobile = postData.mobile;
+	
+	newUser.save(function(err) {
 		if (err) {
-			return callback(err, null);
+			return callback(err);
 		};
-		if (doc) {
-			return callback(null, doc);
-		};
-
-		let newUser = new User();
-		newUser.createDate = Date.now();
-		newUser.roleName = "学生家长";
-		newUser.isShow = true;
-		newUser.truename = postData.truename;
-		newUser.mobile = postData.mobile;
-
-		newUser.save(function(err1) {
-			if (err1) {
-				return callback(err1);
-			};
-			callback(null, newUser);
-		});
-
+		callback(null, newUser);
 	});
 }
 
@@ -235,4 +230,24 @@ exports.findUserById = function(userId, callback) {
 	}).catch(err => {
 		return callback(err, null);
 	});
-}
+};
+
+//更新家长
+exports.updateParent = function(condition, doc, callback) {
+	User.find({
+		_id: userId,
+		isShow: true
+	}).then(doc => {
+
+		if (doc) {
+			callback(null, doc);
+		} else {
+			return callback("当前用户不在数据库中", null);
+		}
+
+	}).catch(err => {
+		return callback(err, null);
+	});
+};
+
+

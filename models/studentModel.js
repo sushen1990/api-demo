@@ -1,8 +1,10 @@
 'use strict';
 const util = require('util');
 const mongoose = require('mongoose');
+require('mongoose-long')(mongoose);
 const Schema = mongoose.Schema;
 const moment = require('moment');
+const SchemaTypes = mongoose.Schema.Types;
 
 var StudentSchema = new Schema({
 	isShow: {
@@ -16,12 +18,13 @@ var StudentSchema = new Schema({
 	},
 	//有效时间截止时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳
 	effectiveDate: {
-		type: String,
-		default: null
+		type: SchemaTypes.Long,
+		default: 0
 	},
 	//创建时间
 	createDate: {
-		type: String
+		type: SchemaTypes.Long,
+		default: 0
 	},
 	//学校ID
 	schoolId: {
@@ -53,8 +56,8 @@ var StudentSchema = new Schema({
 	},
 	//身份证号码
 	ChinaCardId: {
-		type: String,
-		default: null
+		type: SchemaTypes.Long,
+		default: 0
 	},
 	//性别
 	sex: {
@@ -66,21 +69,26 @@ var StudentSchema = new Schema({
 	},
 	//手机卡号
 	mobile: {
-		type: String,
-		default: null
+		type: SchemaTypes.Long,
+		default: 0
 	},
 	// 预备家长手机号 1、初始导入学生数据的家长手机号 2、 管理员家长添加的手机号。获取手机号验证码的时候需要在这里验证
 	preParentsPhones: [{
-		type: String,
-		default: null
+		type: SchemaTypes.Long,
+		default: 0
 	}],
 	//所有家长Id
 	parents: [{
 		type: String,
 		default: null
 	}],
+	//管理员家长手机号
+	adminParentMobile: {
+		type: SchemaTypes.Long,
+		default: 0
+	},
 	//管理员家长Id
-	adminParent: {
+	adminParentId: {
 		type: String,
 		default: null
 	},
@@ -195,4 +203,21 @@ exports.findStudentListPaginate = function(schoolId, classId, page, size, callba
 	}).limit(parseInt(size)).skip((page - 1) * size).sort({
 		_id: -1
 	});
-}
+};
+
+// 更新学生的家长信息
+exports.updateStudentParent = function(condition, doc, callback) {
+	Student.find(condition, function(err, result) {
+		if (err) {
+			return callback(err, null);
+		};
+		if (result) {
+			Student.updateMany(condition, doc, function(err1, raw) {
+				if (err1) {
+					return callback(err1);
+				};
+				callback(null, raw);
+			});
+		};
+	});
+};

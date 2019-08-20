@@ -1,4 +1,4 @@
- const express = require("express")
+const express = require("express")
 const router = express.Router()
 const UserModel = require("../../models/testUser")
 const bcrypt = require("bcrypt")
@@ -36,8 +36,8 @@ router.post("/findByMobile", (req, res) => {
 		})
 	};
 	// 参数验证 end   ↑
-	
-	userDB.findUserByMobile(mobile, function(err,result){
+
+	userDB.findUserByMobile(mobile, function(err, result) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
@@ -47,14 +47,14 @@ router.post("/findByMobile", (req, res) => {
 		if (!result) {
 			return res.status(500).json({
 				msg: "no",
-				data: "服务器端没有查询到数据！" 
+				data: "服务器端没有查询到数据！"
 			});
-		};		
+		};
 		res.json({
 			msg: "ok",
 			data: result
 		})
-	});		
+	});
 });
 
 // $route Post api/users/regi
@@ -71,12 +71,12 @@ router.post("/regi", (req, res) => {
 			data: "手机号码需要为11位数字"
 		})
 	};
-	// if (Helper.checkReal(truename)) {
-	// 	return res.status(400).json({
-	// 		msg: "no",
-	// 		data: "姓名不能为空"
-	// 	})
-	// };
+	if (Helper.checkReal(truename)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "姓名不能为空"
+		})
+	};
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
 		return res.status(400).json({
 			msg: "no",
@@ -88,18 +88,49 @@ router.post("/regi", (req, res) => {
 		mobile: mobile,
 		truename: truename
 	};
-	userDB.Save(postData, function(err, result) {
+	// 检查手机号是否已注册 start ↓
+	// 检查手机号是否已注册 end   ↑
+
+	userDB.findUserByMobile(mobile, function(err, result) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
 				data: "服务器内部错误,请联系后台开发人员!!!" + err
 			});
 		};
-		res.json({
-			msg: "ok",
-			data: result
-		})
-	})
+		if (!result) {
+			return res.status(500).json({
+				msg: "no",
+				data: "手机号已注册！"
+			});
+		};
+		userDB.SaveNew(postData, function(err1, result1) {
+			if (err1) {
+				return res.status(500).json({
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!" + err1
+				});
+			};
+			res.json({
+				msg: "ok",
+				data: result
+			});
+		});
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 })
 
