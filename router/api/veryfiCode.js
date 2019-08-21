@@ -192,7 +192,7 @@ router.post("/checkVeryfiCode", (req, res) => {
 	if (Helper.checkVeryfiCode(veryfiCode)) {
 		return res.status(400).json({
 			msg: "no",
-			data: veryfiCode
+			data: "验证码需要为6位数字"
 		})
 	};
 	if (Helper.checkReal(truename)) {
@@ -205,117 +205,78 @@ router.post("/checkVeryfiCode", (req, res) => {
 	};
 
 	// 检查验证码 start ↓
-	veryfiCodeDB.findBywhereStr(whereStr, function(err, result) {
+	veryfiCodeDB.checkVeryfiCodeByWhereStr(whereStr, veryfiCode, function(err, result) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
 				data: "后端API错误" + err
 			})
 		};
-		if (!result) {
-			return res.status(404).json({
-				msg: "no",
-				data: "验证码不存在，请重新获取"
-			})
-		};
-		if (result.veryfiCode != veryfiCode) {
+
+		if (result.msg == "no") {
+
+			// 验证码未通过，返回错误信息
 			return res.status(403).json({
 				msg: "no",
-				data: "验证码错误，请核对修改后重新提交!"
-			})
-		};
-		var nowTime = new Date().getTime();
-		if (result.veryfiCode == veryfiCode && result.time < nowTime) {
-			return res.status(403).json({
-				msg: "no",
-				data: "验证码已过期，请重新获取验证码！"
-			})
-		};
-		// 检查验证码 end   ↑
+				data: result.info
+			});
 
-		let postData = {
-			mobile: mobile,
-			truename: truename
-		};
+		} else if (result.msg == "yes") {
 
-		// 检查手机号是否已注册
-
-		userDB.findUserByMobile(mobile, function(err1, result1) {
-			if (err1) {
-				return res.status(500).json({
-					msg: "no",
-					data: "服务器内部错误,请联系后台开发人员!!!" + err1
-				});
+			// 验证码通过 继续
+			let userPostData = {
+				mobile: mobile,
+				truename: truename
 			};
 
-			// 家长预备返回信息
-			let userInfo = {
-				_id: null,
-				mobile: null,
-				truename: null,
-				studentsCount: 0,
-				studentsId: []
-			};
+			// 新建用户，返回用户信息。如果用户已存在，也返货用户信息。
+			userDB.SaveNew(userPostData, function(err1, result1) {
+				if (err1) {
+					return res.status(500).json({
+						msg: "no",
+						data: "服务器内部错误,请联系后台开发人员!!!" + err1
+					});
+				};
 
-			if (result1) {
+				// 保存用户信息
+				let userInfo = {
+					_id: null,
+					mobile: null,
+					truename: null,
+					studentsCount: 0,
+					studentsId: []
+				};
 
-				// 手机号已注册  start ↓
-				userInfo._id = result1._id;
-				userInfo.mobile = result1.mobile;
-				userInfo.truename = result1.truename;
-				// 手机号已注册  end   ↑
+				userInfo._id = result1.data._id;
+				userInfo.mobile = result1.data.mobile;
+				userInfo.truename = result1.data.truename;
 
-			} else {
 
-				// 手机号没有注册，保存新用户的数据 start ↓
-				userDB.SaveNew(postData, function(err2, result2) {
+				let updatePostData = {
+					_id: userInfo._id,
+					mobile: userInfo.mobile
+				};
+				// 关联家长 
+				studentDB.updateStudentParent(updatePostData, function(err2, result2) {
 					if (err2) {
 						return res.status(500).json({
 							msg: "no",
 							data: "服务器内部错误,请联系后台开发人员!!!" + err2
 						});
 					};
-
-					userInfo._id = result2._id;
-					userInfo.mobile = result2.mobile;
-					userInfo.truename = result2.truename;
-
+					res.json({
+						msg: "ok",
+						data: userInfo,
+						update: result2
+					})
 				});
-				// 手机号没有注册，保存新用户的数据  end   ↑
+				// 更新student的普通家长信息 end   ↑
 
-			};
-			// 更新student的普通家长信息 start ↓
-			let condition = {
-				"$and": [{
-						"preParentsPhones": userInfo.mobile
-					},
-					{
-						"parents": {
-							"$ne": userInfo._id
-						}
-					}
-				]
-			};
-			// condition = JSON.stringify(condition);
-			let doc = {
-				parents: userInfo._id
-			}
-			studentDB.updateStudentParent(condition, doc, function(err3, result3) {
-				if (err3) {
-					return res.status(500).json({
-						msg: "no",
-						data: "服务器内部错误,请联系后台开发人员!!!" + err3
-					});
-				};
-				res.json({
-					msg: "ok",
-					data: {
-						studentInfo: result3,
-						userInfo: userInfo
-					}
-				})
+				// 更新student的管理员家长信息家长信息 start ↓
+				// 更新student的管理员家长信息家长信息 end   ↑
 			});
-		});
+		};
+
 	});
 });
 

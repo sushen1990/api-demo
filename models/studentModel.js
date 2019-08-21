@@ -205,19 +205,65 @@ exports.findStudentListPaginate = function(schoolId, classId, page, size, callba
 	});
 };
 
-// 更新学生的家长信息
-exports.updateStudentParent = function(condition, doc, callback) {
+
+// 更新学生的家长信息 参数家长Id 手机号 
+
+exports.updateStudentParent = function(postData, callback) {
+
+	let _id = postData._id;
+	let mobile = postData.mobile;
+
+	// 有预备手机号，但是没有在家长列表里面。
+	let condition = {
+		"$and": [{
+				"preParentsPhones": mobile
+			},
+			{
+				"parents": {
+					"$ne": _id
+				}
+			}
+		]
+	};
+
 	Student.find(condition, function(err, result) {
 		if (err) {
 			return callback(err, null);
 		};
-		if (result) {
-			Student.updateMany(condition, doc, function(err1, raw) {
-				if (err1) {
-					return callback(err1);
-				};
-				callback(null, raw);
-			});
+		if (result.lenth == 0) {
+			callback(null, 0);
+		}
+		// 家长未关联的情况
+
+		// 再判断是否存在管理员家长
+
+		let existsAdmin = result[0].adminParentMobile == 0 && result[0].adminParentId == null;
+		let doc = {
+			parents: _id
 		};
+
+		let adminParentMobile = result[0].adminParentMobile;
+		let adminParentId = result[0].adminParentId;
+
+		let aa = {
+			existsAdmin: existsAdmin,
+			adminParentMobile: adminParentMobile,
+			adminParentId: adminParentId,
+
+		}
+		if (existsAdmin) {
+			// 没有管理员家长
+			doc["adminParentId"] = _id;
+			doc["adminParentMobile"] = mobile;
+		};
+
+		// Student.updateMany(condition, doc, function(err1, raw) {
+		// 	if (err1) {
+		// 		return callback(err1);
+		// 	};
+		// 	return callback(null, aa);
+		// });
+		callback(null, result);
+
 	});
 };

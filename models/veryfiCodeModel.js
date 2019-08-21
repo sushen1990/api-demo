@@ -70,3 +70,40 @@ exports.findBywhereStr = function(whereStr, callback) {
 		callback(null, doc);
 	});
 }
+
+// 查询验证码
+exports.checkVeryfiCodeByWhereStr = function(whereStr, code, callback) {
+	VerificationCode.findOne(whereStr, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		};
+
+		let result = {
+			"msg": "no",
+			"info": "没有数据"
+		};
+
+		if (!doc) {
+			result["msg"] = "no";
+			result["info"] = "验证码不存在，请重新获取";
+			return callback(null, result);
+		};
+
+		if (code != doc.veryfiCode) {
+			result["msg"] = "no";
+			result["info"] = "验证码错误，请核对修改后重新提交";
+			return callback(null, result);
+		};
+
+		let nowTime = new Date().getTime();
+		if (doc.veryfiCode == code && doc.time < nowTime) {
+			result["msg"] = "no";
+			result["info"] = "验证码已过期，请重新获取验证码";
+			return callback(null, result);
+		};
+
+		result["msg"] = "yes";
+		result["info"] = "验证码正确";
+		return callback(null, result);
+	});
+}

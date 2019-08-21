@@ -20,9 +20,9 @@ const UserSchema = new Schema({
 		type: String,
 		default: null
 	},
-	isAdmin:{
-		type:Boolean,
-		default:false
+	isAdmin: {
+		type: Boolean,
+		default: false
 	},
 	roleId: {
 		type: String,
@@ -180,7 +180,7 @@ const UserSchema = new Schema({
 mongoose.model('User', UserSchema);
 const User = mongoose.model('User');
 
-// 新建对象
+// 新建对象 不管是否新建 都会返回用户信息 主要依据是手机号
 exports.SaveNew = function(postData, callback) {
 
 	let newUser = new User();
@@ -190,13 +190,38 @@ exports.SaveNew = function(postData, callback) {
 	newUser.truename = postData.truename;
 	newUser.mobile = postData.mobile;
 	
-	newUser.save(function(err) {
+	//  查找手机号 是否已注册
+	User.findOne({
+		mobile: postData.mobile,
+		isShow: true
+	}, function(err, doc) {
 		if (err) {
-			return callback(err);
+			return callback(err, null);
 		};
-		callback(null, newUser);
+		let result = {
+			"msg": "no",
+			"info": null,
+			"data": null
+		};
+		if (!doc) {
+			// 未注册 保存信息
+			newUser.save(function(err1) {
+				if (err) {
+					return callback(err1);
+				};
+				result["msg"] = "yes";
+				result["info"] = "new_save";
+				result["data"] = newUser;
+				return callback(null, result);
+			});
+		};
+		// 已注册 直接返回查询到的信息
+		result["msg"] = "yes";
+		result["info"] = "already_exists";
+		result["data"] = doc;
+		callback(null, result);
 	});
-}
+};
 
 //根据手机号查询用户
 exports.findUserByMobile = function(mobile, callback) {
@@ -249,5 +274,3 @@ exports.updateParent = function(condition, doc, callback) {
 		return callback(err, null);
 	});
 };
-
-
