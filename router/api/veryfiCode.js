@@ -244,12 +244,13 @@ router.post("/checkVeryfiCode", (req, res) => {
 					mobile: null,
 					truename: null,
 					studentsCount: 0,
-					studentsId: []
+					studentsInfo: []
 				};
 
 				userInfo._id = result1.data._id;
 				userInfo.mobile = result1.data.mobile;
 				userInfo.truename = result1.data.truename;
+
 
 
 				let updatePostData = {
@@ -264,11 +265,28 @@ router.post("/checkVeryfiCode", (req, res) => {
 							data: "服务器内部错误,请联系后台开发人员!!!" + err2
 						});
 					};
-					res.json({
-						msg: "ok",
-						data: userInfo,
-						update: result2
+					// res.json({
+					// 	msg: "ok",
+					// 	parent: result2
+					// })
+					//  获取学生信息
+					studentDB.findStudentsByParentUserId(userInfo._id, function(err3, result3) {
+						if (err3) {
+							return res.status(500).json({
+								msg: "no",
+								data: "服务器内部错误,请联系后台开发人员!!!" + err3
+							});
+
+						};
+						userInfo.studentsCount = result3.total;
+						userInfo.studentsInfo = result3.data;
+						res.json({
+							msg: "ok",
+							parent: userInfo,
+							student: result3.data[0]
+						})
 					})
+
 				});
 				// 更新student的普通家长信息 end   ↑
 

@@ -118,20 +118,6 @@ router.post("/regi", (req, res) => {
 		});
 	});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 })
 
 // $route Post api/users/telLogin
@@ -266,4 +252,24 @@ router.post("/LoginParent", (req, res) => {
 		});
 	})
 })
+
+router.post("/findStudentsByParentId", (req, res) => {
+	let Scode = req.body.Scode;
+	let _id = req.body._id;
+
+	studentDB.findStudentsByParentUserId(_id, function(err, doc) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			});
+		};
+		res.json({
+			data: doc
+		})
+	})
+
+});
+
+
 module.exports = router;

@@ -139,16 +139,44 @@ exports.studentSave = function(postData, callback) {
 }
 
 //根据家长id查询学生
-exports.findStudentByParentUserId = function(parentUserId, modelId, callback) {
-	Student.findOne({
-		parents: parentUserId,
+exports.findStudentsByParentUserId = function(parentId, callback) {
+	let whereStr = {
+		parents: parentId,
 		isShow: true
-	}, function(err, doc) {
+	};
+	let projection = {
+		createDate: 0,
+		ChinaCardId: 0,
+		note: 0,
+		createDate: 0,
+		preParentsPhones: 0,
+		brithDay: 0,
+		__v: 0,
+		parents: 0
+	};
+	Student.find(whereStr, projection, function(err, doc) {
 		if (err) {
-			util.log('FATAL ' + err);
 			return callback(err, null);
+		};
+		let newDoc = {
+			total: 0,
+			data: null
 		}
-		callback(null, doc);
+		if (doc.lenth == 0) {
+			return callback(null, newDoc);
+		};
+
+		Student.countDocuments(whereStr, function(err1, total) {
+			if (err1) {
+				return callback(err1, null);
+			};
+			newDoc = {
+				total: total,
+				data: doc
+			}
+			callback(null, newDoc);
+		});
+
 	});
 }
 
@@ -206,12 +234,19 @@ exports.findStudentListPaginate = function(schoolId, classId, page, size, callba
 };
 
 
-// 更新学生的家长信息 参数家长Id 手机号 
+// 更新学生的家长信息
+// 返回 {parent:0,admin:0} 
 
 exports.updateStudentParent = function(postData, callback) {
 
 	let _id = postData._id;
 	let mobile = postData.mobile;
+
+	// 定义返回数据 普通家长更新数量 管理员家长更新数量
+	let returnData = {
+		parent: 0,
+		admin: 0
+	}
 
 	// 有预备手机号，但是没有在家长列表里面。
 	let condition = {
@@ -225,45 +260,61 @@ exports.updateStudentParent = function(postData, callback) {
 			}
 		]
 	};
-
+	//  判断当前家长是否已关联  nModified
 	Student.find(condition, function(err, result) {
 		if (err) {
 			return callback(err, null);
 		};
-		if (result.lenth == 0) {
-			callback(null, 0);
+		if (result.length == 0) {
+			return callback(null, returnData);
 		}
 		// 家长未关联的情况
 
-		// 再判断是否存在管理员家长
-
-		let existsAdmin = result[0].adminParentMobile == 0 && result[0].adminParentId == null;
+		// 首先关联为普通家长
 		let doc = {
 			parents: _id
 		};
+		Student.updateMany(condition, doc, function(err1, raw1) {
+			if (err1) {
+				return callback(err1);
+			};
+			// 返回关联此家长为普通家长，的学生数量
+			returnData.parent = raw1.nModified;
 
-		let adminParentMobile = result[0].adminParentMobile;
-		let adminParentId = result[0].adminParentId;
-
-		let aa = {
-			existsAdmin: existsAdmin,
-			adminParentMobile: adminParentMobile,
-			adminParentId: adminParentId,
-
-		}
-		if (existsAdmin) {
-			// 没有管理员家长
-			doc["adminParentId"] = _id;
-			doc["adminParentMobile"] = mobile;
-		};
-
-		// Student.updateMany(condition, doc, function(err1, raw) {
-		// 	if (err1) {
-		// 		return callback(err1);
-		// 	};
-		// 	return callback(null, aa);
-		// });
-		callback(null, result);
-
+			//  判断是否没有管理员家长
+			condition = {
+				"$and": [{
+						"preParentsPhones": mobile
+					},
+					{
+						"adminParentMobile": 0
+					},
+					{
+						"adminParentId": null
+					}
+				]
+			};
+			doc = {
+				adminParentMobile: mobile,
+				adminParentId: _id
+			};
+			Student.find(condition, doc, function(err2, result2) {
+				if (err2) {
+					return callback(err2);
+				};
+				if (result2.length == 0) {
+					return callback(null, raw1);
+				};
+				//  如果学生没有管理员家长 ，关联上
+				Student.updateMany(condition, doc, function(err3, raw3) {
+					if (err3) {
+						return callback(err3);
+					};
+					// 返回关联此家长为管理员家长，的学生数量
+					returnData.admin = raw3.nModified;
+					callback(null, returnData)
+				});
+			});
+		});
 	});
 };
