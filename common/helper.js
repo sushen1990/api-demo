@@ -1,4 +1,5 @@
 const stringRandom = require('string-random');
+const moment = require('moment');
 // 检查是否为空、null、undefined   数据错误返回true  数据正常返回false
 exports.checkReal = function(str) {
 	if (str == null || str == "" || str == undefined) {
@@ -11,23 +12,23 @@ exports.checkReal = function(str) {
 // 检测是否为手机号 数据错误返回true  数据正常返回false
 exports.checkTel = function(tel) {
 	if (tel == null || tel == undefined || tel == "") {
-        return true;
-    }
-    let reg = /^1[0-9]{10}$/;
-    tel = tel.toString();
-    if (tel.length == 11 && reg.test(tel)) {
-        return false;
-    } else {
-        return true;
-    }
+		return true;
+	}
+	let reg = /^1[0-9]{10}$/;
+	tel = tel.toString();
+	if (tel.length == 11 && reg.test(tel)) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
 // 检测是否为手机号 数据错误返回true  数据正常返回false
 exports.checkVeryfiCode = function(veryfiCode) {
 	if (veryfiCode == null || veryfiCode == undefined || veryfiCode == "") {
-        return true;
-    }
-    let reg = /^[0-9]{6}$/;
+		return true;
+	}
+	let reg = /^[0-9]{6}$/;
 	veryfiCode = veryfiCode.toString();
 	if (veryfiCode.length == 6 && reg.test(veryfiCode)) {
 		return false;
@@ -64,39 +65,39 @@ exports.str32 = function() {
 // YYYY-MM-DD HH:mm:ss
 exports.getNowYtoS = function getNowFormatDate() {
 
-    var date = new Date();
-    var seperator1 = "-";
-    var seperator2 = ":";
-    var month = date.getMonth() + 1;
-    var strDate = date.getDate();
-    if (month >= 1 && month <= 9) {
-        month = "0" + month;
-    }
-    if (strDate >= 0 && strDate <= 9) {
-        strDate = "0" + strDate;
-    }
-    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
-            + " " + date.getHours() + seperator2 + date.getMinutes()
-            + seperator2 + date.getSeconds();
-    return currentdate;
+	var date = new Date();
+	var seperator1 = "-";
+	var seperator2 = ":";
+	var month = date.getMonth() + 1;
+	var strDate = date.getDate();
+	if (month >= 1 && month <= 9) {
+		month = "0" + month;
+	}
+	if (strDate >= 0 && strDate <= 9) {
+		strDate = "0" + strDate;
+	}
+	var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
+		" " + date.getHours() + seperator2 + date.getMinutes() +
+		seperator2 + date.getSeconds();
+	return currentdate;
 }
 
- exports.getDateString = function(date,type) {
+exports.getDateString = function(date, type) {
 	// 返回 YYYY-MM-DD hh:mm:ss
 	// type 精确到 year month day full
-    let seperator1 = "-";
-    let seperator2 = ":";
-    let month = date.getMonth() + 1;
-    let strDate = date.getDate();
-	
-    if (month >= 1 && month <= 9) {
-        month = "0" + month;
-    }
-    if (strDate >= 0 && strDate <= 9) {
-        strDate = "0" + strDate;
-    }
+	let seperator1 = "-";
+	let seperator2 = ":";
+	let month = date.getMonth() + 1;
+	let strDate = date.getDate();
+
+	if (month >= 1 && month <= 9) {
+		month = "0" + month;
+	}
+	if (strDate >= 0 && strDate <= 9) {
+		strDate = "0" + strDate;
+	}
 	let currentdate = "";
-	switch(type) {
+	switch (type) {
 		case "year":
 			currentdate = date.getFullYear();
 			break;
@@ -107,37 +108,44 @@ exports.getNowYtoS = function getNowFormatDate() {
 			currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
 			break;
 		case "full":
-			currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
-            + " " + date.getHours() + seperator2 + date.getMinutes()
-            + seperator2 + date.getSeconds();					
+			currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate +
+				" " + date.getHours() + seperator2 + date.getMinutes() +
+				seperator2 + date.getSeconds();
 	}
-    return currentdate;
+	return currentdate;
 }
 
+// 随机32字符串
+exports.getDateStringWithMomont = function() {
+	let time = moment.unix(Date.now() / 1000).format("YYYY-MM-DD HH:mm:ss");
+	return time; //随机数
+}
 
 // 生成唯一订单号
-exports.getPayOrderNo = function(type){
+exports.getPayOrderNo = function(type) {
 	var date = new Date();
-    var month = date.getMonth() + 1;
-    var strDate = date.getDate();
-    var strHour = date.getHours();	
+	var month = date.getMonth() + 1;
+	var strDate = date.getDate();
+	var strHour = date.getHours();
 	var strMinutes = date.getMinutes();
 	var strSeconds = date.getSeconds();
-    if (month >= 1 && month <= 9) {
-        month = "0" + month;
-    }
-    if (strDate >= 0 && strDate <= 9) {
-        strDate = "0" + strDate;
-    }
+	if (month >= 1 && month <= 9) {
+		month = "0" + month;
+	}
+	if (strDate >= 0 && strDate <= 9) {
+		strDate = "0" + strDate;
+	}
 	var currentdate = "";
-    currentdate = date.getFullYear()  + month  + strDate + strHour + strMinutes + strSeconds + type +stringRandom(8, { letters: false })
-	
+	currentdate = date.getFullYear() + month + strDate + strHour + strMinutes + strSeconds + type + stringRandom(8, {
+		letters: false
+	})
+
 	return currentdate;
 }
 
 // 转换本地时间
 exports.localDate = function(v) {
-    const d = new Date(v || Date.now());
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString();
+	const d = new Date(v || Date.now());
+	d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+	return d.toISOString();
 }

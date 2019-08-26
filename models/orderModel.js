@@ -6,10 +6,6 @@ var Schema = mongoose.Schema;
 
 //定义SmsOrder对象模型
 var OrderSchema = new Schema({
-	topModelId: {
-		type: String,
-		default: ''
-	},
 	//订购商品类型 在价格文件里面设置价格
 	goods_type: {
 		type: Number,
@@ -20,9 +16,9 @@ var OrderSchema = new Schema({
 		type: String,
 		default : ''
 	},
-	//订单状态 0 创建订单 1 待支付 2 已支付 3 订单正常完成 -1 作废
+	//订单状态 _created 创建订单 1 待支付 2 已支付 3 订单正常完成 -1 作废
 	state: {
-		type: Number,
+		type: String,
 		default: 0
 	},
 	//订购人id
