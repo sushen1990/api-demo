@@ -16,7 +16,7 @@ var StudentSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	//有效时间截止时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳
+	//有效时间截止时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳。订单增加的时候，会自动增加。
 	effectiveDate: {
 		type: SchemaTypes.Long,
 		default: 0
@@ -63,9 +63,9 @@ var StudentSchema = new Schema({
 	sex: {
 		type: String
 	},
-	note: {
+	remarks: {
 		type: String,
-		default: null
+		default: ''
 	},
 	//手机卡号
 	mobile: {
