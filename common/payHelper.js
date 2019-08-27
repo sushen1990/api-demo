@@ -13,7 +13,6 @@ exports.getAlipayTradeString = function(out_trade_no, subject, total_amount) {
 	// const AppID = '2019070565762733'; // 信天游的！
 	const AppID = '2019082666450460'; // 冠美的
 	const APP_PRIVATE_KEY_PATH = './static/app_private_key.pem'; // 商户秘钥路径
-	const subject = subject; //付款标题
 
 	// 1、业务参数
 	let aliPaySignObj = {
@@ -49,12 +48,13 @@ exports.getAlipayTradeString = function(out_trade_no, subject, total_amount) {
 	const result = encodeStr + 'sign=' + encodeURIComponent(sign);
 
 	return result;
+	// return signStr;
 }
 
 // 生成唯一订单号
 exports.getOrderByType = function(type) {
-	let time = helper.getDateStringWithMoment();
-	let int13 = helper.randomStr(13);
+	let time = Helper.getDateStringForPay();
+	let int13 = Helper.randomStr(13);
 	let result = type + time + int13;
-	return
+	return result;
 }

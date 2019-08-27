@@ -76,6 +76,11 @@ exports.getDateStringWithMoment = function() {
 	return time; //随机数
 }
 
+// 生成日期字符串YYYY-MM-DD HH:mm:ss
+exports.getDateStringForPay = function() {
+	let time = moment.unix(Date.now() / 1000).format("YYYYMMDD_HHmmss_");
+	return time; //随机数
+}
 
 
 // 生成字段 ---------------------------------------------------------------  end ↑

@@ -22,10 +22,10 @@ var OrderSchema = new Schema({
 	trade_type: {
 		type: String,
 		default: ''
-	}
+	},
 	//订单状态 _created 创建订单等待付款 _paid 已经支付 
 	status: {
-		String,
+		type: String,
 		default: '_created'
 	},
 	//订购人id
@@ -70,9 +70,9 @@ mongoose.model("Order", OrderSchema);
 var Order = mongoose.model("Order");
 
 // 保存订单信息
-exports.orderSave = function(postData, callback) {
+exports.SaveNew = function(postData, callback) {
 	let newOrder = new Order();
-	
+
 	newOrder.goods_item = postData.goods_item;
 	newOrder.trade_type = postData.trade_type;
 	newOrder.out_trade_no = postData.out_trade_no;
@@ -92,6 +92,28 @@ exports.orderSave = function(postData, callback) {
 	// save订单信息 end   ↑
 }
 
+
+// 查询订单信息
+exports.findBywhereStr = function(whereStr, callback) {
+	Order.findOne(whereStr, function(err, doc) {
+		let result = null;
+		if (err) {
+			return callback(err, null);
+		};
+		if (!doc) {
+			result = {
+				msg: 'no',
+				data: "数据库没有数据",
+			};
+		} else {
+			result = {
+				msg: 'yes',
+				data: doc,
+			};
+		};
+		callback(null, result);
+	});
+}
 // 查找待支付订单
 exports.findOrderToPay = function(callback) {
 	Order.find({
