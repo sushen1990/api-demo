@@ -16,8 +16,8 @@ var StudentSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	//有效时间截止时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳。订单增加的时候，会自动增加。
-	effectiveDate: {
+	//设备失效时间点，过了这个时间点就会失效。isInEffective变为false 数据格式为 yyyy-mm-DD 转换来的时间戳。订单增加的时候，会自动增加。
+	expireDate: {
 		type: SchemaTypes.Long,
 		default: 0
 	},
@@ -318,3 +318,22 @@ exports.updateStudentParent = function(postData, callback) {
 		});
 	});
 };
+
+// 更新学生数据，默认这里的 condition 都是已经经过确认的！
+exports.updateStudentBywhereStr = function(condition, doc, callback) {
+	Student.updateMany(condition, doc, function(err, result) {
+		if (err) {
+			return callback(err);
+		};
+		if (!result) {
+			return callback(null, {
+				msg: 'no',
+				data: "没有更新数据",
+			})
+		}
+		callback(null, {
+			msg: 'yes',
+			data: result,
+		})
+	})
+}

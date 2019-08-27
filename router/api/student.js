@@ -220,8 +220,8 @@ router.post("/findStudentByPrePhone", (req, res) => {
 	});
 })
 
-// 根据whereStr查找学生
-router.post("/findStudentByWhereStr", (req, res) => {
+// 根据手机查找学生
+router.post("/findStudentByMobile", (req, res) => {
 	let Scode = req.body.Scode;
 	let mobile = req.body.mobile;
 
@@ -242,6 +242,45 @@ router.post("/findStudentByWhereStr", (req, res) => {
 	let whereStr = {
 		isShow: true,
 		preParentsPhones: mobile
+	};
+	studentDB.findStudentByWhereStr(whereStr, function(err, result) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			})
+		};
+		if (!result) {
+			return res.status(404).json({
+				msg: "no",
+				data: "没有数据"
+			})
+		}else{
+			res.json({
+				msg: "ok",
+				data: result
+			})			
+		};
+	});
+})
+
+// 根据id查找学生
+router.post("/findStudentById", (req, res) => {
+	let Scode = req.body.Scode;
+	let _id = req.body._id;
+
+	// 参数验证 start ↓
+
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	// 参数验证 end   ↑
+	let whereStr = {
+		isShow: true,
+		_id: _id
 	};
 	studentDB.findStudentByWhereStr(whereStr, function(err, result) {
 		if (err) {

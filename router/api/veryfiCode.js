@@ -265,10 +265,7 @@ router.post("/checkVeryfiCode", (req, res) => {
 							data: "服务器内部错误,请联系后台开发人员!!!" + err2
 						});
 					};
-					// res.json({
-					// 	msg: "ok",
-					// 	parent: result2
-					// })
+
 					//  获取学生信息
 					studentDB.findStudentsByParentUserId(userInfo._id, function(err3, result3) {
 						if (err3) {

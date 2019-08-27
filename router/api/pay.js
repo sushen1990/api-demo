@@ -6,18 +6,28 @@ const fs = require('fs');
 const config = require("../../config.js");
 const crypto = require('crypto');
 const AlipaySdk = require('alipay-sdk').default;
+const moment = require('moment');
 
 const orderDB = require("../../models/orderModel.js");
+const studentDB = require("../../models/studentModel.js");
 const Helper = require('../../common/helper');
 const payHelper = require('../../common/payHelper');
 
-
-router.get("/test", (req, res) => {
+// 测试接口是否接通
+router.post("/test", (req, res) => {
+	let Scode = req.body.Scode;
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
 	res.json({
 		msg: "hello q"
 	})
 })
 
+// 获取交易字符串，用来发起交易
 router.post("/getTradeString", (req, res) => {
 
 	// 复核字段
@@ -41,7 +51,6 @@ router.post("/getTradeString", (req, res) => {
 		})
 	};
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
-		console.log(config.Scode)
 		return res.status(400).json({
 			msg: "no",
 			data: "Scode错误"
@@ -81,12 +90,10 @@ router.post("/getTradeString", (req, res) => {
 				data: tradeString
 			})
 		})
-
 	}
-
 });
 
-// 回调地址
+// 接受支付供应商异步通知
 router.post("/notify", (req, res) => {
 	const alipaySdk = new AlipaySdk({
 		appId: '2019082666450460',
@@ -97,14 +104,106 @@ router.post("/notify", (req, res) => {
 	let postdata = null;
 	postdata = req.body;
 
+
 	let checkResult = alipaySdk.checkNotifySign(postdata);
-	// let checkResult = true;
 	if (checkResult) {
-		console.log("ok")
-		res.json("success")
+		// 更新order 和 student
+		let out_trade_no = req.body.out_trade_no;
+
+		// 查找条件
+		let condition = {
+			"$and": [{
+					"out_trade_no": out_trade_no
+				},
+				{
+					"status": "_created"
+				},
+				{
+					"pay_return": []
+				}
+			]
+		};
+
+		// 待更新内容
+		let doc = {
+			status: "_paid",
+			pay_return: postdata,
+			efftiveDate: Date.now()
+		};
+
+		//更新订单，并且更新学生的设备时间
+		orderDB.updateOrderAndStudentDevice(condition, doc, function(err, result) {
+			if (err) {
+				return res.status(500).json({
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!" + err
+				})
+			};
+			if (result.msg == "no") {
+				console.log("failure1")
+				return res.json("failure")
+			}
+			console.log("success")
+			res.json("success")
+		})
 	} else {
-		console.log("failure")
+		console.log("failure2")
+		res.json("failure")
+	}
+});
+
+// 接受支付供应商异步通知
+router.post("/notifyTest", (req, res) => {
+
+	let postdata = req.body;
+	let out_trade_no = req.body.out_trade_no;
+
+	let checkResult = true;
+	if (checkResult) {
+		// 更新order 和 student
+
+
+		// 查找条件
+		let condition = {
+			"$and": [{
+					"out_trade_no": out_trade_no
+				},
+				{
+					"status": "_created"
+				},
+				{
+					"pay_return": []
+				}
+			]
+		};
+
+		// 待更新内容
+		let doc = {
+			status: "_paid",
+			pay_return: postdata,
+			efftiveDate: Date.now()
+		};
+
+		//更新订单，并且更新学生的设备时间
+		orderDB.updateOrderAndStudentDevice(condition, doc, function(err, result) {
+			if (err) {
+				return res.status(500).json({
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!" + err
+				})
+			};
+			if (result.msg == "no") {
+				return res.json("failure")
+			}
+			res.json("success")
+		})
+	} else {
 		res.json("failure")
 	}
 })
+
+
+
+
+
 module.exports = router;

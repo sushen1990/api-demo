@@ -5,6 +5,8 @@ const mongoose = require('mongoose')
 require('mongoose-long')(mongoose);
 const Schema = mongoose.Schema;
 const SchemaTypes = mongoose.Schema.Types;
+const studentDB = require("./studentModel.js")
+const moment = require('moment');
 
 //定义Order对象模型
 var OrderSchema = new Schema({
@@ -53,15 +55,15 @@ var OrderSchema = new Schema({
 		type: SchemaTypes.Long,
 		default: 0
 	},
-	//订单过期时间，根据订单支付内容设置。当支付成功后，同步到student表中
-	expireDate: {
-		type: SchemaTypes.Long,
-		default: 0
-	},
 	//支付订单号
 	out_trade_no: {
 		type: String,
 		default: ''
+	},
+	// 支付的接口回调数据
+	pay_return: {
+		type: Array,
+		default: null
 	}
 });
 
@@ -69,7 +71,7 @@ var OrderSchema = new Schema({
 mongoose.model("Order", OrderSchema);
 var Order = mongoose.model("Order");
 
-// 保存订单信息
+// 保存订单
 exports.SaveNew = function(postData, callback) {
 	let newOrder = new Order();
 
@@ -92,53 +94,107 @@ exports.SaveNew = function(postData, callback) {
 	// save订单信息 end   ↑
 }
 
+// 查询订单
+exports.findOrderBywhereStr = function(whereStr, callback) {
 
-// 查询订单信息
-exports.findBywhereStr = function(whereStr, callback) {
 	Order.findOne(whereStr, function(err, doc) {
-		let result = null;
 		if (err) {
 			return callback(err, null);
 		};
 		if (!doc) {
-			result = {
+			return callback(err, {
 				msg: 'no',
 				data: "数据库没有数据",
-			};
-		} else {
-			result = {
-				msg: 'yes',
-				data: doc,
-			};
-		};
-		callback(null, result);
+			});
+		}
+		callback(null, result = {
+			msg: 'yes',
+			data: doc,
+		});
 	});
 }
-// 查找待支付订单
-exports.findOrderToPay = function(callback) {
-	Order.find({
-		state: "1"
-	}, function(err, doc) {
-		if (err) {
-			return callback(err, null)
-		} else if (doc) {
-			console.log(doc);
-			callback(null, doc)
-		}
+
+// 更新数据，默认这里的 condition 都是已经经过确认的！
+exports.updateOrderBywhereStr = function(condition, doc, callback) {
+	Order.updateMany(condition, doc, function(err1, doc1) {
+		if (err1) {
+			return callback(err1);
+		};
+		let result = {
+			msg: 'yes',
+			data: doc2,
+		};
+		return callback(err, result)
 	})
 }
 
-// 根据学生ID获取订单信息
-exports.findOrderByStudentID = function(callback) {
-	Order.find({
-		state: "1",
+// 更新订单，并且更新学生的设备时间
+exports.updateOrderAndStudentDevice = function(condition, doc, callback) {
 
-	}, function(err, doc) {
+	//  查找order
+	Order.findOne(condition, function(err, result) {
+
 		if (err) {
-			return callback(err, null)
-		} else if (doc) {
-			console.log(doc);
-			callback(null, doc)
+			return callback(err, null);
+		};
+		if (!result) {
+			return callback(null, {
+				msg: 'no',
+				data: "orderDB数据库没有数据" + condition,
+			});
 		}
+
+		//  更新order
+		Order.updateOne(condition, doc, function(err1, result1) {
+			if (err1) {
+				return callback(err1);
+			};
+
+			// 查找student
+			let studentId = result.studentId;
+			studentDB.findStudentByWhereStr({
+				_id: studentId
+			}, function(err2, result2) {
+				if (err2) {
+					return callback(err, null);
+				};
+				if (!result2) {
+					return callback(null, {
+						msg: 'no',
+						data: "studentDB没有数据！",
+					});
+				}
+
+				// 更新student
+				let addMonth = result.goods_item[0].month;
+				let existsExpireDate = result2.expireDate;
+				existsExpireDate = parseInt(existsExpireDate);
+				let expireDate = existsExpireDate == 0 ? Date.now() : existsExpireDate;
+				let nextExpireDate = moment(expireDate).add(addMonth, "month").valueOf();
+
+
+				let doc1 = {
+					expireDate: nextExpireDate,
+					isInEffective: true
+				}
+				studentDB.updateStudentBywhereStr({
+					_id: studentId
+				}, doc1, function(err3, result3) {
+					if (err3) {
+						return callback(err, null);
+					};
+					if (result3.msg == "no") {
+						return callback(null, {
+							msg: 'no',
+							data: result3.data
+						});
+					}
+					callback(null, {
+						msg: 'yes',
+						data: result3.data,
+					});
+				})
+			})
+		})
 	})
 }
