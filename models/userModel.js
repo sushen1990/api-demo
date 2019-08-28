@@ -189,7 +189,7 @@ exports.SaveNew = function(postData, callback) {
 	newUser.isShow = true;
 	newUser.truename = postData.truename;
 	newUser.mobile = postData.mobile;
-	
+
 	//  查找手机号 是否已注册
 	User.findOne({
 		mobile: postData.mobile,
@@ -256,6 +256,17 @@ exports.findUserById = function(userId, callback) {
 		return callback(err, null);
 	});
 };
+
+// 根据whereStr查询用户
+exports.findBywhereStr = function(whereStr, callback) {
+	User.findOne(whereStr, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}
+
 
 //更新家长
 exports.updateParent = function(condition, doc, callback) {

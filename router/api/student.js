@@ -211,11 +211,11 @@ router.post("/findStudentByPrePhone", (req, res) => {
 				msg: "no",
 				data: "没有数据"
 			})
-		}else{
+		} else {
 			res.json({
 				msg: "ok",
 				data: result
-			})			
+			})
 		};
 	});
 })
@@ -255,11 +255,11 @@ router.post("/findStudentByMobile", (req, res) => {
 				msg: "no",
 				data: "没有数据"
 			})
-		}else{
+		} else {
 			res.json({
 				msg: "ok",
 				data: result
-			})			
+			})
 		};
 	});
 })
@@ -294,12 +294,84 @@ router.post("/findStudentById", (req, res) => {
 				msg: "no",
 				data: "没有数据"
 			})
-		}else{
+		} else {
 			res.json({
 				msg: "ok",
 				data: result
-			})			
+			})
 		};
+	});
+})
+
+// 根据whereStr查找学生
+// _id、truename、ChinaCardId
+router.post("/findStudentByhereStr", (req, res) => {
+	let Scode = req.body.Scode;
+	let ChinaCardId = req.body.ChinaCardId;
+	let _id = req.body._id;
+	let truename = req.body.truename;
+	
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	
+	let condition = {};
+	
+	if (ChinaCardId) {
+		if (Helper.checkReal(ChinaCardId)) {
+			return res.status(400).json({
+				msg: "no",
+				data: "手机号码需要为11位数字"
+			})
+		};
+		condition.mobile = mobile;
+	};
+	if (_id) {
+		if (Helper.checkReal(_id)) {
+			return res.status(400).json({
+				msg: "no",
+				data: "_id错误"
+			})
+		};
+		condition._id = _id;
+	};
+	if (truename) {
+		if (Helper.checkReal(truename)) {
+			return res.status(400).json({
+				msg: "no",
+				data: "姓名错误"
+			})
+		};
+		condition.truename = truename;
+	};
+	
+	if (Object.keys(condition).length == 0) {
+		return res.status(400).json({
+			msg: "no",
+			data: "至少提供一个参数"
+		})
+	};
+	
+	studentDB.findStudentByWhereStr(condition, function(err, result) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			});
+		};
+		if (!result) {
+			return res.status(404).json({
+				msg: "no",
+				data: "服务器端没有查询到数据！"
+			});
+		};
+		res.json({
+			msg: "ok",
+			data: result
+		})
 	});
 })
 

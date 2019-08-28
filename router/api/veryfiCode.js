@@ -252,7 +252,6 @@ router.post("/checkVeryfiCode", (req, res) => {
 				userInfo.truename = result1.data.truename;
 
 
-
 				let updatePostData = {
 					_id: userInfo._id,
 					mobile: userInfo.mobile
