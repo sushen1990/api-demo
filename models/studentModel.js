@@ -233,10 +233,36 @@ exports.findStudentListPaginate = function(schoolId, classId, page, size, callba
 	});
 };
 
+// 添加学生的家长预备手机号
+exports.updatePrePhones = function(postData, callback) {
+	let studentId = postData.studentId;
+	let mobile = postData.mobile;
+
+	let condition = {
+		_id: studentId
+	};
+	let doc = {
+		'$push': {
+			preParentsPhones: mobile
+		}
+	};
+	Student.updateMany(condition, doc, function(err, raw) {
+		if (err) {
+			return callback(err);
+		};
+
+		callback(null, {
+			msg: "yes",
+			data: raw
+		})
+	});
+}
+
+
+
 
 // 更新学生的家长信息
 // 返回 {parent:0,admin:0} 
-
 exports.updateStudentParent = function(postData, callback) {
 
 	let _id = postData._id;
@@ -272,7 +298,9 @@ exports.updateStudentParent = function(postData, callback) {
 
 		// 首先关联为普通家长
 		let doc = {
-			parents: _id
+			'$push': {
+				parents: _id
+			}
 		};
 		Student.updateMany(condition, doc, function(err1, raw1) {
 			if (err1) {

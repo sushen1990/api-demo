@@ -229,8 +229,8 @@ router.post("/checkVeryfiCode", (req, res) => {
 				truename: truename
 			};
 
-			// 新建用户，返回用户信息。如果用户已存在，也返货用户信息。
-			userDB.SaveNew(userPostData, function(err1, result1) {
+			// 新建用户，返回用户信息。如果用户已存在，也返回用户信息。
+			userDB.userLoginByCode(userPostData, function(err1, result1) {
 				if (err1) {
 					return res.status(500).json({
 						msg: "no",
@@ -246,7 +246,6 @@ router.post("/checkVeryfiCode", (req, res) => {
 					studentsCount: 0,
 					studentsInfo: []
 				};
-
 				userInfo._id = result1.data._id;
 				userInfo.mobile = result1.data.mobile;
 				userInfo.truename = result1.data.truename;
@@ -285,9 +284,6 @@ router.post("/checkVeryfiCode", (req, res) => {
 
 				});
 				// 更新student的普通家长信息 end   ↑
-
-				// 更新student的管理员家长信息家长信息 start ↓
-				// 更新student的管理员家长信息家长信息 end   ↑
 			});
 		};
 
