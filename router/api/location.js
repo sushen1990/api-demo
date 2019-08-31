@@ -5,6 +5,7 @@ const request = require('request');
 const soap = require('soap');
 const crypto = require('crypto');
 const Helper = require('../../common/helper')
+const config = require("../../config.js")
 
 
 
@@ -12,7 +13,8 @@ const Helper = require('../../common/helper')
 
 
 // 根据设备手机号获取设备定位信息
-router.post("/getLocationByTel", (req, res) => {
+router.post("/getLocationByMobile", (req, res) => {
+	let Scode = req.body.Scode;
 	let mobile = req.body.mobile;
 	let stime = req.body.stime;
 	let etime = req.body.etime;
@@ -24,6 +26,15 @@ router.post("/getLocationByTel", (req, res) => {
 			data: null
 		})
 	}
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	
+	
+	
 	let url = "http://www.ts10000.net/intf/open/locrecord_lists.php?";
 	let key = "78a83e3be0e2be4cb1695167749f2b3a";
 	url = url + "key=" + key;
@@ -39,8 +50,8 @@ router.post("/getLocationByTel", (req, res) => {
 	request.get(url, (err, result, doc) => {
 		if (err) {
 			return res.status(500).json({
-				msg: "系统错误，代码！" + err,
-				data: null
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
 			})
 		} else {
 			doc = JSON.parse(doc);
@@ -51,8 +62,8 @@ router.post("/getLocationByTel", (req, res) => {
 				});
 			} else {
 				res.status(500).json({
-					msg: "定位卡API系统错误，代码！" + doc.msg,
-					data: doc.result
+					msg:"no",
+					data: "定位卡API系统错误，代码！" + doc.msg
 				})
 			}
 		}

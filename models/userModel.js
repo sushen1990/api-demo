@@ -134,29 +134,13 @@ exports.findUserByMobile = function(mobile, callback) {
 }
 
 // 根据whereStr查询用户
-exports.findUserBywhereStr = function(whereStr,callback) {
-	User.find(whereStr,{"truename":1,"mobile":1}, function(err, doc) {
+exports.findUserBywhereStr = function(whereStr, callback) {
+	User.find(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		}
 		callback(null, doc);
 	});
-}
-
-//更新家长
-exports.updateParent = function(condition, doc, callback) {
-	User.find({
-		_id: userId,
-		isShow: true
-	}).then(doc => {
-
-		if (doc) {
-			callback(null, doc);
-		} else {
-			return callback("当前用户不在数据库中", null);
-		}
-
-	}).catch(err => {
-		return callback(err, null);
-	});
 };
+
+// 客户端获取最新的家长、学生数据

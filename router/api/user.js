@@ -133,22 +133,74 @@ router.post("/findByWhereStr", (req, res) => {
 });
 
 
-router.post("/findStudentsByParentId", (req, res) => {
+// 获取家长和学生的最新数据
+router.post("/findLatestData", (req, res) => {
+	let parentId = req.body.parentId;
+	let studentId = req.body.studentId;
 	let Scode = req.body.Scode;
-	let _id = req.body._id;
 
-	studentDB.findStudentsByParentUserId(_id, function(err, doc) {
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	if (Helper.checkReal(parentId)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "parentId错误"
+		})
+	};
+	if (Helper.checkReal(studentId)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "studentId错误"
+		})
+	};
+
+
+	// 获取家长信息
+	userDB.findUserBywhereStr({
+		_id: parentId
+	}, function(err, parent) {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
 				data: "服务器内部错误,请联系后台开发人员!!!" + err
 			});
 		};
-		res.json({
-			data: doc
+		if (!parent) {
+			return res.status(404).json({
+				msg: "no",
+				data: "userDB中没有数据" + parentId
+			});
+		};
+
+		studentDB.findStudentByWhereStr({
+			_id: studentId
+		}, function(err2, student) {
+			if (err2) {
+				return res.status(500).json({
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!" + err
+				});
+			};
+			if (!student) {
+				return res.status(404).json({
+					msg: "no",
+					data: "studentData中没有数据" + studentId
+				});
+			};
+
+			res.json({
+				msg: "yes",
+				data: {
+					parent,
+					student
+				}
+			})
 		})
 	})
-
 });
 
 

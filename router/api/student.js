@@ -116,6 +116,8 @@ router.post("/studentSave", (req, res) => {
 	);
 });
 
+
+
 // 分页获取学生 start
 router.post("/studentListPage", (req, res) => {
 	let Scode = req.body.Scode;
@@ -440,8 +442,54 @@ router.post("/findParentByStudentId", (req, res) => {
 	})
 });
 
+// 根据学生ID查询预设家长信息
+router.post("/findPerPhoneByStudentId", (req, res) => {
+	let Scode = req.body.Scode;
+	let studentId = req.body.studentId;
+
+	// 参数验证 start ↓
+	if (Helper.checkReal(studentId)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "studentId错误"
+		})
+	};
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	// 参数验证 end   ↑
+	let whereStr = {
+		isShow: true,
+		_id: studentId
+	};
+	studentDB.findStudentByWhereStr(whereStr, function(err, result) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			})
+		};
+		if (!result) {
+			return res.status(200).json({
+				msg: "no",
+				data: "没有数据"
+			})
+		} else {
+			res.json({
+				msg: "ok",
+				data: result
+			})
+		};
+	});
+})
+
+
+
 // 添加学生的家长预备手机号
-router.post("/updatePrePhones", (req, res) => {
+router.post("/addPrePhones", (req, res) => {
 	let Scode = req.body.Scode;
 	let mobile = req.body.mobile;
 	let studentId = req.body.studentId;
@@ -490,12 +538,19 @@ router.post("/updatePrePhones", (req, res) => {
 				data: "当前手机号已经存在，无需重复添加！"
 			});
 		};
+		if (mobileList.length==4) {
+			return res.status(200).json({
+				msg: "no",
+				data: "家长手机号只允许保存4个！！"
+			});
+		};		
 
-		condition = {
-			studentId,
-			mobile
-		}
-		studentDB.updatePrePhones(condition, function(err1, result1) {
+		let doc = {
+			'$push': {
+				preParentsPhones: mobile
+			}
+		};
+		studentDB.updatePrePhones(condition, doc, function(err1, result1) {
 			if (err1) {
 				return res.status(500).json({
 					msg: "no",
@@ -508,6 +563,110 @@ router.post("/updatePrePhones", (req, res) => {
 			})
 		})
 	})
-})
+});
+
+// 删除学生的家长预备手机号
+router.post("/deletePrePhones", (req, res) => {
+	let Scode = req.body.Scode;
+	let mobile = req.body.mobile;
+	let studentId = req.body.studentId;
+
+	// 参数验证
+	if (Helper.checkTel(mobile)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "手机号码需要为11位数字"
+		})
+	};
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	if (Helper.checkReal(studentId)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "studentId错误"
+		})
+	};
+
+	let condition = {
+		_id: studentId
+	}
+
+	// 查询studentId
+	studentDB.findStudentByWhereStr(condition, function(err, result) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			});
+		};
+		if (!result) {
+			return res.status(404).json({
+				msg: "no",
+				data: "studentDB服务器端没有查询到数据！"
+			});
+		};
+
+		if (mobile == result.adminParentMobile) {
+			return res.status(200).json({
+				msg: "no",
+				data: "当前手机号为管理员所有，无法删除！"
+			});
+		}
+
+
+
+		let mobileList = result.preParentsPhones;
+		if (!mobileList.includes(mobile)) {
+			return res.status(200).json({
+				msg: "no",
+				data: "当前手机号不存在，无法删除！"
+			});
+		};
+
+		let doc = {
+			'$pull': {
+				preParentsPhones: mobile
+			}
+		};
+
+		// userDB查询手机号
+		userDB.findUserByMobile(mobile, function(err1, result1) {
+			if (err1) {
+				return res.status(500).json({
+					msg: "no",
+					data: "服务器内部错误,请联系后台开发人员!!!" + err1
+				});
+			};
+			if (result1) {
+				doc = {
+					'$pull': {
+						preParentsPhones: mobile,
+						parents: result1._id
+					}
+				};
+			}
+			// 更新数据
+			studentDB.updatePrePhones(condition, doc, function(err2, result2) {
+				if (err2) {
+					return res.status(500).json({
+						msg: "no",
+						data: "服务器内部错误,请联系后台开发人员!!!" + err2
+					});
+				};
+				res.json({
+					msg: "yes",
+					data: result2
+				})
+			})
+
+
+		})
+
+	})
+});
 
 module.exports = router;

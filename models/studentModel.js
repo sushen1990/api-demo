@@ -100,7 +100,7 @@ mongoose.model('Student', StudentSchema);
 var Student = mongoose.model('Student');
 
 
-//保存学生信息
+// 保存学生信息
 exports.studentSave = function(postData, callback) {
 	let newStudent = new Student();
 	newStudent.isShow = true;
@@ -138,23 +138,22 @@ exports.studentSave = function(postData, callback) {
 	// save学生信息 end   ↑
 }
 
-//根据家长id查询学生
+
+
+// 根据家长id查询学生
 exports.findStudentsByParentUserId = function(parentId, callback) {
 	let whereStr = {
 		parents: parentId,
 		isShow: true
 	};
-	let projection = {
-		createDate: 0,
-		ChinaCardId: 0,
-		note: 0,
-		createDate: 0,
-		preParentsPhones: 0,
-		brithDay: 0,
-		__v: 0,
-		parents: 0
-	};
-	Student.find(whereStr, projection, function(err, doc) {
+	// let projection = {
+	// 	createDate: 0,
+	// 	note: 0,
+	// 	createDate: 0,
+	// 	brithDay: 0,
+	// 	__v: 0,
+	// };
+	Student.find(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		};
@@ -190,7 +189,7 @@ exports.findStudentByWhereStr = function(whereStr, callback) {
 	});
 }
 
-//根据学生身份证号验证学生
+// 根据学生身份证号验证学生
 exports.findStudentByChinaCardId = function(ChinaCardId, callback) {
 	Student.findOne({
 		ChinaCardId: ChinaCardId,
@@ -233,19 +232,11 @@ exports.findStudentListPaginate = function(schoolId, classId, page, size, callba
 	});
 };
 
-// 添加学生的家长预备手机号
-exports.updatePrePhones = function(postData, callback) {
-	let studentId = postData.studentId;
-	let mobile = postData.mobile;
 
-	let condition = {
-		_id: studentId
-	};
-	let doc = {
-		'$push': {
-			preParentsPhones: mobile
-		}
-	};
+
+
+// 更新学生的家长预备手机号
+exports.updatePrePhones = function(condition, doc, callback) {
 	Student.updateMany(condition, doc, function(err, raw) {
 		if (err) {
 			return callback(err);
@@ -257,9 +248,6 @@ exports.updatePrePhones = function(postData, callback) {
 		})
 	});
 }
-
-
-
 
 // 更新学生的家长信息
 // 返回 {parent:0,admin:0} 
