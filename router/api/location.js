@@ -6,6 +6,7 @@ const soap = require('soap');
 const crypto = require('crypto');
 const Helper = require('../../common/helper')
 const config = require("../../config.js")
+const moment = require('moment');
 
 
 
@@ -17,7 +18,6 @@ router.post("/getLocationByMobile", (req, res) => {
 	let Scode = req.body.Scode;
 	let mobile = req.body.mobile;
 	let stime = req.body.stime;
-	let etime = req.body.etime;
 
 	if (Helper.checkTel(mobile)) {
 		console.log(mobile);
@@ -32,41 +32,68 @@ router.post("/getLocationByMobile", (req, res) => {
 			data: "Scode错误"
 		})
 	};
-	
-	
-	
+
+
+
 	let url = "http://www.ts10000.net/intf/open/locrecord_lists.php?";
 	let key = "78a83e3be0e2be4cb1695167749f2b3a";
 	url = url + "key=" + key;
 	url = url + "&tnumber=" + mobile;
 
-	if (stime && stime != "" || stime != undefined) {
-		url = url + "&stime=" + stime;
-	}
-	if (etime && etime != "" || etime != undefined) {
-		url = url + "&etime=" + etime;
-	}
+	let etime = null;
+	// 有日期参数，
+	if (!Helper.checkReal(stime)) {
+		etime = moment(stime).add(1, "day").format("YYYY-MM-DD");
 
-	request.get(url, (err, result, doc) => {
+	} else {
+		// 没有日期参数
+		stime = moment().format("YYYY-MM-DD");
+		etime = moment().add(1, "day").format("YYYY-MM-DD");
+
+	}
+	url = url + "&stime=" + stime;
+	url = url + "&etime=" + etime;
+
+	request.get(url, (err, doc) => {
 		if (err) {
 			return res.status(500).json({
 				msg: "no",
 				data: "服务器内部错误,请联系后台开发人员!!!" + err
 			})
-		} else {
-			doc = JSON.parse(doc);
-			if (doc.status == 0 && doc.msg == "操作成功") {
-				res.json({
-					msg: "ok",
-					data: doc.result
-				});
-			} else {
-				res.status(500).json({
-					msg:"no",
-					data: "定位卡API系统错误，代码！" + doc.msg
-				})
-			}
 		}
+		doc = JSON.parse(doc.body)
+		if (doc.msg != "操作成功") {
+			return res.json({
+				msg: "no",
+				data: doc.msg
+			})
+		}
+		res.json({
+			msg: "ok",
+			data: doc.result
+		});
+
+
+
+		// else {
+		// 	res.json({
+		// 		msg: "ok",
+		// 		data: doc
+		// 	});
+
+		// doc = JSON.parse(doc);
+		// if (doc.status == 0 && doc.msg == "操作成功") {
+		// 	res.json({
+		// 		msg: "ok",
+		// 		data: doc.result
+		// 	});
+		// } else {
+		// 	res.status(500).json({
+		// 		msg:"no",
+		// 		data: "定位卡API系统错误，代码！" + doc.msg
+		// 	})
+		// }
+		// }
 	})
 
 })
