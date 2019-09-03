@@ -488,6 +488,63 @@ router.post("/findPerPhoneByStudentId", (req, res) => {
 
 
 
+
+// findOneAndUpdateStudent
+router.post("/findOneAndUpdateStudent", (req, res) => {
+	let Scode = req.body.Scode;
+	let truename = req.body.truename;
+	let newTruename = req.body.newTruename;
+
+	// 参数验证 start ↓
+
+	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	if (Helper.checkReal(truename)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	if (Helper.checkReal(newTruename)) {
+		return res.status(400).json({
+			msg: "no",
+			data: "Scode错误"
+		})
+	};
+	// 参数验证 end   ↑
+	let whereStr = {
+		isShow: true,
+		truename
+	};
+	let doc = {
+		truename: newTruename
+	}
+	studentDB.findOneAndUpdateStudent(whereStr, doc, function(err, result) {
+		if (err) {
+			return res.status(500).json({
+				msg: "no",
+				data: "服务器内部错误,请联系后台开发人员!!!" + err
+			})
+		};
+		if (result.data == null) {
+			return res.json({
+				msg: "no",
+				data: "没有数据"
+			})
+		} else {
+			res.json({
+				msg: "ok",
+				data: result
+			})
+		};
+	});
+})
+
+
 // 添加学生的家长预备手机号
 router.post("/addPrePhones", (req, res) => {
 	let Scode = req.body.Scode;
@@ -517,6 +574,7 @@ router.post("/addPrePhones", (req, res) => {
 	let condition = {
 		_id: studentId
 	}
+	// studentDB查询学生Id是否存在
 	studentDB.findStudentByWhereStr(condition, function(err, result) {
 		if (err) {
 			return res.status(500).json({
@@ -538,18 +596,20 @@ router.post("/addPrePhones", (req, res) => {
 				data: "当前手机号已经存在，无需重复添加！"
 			});
 		};
-		if (mobileList.length==4) {
+		if (mobileList.length == 4) {
 			return res.status(200).json({
 				msg: "no",
 				data: "家长手机号只允许保存4个！！"
 			});
-		};		
+		};
 
 		let doc = {
 			'$push': {
 				preParentsPhones: mobile
 			}
-		};
+		};	
+		
+		// 更新到预备手机号中
 		studentDB.updatePrePhones(condition, doc, function(err1, result1) {
 			if (err1) {
 				return res.status(500).json({

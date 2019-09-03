@@ -181,7 +181,7 @@ exports.findStudentsByParentUserId = function(parentId, callback) {
 
 // 根据whereStr 查找学生
 exports.findStudentByWhereStr = function(whereStr, callback) {
-	Student.findOne(whereStr, function(err, doc) {
+	Student.find(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		}
@@ -348,6 +348,20 @@ exports.updateStudentBywhereStr = function(condition, doc, callback) {
 			})
 		}
 		callback(null, {
+			msg: 'yes',
+			data: result,
+		})
+	})
+}
+// 更新学生数据，默认这里的 condition 都是已经经过确认的！
+exports.findOneAndUpdateStudent = function(condition, doc, callback) {
+	Student.findOneAndUpdate(condition, doc, {
+		new: true
+	}, function(err, result) {
+		if (err) {
+			return callback(err);
+		};
+		callback(null,{
 			msg: 'yes',
 			data: result,
 		})

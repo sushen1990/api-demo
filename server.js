@@ -81,3 +81,7 @@ app.use("/api/class", classlAPI)
 //学生相关
 const studentAPI = require("./router/api/student")
 app.use("/api/student", studentAPI)
+
+//家长相关
+const parentAPI = require("./router/api/parent")
+app.use("/api/parent", parentAPI)

@@ -11,11 +11,13 @@ const studentDB = require("../../models/studentModel.js")
 const userDB = require("../../models/userModel.js")
 const Core = require('@alicloud/pop-core'); // 阿里短信sdk
 
+// 测试
 router.get("/test", (req, res) => {
 	res.json({
 		msg: "hello VeryfiCode"
 	})
 });
+
 //  预设家长手机号获取验证码
 router.post("/sendVeryfiCodeInLogin", (req, res) => {
 
@@ -84,8 +86,8 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 				var requestOption = {
 					method: 'POST'
 				};
-
-				client.request('SendSms1', params, requestOption).then((result) => {
+				//  SendSms 发送短信的正确方式
+				client.request('SendSms', params, requestOption).then((result) => {
 					res.json({
 						msg: "ok",
 						data: result
@@ -167,7 +169,6 @@ router.post("/sendVeryfiCode", (req, res) => {
 	});
 })
 
-
 // 登录的时候验证验证码
 router.post("/checkVeryfiCode", (req, res) => {
 
@@ -175,6 +176,7 @@ router.post("/checkVeryfiCode", (req, res) => {
 	let truename = req.body.truename;
 	let veryfiCode = req.body.veryfiCode;
 	let Scode = req.body.Scode;
+	let cid = req.body.cid;
 
 	// 参数验证 start ↓
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
@@ -225,8 +227,9 @@ router.post("/checkVeryfiCode", (req, res) => {
 
 			// 验证码通过 继续
 			let userPostData = {
-				mobile: mobile,
-				truename: truename
+				mobile,
+				truename,
+				cid
 			};
 
 			// 新建用户，返回用户信息。如果用户已存在，也返回用户信息。

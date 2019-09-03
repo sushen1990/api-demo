@@ -11,15 +11,7 @@ const UserSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	userName: {
-		type: String,
-		default: null
-	},
 	truename: {
-		type: String,
-		default: null
-	},
-	roleId: {
 		type: String,
 		default: null
 	},
@@ -27,31 +19,19 @@ const UserSchema = new Schema({
 		type: String,
 		default: null
 	},
+	//  登录手机唯一识别号
+	clientId: {
+		type: String,
+		default: null
+	},
 	createDate: {
 		type: SchemaTypes.Long,
 		default: Date.now()
 	},
-
 	mobile: {
 		type: SchemaTypes.Long,
 		default: 0
 	},
-	city: {
-		type: String,
-		default: null
-	},
-	province: {
-		type: String,
-		default: null
-	},
-	country: {
-		type: String,
-		default: null
-	},
-	note: {
-		type: String,
-		default: null
-	}
 });
 
 //访问user对象模型
@@ -66,6 +46,7 @@ exports.SaveNew = function(postData, callback) {
 	newUser.isShow = true;
 	newUser.truename = postData.truename;
 	newUser.mobile = postData.mobile;
+	newUser.clientId = postData.cid;
 
 	newUser.save(function(err) {
 		if (err) {
@@ -83,6 +64,7 @@ exports.userLoginByCode = function(postData, callback) {
 	newUser.isShow = true;
 	newUser.truename = postData.truename;
 	newUser.mobile = postData.mobile;
+	newUser.clientId = postData.cid;
 
 	//  查找手机号 是否已注册
 	User.findOne({
@@ -99,24 +81,37 @@ exports.userLoginByCode = function(postData, callback) {
 		};
 		// 已注册 直接返回查询到的信息
 		if (doc) {
-			return callback(null, {
-				"msg": "yes",
-				"info": "already_exists",
-				"data": doc
+			// 更新cid
+			User.findOneAndUpdate({
+				mobile: postData.mobile,
+				isShow: true
+			}, {
+				clientId: postData.cid
+			}, {
+				new: true
+			}, function(err1, doc1) {
+				if (err1) {
+					return callback(err1);
+				};
+				callback(null, {
+					"msg": "yes",
+					"info": "already_exists",
+					"data": doc1
+				});
+			});
+		} else {
+			// 未注册 保存信息
+			newUser.save(function(err2) {
+				if (err2) {
+					return callback(err2);
+				};
+				callback(null, {
+					"msg": "yes",
+					"info": "new_save",
+					"data": newUser
+				});
 			});
 		}
-		// 未注册 保存信息
-		newUser.save(function(err1) {
-			if (err1) {
-				return callback(err1);
-			};
-			return callback(null, {
-				"msg": "yes",
-				"info": "new_save",
-				"data": newUser
-			});
-		});
-
 	});
 };
 
