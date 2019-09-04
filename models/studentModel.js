@@ -179,8 +179,18 @@ exports.findStudentsByParentUserId = function(parentId, callback) {
 	});
 }
 
-// 根据whereStr 查找学生
+// 根据whereStr 查找单个学生
 exports.findStudentByWhereStr = function(whereStr, callback) {
+	Student.findOne(whereStr, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+}
+
+// 根据whereStr 查找所有学生
+exports.findManyStudentsByWhereStr = function(whereStr, callback) {
 	Student.find(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);

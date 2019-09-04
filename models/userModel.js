@@ -115,22 +115,9 @@ exports.userLoginByCode = function(postData, callback) {
 	});
 };
 
-//根据手机号查询用户
-exports.findUserByMobile = function(mobile, callback) {
-	User.findOne({
-		mobile: mobile,
-		isShow: true
-	}, function(err, doc) {
-		if (err) {
-			return callback(err, null);
-		};
-		callback(null, doc);
-	});
-}
-
-// 根据whereStr查询用户
+// 根据whereStr 查询单个用户
 exports.findUserBywhereStr = function(whereStr, callback) {
-	User.find(whereStr, function(err, doc) {
+	User.findOne(whereStr, function(err, doc) {
 		if (err) {
 			return callback(err, null);
 		}
@@ -138,4 +125,12 @@ exports.findUserBywhereStr = function(whereStr, callback) {
 	});
 };
 
-// 客户端获取最新的家长、学生数据
+// 根据whereStr 查询多个用户
+exports.findManyUsersBywhereStr = function(whereStr, callback) {
+	User.find(whereStr, function(err, doc) {
+		if (err) {
+			return callback(err, null);
+		}
+		callback(null, doc);
+	});
+};
