@@ -53,6 +53,7 @@ router.post("/locationAdd", (req, res) => {
 		}
 		doc = JSON.parse(doc.body)
 		if (doc.msg == "用户不存在") {
+			
 			// 新建用户
 			return res.json({
 				msg: "no",
@@ -86,6 +87,7 @@ router.post("/locationAdd", (req, res) => {
 						data: doc1
 					});
 				}
+				
 				//当前终端号码不存在于数据库
 				if (doc1.result.length != 0) {
 					return res.json({
@@ -93,6 +95,7 @@ router.post("/locationAdd", (req, res) => {
 						data: doc1
 					});
 				}
+				
 				//终端号码已在数据库，不允许新建
 				return res.json({
 					msg: "yes",
@@ -108,8 +111,7 @@ router.post("/locationAdd", (req, res) => {
 	})
 });
 
-
-
+// loaction 测试
 router.post("/locationAddUser", (req, res) => {
 	let Scode = req.body.Scode;
 	let userMobile = req.body.userMobile;
