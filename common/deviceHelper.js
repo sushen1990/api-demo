@@ -17,6 +17,7 @@ exports.locationAPI = function(postData) {
 		request(options, function(err, doc) {
 			if (err) {
 				reject(error);
+				console.log(err)
 			} else {
 				resolve(JSON.parse(doc.body));
 			}
