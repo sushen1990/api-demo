@@ -7,10 +7,10 @@ const cors = require('cors'); //跨域
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 const config = require("./config")
-const Schedule = require('./common/schedule') 
+const Schedule = require('./common/schedule')
 
 app.use(cors()); //解决跨域
-
+app.set('view >>enigne<<', 'jade')
 
 // 转换https服务
 const https = require("https")
@@ -20,10 +20,10 @@ var options = {
 }
 
 
-https.createServer(options,app).listen(port)
+https.createServer(options, app).listen(port)
 console.log(`https服务器运行在端口[${port}]`)
 // 访问页面内容
-app.get("/",(req,res) =>{
+app.get("/", (req, res) => {
 	res.send("hello q")
 })
 
@@ -33,38 +33,39 @@ app.get("/",(req,res) =>{
 // mongoRUI="mongodb://aly_root:d456_FJ35LLL@localhost:27899/xiaoantong"
 
 mongoRUI = config.mongoRUI;
-const DB =  mongoRUI ;
-mongoose.connect(DB,
-			{ useNewUrlParser: true ,
-			  useFindAndModify: false
-			}
-		)
-        .then(() => console.log("数据库连接成功"))
-        .catch(err => console.log(err))
+const DB = mongoRUI;
+mongoose.connect(DB, {
+		useNewUrlParser: true,
+		useFindAndModify: false
+	})
+	.then(() => console.log("数据库连接成功"))
+	.catch(err => console.log(err))
 
 // 使用bodyParser中间件
-app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.urlencoded({
+	extended: false
+}))
 app.use(bodyParser.json())
-		
+
 // 用户相关
 const userAPI = require("./router/api/user")
-app.use("/api/user",userAPI) 
+app.use("/api/user", userAPI)
 
 // 获取banner信息之类的
 const resApi = require("./router/api/res")
-app.use("/api/res",resApi)
+app.use("/api/res", resApi)
 
 // 定位设备
 const locationApi = require("./router/api/location")
-app.use("/api/location",locationApi)
+app.use("/api/location", locationApi)
 
 // 获取验证码
 const veryfiCodeApi = require("./router/api/veryfiCode")
-app.use("/api/veryfiCode",veryfiCodeApi)
+app.use("/api/veryfiCode", veryfiCodeApi)
 
 // 订单相关
 const orderApi = require("./router/api/order")
-app.use("/api/order",orderApi)
+app.use("/api/order", orderApi)
 
 //支付相关
 const payAPI = require("./router/api/pay")
@@ -85,3 +86,7 @@ app.use("/api/student", studentAPI)
 //家长相关
 const parentAPI = require("./router/api/parent")
 app.use("/api/parent", parentAPI)
+
+//飞安信API整合
+const fei_an_xinAPI = require("./router/api/fei_an_xin")
+app.use("/api/fei_an_xin", fei_an_xinAPI)

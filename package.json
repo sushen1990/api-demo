@@ -10,10 +10,11 @@
   "author": "shane",
   "license": "ISC",
   "dependencies": {
-    "alipay-node-sdk": "^1.1.9",
     "alipay-sdk": "^3.0.7",
     "bcrypt": "^3.0.6",
     "express": "^4.16.4",
+    "gt-push-sdk": "^4.1.1",
+    "moment": "^2.24.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "string-random": "^0.1.3"
