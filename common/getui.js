@@ -17,7 +17,7 @@ let gt = new GeTui(HOST, APPKEY, MASTERSECRET);
 
 pushMessageToSingle()
 
-export.pushMsg = function(cid, content) {
+exports.pushMsg = function(cid, content) {
 	CID = cid
 	transmissionContent = content
 	pushMessageToSingle();

@@ -1,6 +1,6 @@
 // const moment = require('moment')
 const crypto = require('crypto');
-const devicehelper = require('./common/deviceHelper');
+const FeiAnXinHelper = require('./common/FeiAnXinHelper');
 
 async function load() {
 	try {
@@ -23,20 +23,14 @@ async function load() {
 		// console.log(result1);
 
 		// 2. 添加终端的的安全围栏
-		postData = {
-			url: "fence_add.php",
+		let postData1 = {
+			url: "locreport_lists.php",
 			form: {
 				"tnumber": terminalMobile, //终端手机号
-				"lrid": "237049", // 定位时段Id
-				"latitude": "34.747066", //经度
-				"longitude": "113.699915", //经度
-				"type": "0", //类型 (0 出 1 入)
-				"rang": "300", //范围 米
-				"name": "围栏"
 			}
 		}
-		let result2 = await devicehelper.locationAPI(postData);
-		console.log(result2);
+		let result2 = await FeiAnXinHelper.locationAPI(postData1);
+		console.log(result2.result[0].id);
 
 	} catch (err) {
 		console.log(err);
