@@ -110,7 +110,7 @@ exports.checkVeryfiCodeByWhereStr = function(whereStr, code, callback) {
 
 // 查询验证码
 exports.checkVeryfiCodeByWhereStr1 = function(whereStr, code) {
-
+	// 封装promise返回
 	return new Promise(function(resolve, reject) {
 		VerificationCode.findOne(whereStr, function(err, doc) {
 			let result = {
@@ -123,7 +123,6 @@ exports.checkVeryfiCodeByWhereStr1 = function(whereStr, code) {
 				reject(result);
 				return;
 			};
-
 
 			if (!doc) {
 				result["info"] = "验证码不存在，请重新获取";
@@ -142,14 +141,11 @@ exports.checkVeryfiCodeByWhereStr1 = function(whereStr, code) {
 				result["info"] = '验证码已过期，请重新获取验证码';
 				resolve(result);
 				return;
-
 			};
 
 			result["msg"] = 'yes';
 			result["info"] = '验证码正确';
 			resolve(result);
 		});
-
 	})
-
 }

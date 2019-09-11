@@ -56,6 +56,8 @@ exports.SaveNew = function(postData, callback) {
 	});
 }
 
+
+
 // 家长用户通过验证码登录的时候，如果数据库没有就新建用户数据。最后都要返回用户数据
 exports.userLoginByCode = function(postData, callback) {
 
