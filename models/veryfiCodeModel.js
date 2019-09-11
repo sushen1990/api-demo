@@ -106,4 +106,50 @@ exports.checkVeryfiCodeByWhereStr = function(whereStr, code, callback) {
 		result["info"] = "验证码正确";
 		return callback(null, result);
 	});
+};
+
+// 查询验证码
+exports.checkVeryfiCodeByWhereStr1 = function(whereStr, code) {
+
+	return new Promise(function(resolve, reject) {
+		VerificationCode.findOne(whereStr, function(err, doc) {
+			let result = {
+				"msg": "no",
+				"info": "没有数据"
+			};
+
+			if (err) {
+				result["info"] = "验证码不存在，请重新获取";
+				reject(result);
+				return;
+			};
+
+
+			if (!doc) {
+				result["info"] = "验证码不存在，请重新获取";
+				resolve(result);
+				return;
+			}
+
+			if (code != doc.veryfiCode) {
+				result["info"] = "验证码错误，请核对修改后重新提交";
+				resolve(result);
+				return;
+			};
+
+			let nowTime = new Date().getTime();
+			if (doc.veryfiCode == code && doc.time < nowTime) {
+				result["info"] = '验证码已过期，请重新获取验证码';
+				resolve(result);
+				return;
+
+			};
+
+			result["msg"] = 'yes';
+			result["info"] = '验证码正确';
+			resolve(result);
+		});
+
+	})
+
 }

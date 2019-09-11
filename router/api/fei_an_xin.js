@@ -153,7 +153,8 @@ router.post("/fence_list", async (req, res) => {
 router.post("/fence_delete", async (req, res) => {
 
 	let Scode = req.body.Scode;
-	let fid = req.body.id; // 电子围栏Id
+	let Id1 = req.body.Id1; // 电子围栏Id
+	let Id2 = req.body.Id2; // 出入方向，两个id。要删除两次
 
 	//  1. 参数验证
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
@@ -164,26 +165,36 @@ router.post("/fence_delete", async (req, res) => {
 		})
 	};
 
-	if (Helper.checkReal(fid)) {
+	if (Helper.checkReal(Id1) || Helper.checkReal(Id2)) {
 		return res.status(400).json({
 			msg: "no",
-			data: "电子围栏fid错误"
+			data: "电子围栏Id错误"
 		})
 	};
 
 	//  2. 向飞安信服务器请求数据，并根据情况返回
-	let postData = {
+	let postData1 = {
 		url: "fence_del.php",
 		form: {
-			"id": fid, //终端手机号
+			"id": Id1, //电子围栏Id
+		}
+	};
+	let postData2 = {
+		url: "fence_del.php",
+		form: {
+			"id": Id2, //电子围栏Id
 		}
 	};
 
 	try {
-		let result = await FeiAnXinHelper.locationAPI(postData);
+		// 2.1 第一次删除
+		let result1 = await FeiAnXinHelper.locationAPI(postData1);
+		// 2.2 第二次删除
+		let result2 = await FeiAnXinHelper.locationAPI(postData2);
+
 		res.json({
 			msg: "ok",
-			data: result
+			data: result2
 		})
 	} catch (e) {
 		res.status(500).json({

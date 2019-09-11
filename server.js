@@ -9,8 +9,10 @@ const bodyParser = require("body-parser")
 const config = require("./config")
 const Schedule = require('./common/schedule')
 
+const Promise = require('bluebird'); // 异步问题
+mongoose.Promise = Promise;
+
 app.use(cors()); //解决跨域
-app.set('view >>enigne<<', 'jade')
 
 // 转换https服务
 const https = require("https")

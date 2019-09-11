@@ -47,8 +47,7 @@ var OrderSchema = new Schema({
 	},
 	//订购时间
 	creatTime: {
-		type: SchemaTypes.Long,
-		default: Date.now()
+		type: SchemaTypes.Long
 	},
 	//订单生效时间
 	efftiveDate: {
@@ -82,7 +81,7 @@ exports.SaveNew = function(postData, callback) {
 	newOrder.userId = postData.userId;
 	newOrder.mobile = postData.mobile;
 	newOrder.studentId = postData.studentId;
-
+	newOrder.creatTime = Date.now();
 
 	// save订单信息 start ↓
 	newOrder.save(function(err) {

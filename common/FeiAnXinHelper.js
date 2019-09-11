@@ -12,12 +12,11 @@ exports.locationAPI = function(postData) {
 		form: postData.form
 	};
 
-	// 返回Promise的对象
+	// 返回Promise的对象 封装好的API
 	return new Promise(function(resolve, reject) {
 		request(options, function(err, doc) {
 			if (err) {
 				reject(error);
-				console.log(err)
 			} else {
 				resolve(JSON.parse(doc.body));
 			}
