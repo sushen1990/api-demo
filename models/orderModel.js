@@ -1,5 +1,4 @@
 'use strict';
-const util = require('util');
 const async = require('async');
 const mongoose = require('mongoose')
 require('mongoose-long')(mongoose);
@@ -7,6 +6,7 @@ const Schema = mongoose.Schema;
 const SchemaTypes = mongoose.Schema.Types;
 const studentDB = require("./studentModel.js")
 const moment = require('moment');
+const Promise = require('bluebird');
 
 //定义Order对象模型
 var OrderSchema = new Schema({
@@ -66,9 +66,13 @@ var OrderSchema = new Schema({
 	}
 });
 
+
+
 //访问对象模型
-mongoose.model("Order", OrderSchema);
-var Order = mongoose.model("Order");
+// mongoose.model("Order", OrderSchema);
+var Order = mongoose.model("Order", OrderSchema);
+
+// var Teacher = mongoose.model("Teacher", TeacherSchema);
 
 // 保存订单
 exports.SaveNew = function(postData, callback) {
@@ -197,3 +201,11 @@ exports.updateOrderAndStudentDevice = function(condition, doc, callback) {
 		})
 	})
 }
+
+
+// -------------------------------使用bluebird 
+//promise化user类及其方法
+Promise.promisifyAll(Order);
+Promise.promisifyAll(Order.prototype);
+
+module.exports = Order;

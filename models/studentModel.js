@@ -1,10 +1,11 @@
 'use strict';
-const util = require('util');
+
 const mongoose = require('mongoose');
 require('mongoose-long')(mongoose);
 const Schema = mongoose.Schema;
 const moment = require('moment');
 const SchemaTypes = mongoose.Schema.Types;
+const Promise = require('bluebird');
 
 var StudentSchema = new Schema({
 	isShow: {
@@ -96,8 +97,7 @@ var StudentSchema = new Schema({
 });
 
 //访问Student对象模型
-mongoose.model('Student', StudentSchema);
-var Student = mongoose.model('Student');
+var Student = mongoose.model('Student', StudentSchema);
 
 
 // 保存学生信息
@@ -371,9 +371,18 @@ exports.findOneAndUpdateStudent = function(condition, doc, callback) {
 		if (err) {
 			return callback(err);
 		};
-		callback(null,{
+		callback(null, {
 			msg: 'yes',
 			data: result,
 		})
 	})
 }
+
+
+
+// -------------------------------使用bluebird 
+//promise化user类及其方法
+Promise.promisifyAll(Student);
+Promise.promisifyAll(Student.prototype);
+
+module.exports = Student;

@@ -14,6 +14,8 @@ mongoose.Promise = Promise;
 
 app.use(cors()); //解决跨域
 
+
+
 // 转换https服务
 const https = require("https")
 var options = {
@@ -24,6 +26,7 @@ var options = {
 
 https.createServer(options, app).listen(port)
 console.log(`https服务器运行在端口[${port}]`)
+
 // 访问页面内容
 app.get("/", (req, res) => {
 	res.send("hello q")
@@ -88,6 +91,10 @@ app.use("/api/student", studentAPI)
 //家长相关
 const parentAPI = require("./router/api/parent")
 app.use("/api/parent", parentAPI)
+
+//教师相关
+const teacherAPI = require('./router/api/teacher')
+app.use("/api/teacher", teacherAPI)
 
 //飞安信API整合
 const fei_an_xinAPI = require("./router/api/fei_an_xin")
