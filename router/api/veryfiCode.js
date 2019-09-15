@@ -4,12 +4,13 @@ const router = express.Router();
 const request = require('request');
 const soap = require('soap');
 const crypto = require('crypto');
+const moment = require('moment');
+const Core = require('@alicloud/pop-core'); // 阿里短信sdk
 const Helper = require('../../common/helper');
 const config = require("../../config");
 const veryfiCodeDB = require("../../models/veryfiCodeModel.js");
 const studentDB = require("../../models/studentModel.js")
 const userDB = require("../../models/userModel.js")
-const Core = require('@alicloud/pop-core'); // 阿里短信sdk
 
 // 测试
 router.get("/test", (req, res) => {
@@ -294,67 +295,8 @@ router.post("/checkVeryfiCode", (req, res) => {
 });
 
 
-// 登录的时候验证验证码
-// router.post("/checkVeryfiCode1", (req, res) => {
-// 	let mobile = req.body.mobile;
-// 	let truename = req.body.truename;
-// 	let veryfiCode = req.body.veryfiCode;
-// 	let Scode = req.body.Scode;
-// 	let cid = req.body.cid;
-// 
-// 	// 1. 检查参数
-// 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
-// 		return res.status(400).json({
-// 			msg: "no",
-// 			data: "Scode错误"
-// 		})
-// 	};
-// 	if (Helper.checkTel(mobile)) {
-// 		return res.status(400).json({
-// 			msg: "no",
-// 			data: "手机号码需要为11位数字"
-// 		})
-// 	};
-// 	if (Helper.checkVeryfiCode(veryfiCode)) {
-// 		return res.status(400).json({
-// 			msg: "no",
-// 			data: "验证码需要为6位数字"
-// 		})
-// 	};
-// 	if (Helper.checkReal(truename)) {
-// 		truename = "家长";
-// 	};
-// 
-// 
-// 
-// 	// 2. 检查验证码
-// 	let whereStr = {
-// 		mobile: mobile
-// 	};
-// 	veryfiCodeDB.checkVeryfiCodeByWhereStr1(whereStr, veryfiCode).then((get_veryfiCode) => {
-// 		// 2.1 验证码不合法
-// 		if (get_veryfiCode.msg === 'no') {
-// 			return res.json({
-// 				msg: "ok",
-// 				data: get_veryfiCode
-// 			})
-// 		}
-// 		// 2.2 验证码通过继续。新建并返回用户信息。如果用户已存在，直接返回用户信息
-// 		
-// 		
-// 		res.json({
-// 			msg: "ok",
-// 			data: get_veryfiCode
-// 		})
-// 
-// 
-// 	}).catch((err) => {
-// 		res.status(500).json({
-// 			msg: 'no',
-// 			data: '服务器内部错误,请联系后台开发人员!!!' + err.data
-// 		})
-// 	})
-// })
+
+
 
 
 module.exports = router;

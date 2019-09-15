@@ -1,17 +1,21 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 const config = require('../../config.js')
 const Helper = require('../../common/helper');
 var teacherDB = require('../../models/teacherModel')
-// 根据预设家长号查找学生
-router.post('/teacher_add', (req, res) => {
-	let Scode = req.body.Scode;
-	let mobile = req.body.mobile;
-	let name = req.body.name;
 
-	// 1. 参数验证 
-	if (Helper.checkReal(Scode) || Scode != config.Scode) {
+
+// 添加老师
+router.post('/teacher_add', (req, res) => {
+	let Scode = req.body.Scode === undefined ? '' : req.body.Scode.trim();
+	let mobile = req.body.mobile === undefined ? '' : req.body.mobile.trim();
+	let name = req.body.name === undefined ? '' : req.body.name.trim();
+
+
+	// 1. 验证参数
+	if (Helper.checkReal(Scode) || Scode != config.Scode) { // 1. 参数验证 
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
@@ -26,56 +30,105 @@ router.post('/teacher_add', (req, res) => {
 		})
 	};
 
-
+	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 	let query = {
 		mobile
 	};
 	let info = '';
 
 	// 2. 通过手机号查询用户是否已注册
-
-
-	teacherDB.find(query).then((teacher) => {
-
-		if (teacher.length != 0) {
-
-			// 2.1 已经注册，获取已注册的用户信息
+	teacherDB.findOne(query).then((teacher) => {
+		if (teacher != null) { // 2.1 已经注册，获取已注册的用户信息
 			info = 'already_exists';
-			return teacher
-
-		} else {
-
-			// 2.2 没有注册，注册新用户
-			let newTeacher = new teacherDB();
-			newTeacher.mobile = mobile;
-			newTeacher.class_id = '';
-			newTeacher.name = name;
-			newTeacher.creat_at = Date.now();
-			info = 'recently_saved';
-			return newTeacher.save()
-
+			throw new Error('already_exists')
 		}
-	}).then((result) => {
+		let newTeacher = new teacherDB(); // 2.2 没有注册，注册新用户
+		newTeacher.mobile = mobile;
+		newTeacher.class_id = '';
+		newTeacher.name = name;
+		newTeacher.creat_at = Date.now();
+		info = 'recently_saved';
+		return newTeacher.save();
+
+	}).then((result) => { // ！此处的result，是上面两种情况依据实际二选一返回的数据。
 
 		// 3. 返回数据
-		return res.json({
+		res.json({
 			msg: 'yes',
 			info,
 			data: result
 		});
-
 	}).catch((err) => {
 
 		//  4. 记录err
+		res.json({
+			msg: 'no',
+			info: info === '' ? err : info,
+			data: null,
+		});
+	})
+})
+
+// 修改老师信息
+router.post('/teacher_update', (req, res) => {
+	let Scode = req.body.Scode === undefined ? '' : req.body.Scode.trim();
+	let mobile = req.body.mobile === undefined ? '' : req.body.mobile.trim();
+	let new_name = req.body.new_name === undefined ? '' : req.body.new_name.trim();
+
+	// 1. 验证参数
+	if (Helper.checkReal(Scode) || Scode != config.Scode) { // 1. 参数验证 
 		return res.json({
 			msg: 'no',
-			info: 'err',
-			data: err,
+			info: 'param_wrong',
+			data: 'Scode错误'
+		})
+	};
+	if (Helper.checkTel(mobile) || Helper.checkReal(new_name)) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: '参数不合法'
+		})
+	};
+	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
+	let condition = {
+		mobile,
+		'is_show': true
+	};
+	let doc = {
+		'name': new_name,
+		'update_at': Date.now()
+	}
+	let return_new = {
+		'new': true
+	}
+
+	// 2. 查找并更新
+	teacherDB.findOneAndUpdate(condition, doc, return_new).then((result) => {
+		// teacherDB.updateMany(condition, doc).then((result) => {
+
+		// 3. 返回数据
+		if (result === null) {
+			return res.json({
+				msg: 'no',
+				info: 'no_data',
+				data: null
+			});
+		}
+		res.json({
+			msg: 'yes',
+			info: 'yes',
+			data: result
 		});
+	}).catch((err) => {
 
+		//  4. 记录err
+		res.json({
+			msg: 'no',
+			info: 'no',
+			data: null,
+		});
 	})
-
-
 })
 
 module.exports = router;

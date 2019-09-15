@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Helper = require('../common/helper');
 const config = require("../config");
-
+const Promise = require('bluebird');
 
 //定义VerificationCode对象模型
 const VerificationCodeSchema = new Schema({
@@ -24,8 +24,7 @@ const VerificationCodeSchema = new Schema({
 });
 
 //访问VerificationCode对象模型
-mongoose.model('VerificationCode', VerificationCodeSchema);
-var VerificationCode = mongoose.model('VerificationCode');
+var VerificationCode = mongoose.model('VerificationCode', VerificationCodeSchema);
 
 //或新建、更新数据库中的验证码
 exports.add = function(veryfiCode, mobile, callback) {
@@ -149,3 +148,11 @@ exports.checkVeryfiCodeByWhereStr1 = function(whereStr, code) {
 		});
 	})
 }
+
+
+// -------------------------------使用bluebird 
+//promise化user类及其方法
+Promise.promisifyAll(VerificationCode);
+Promise.promisifyAll(VerificationCode.prototype);
+
+module.exports = VerificationCode;

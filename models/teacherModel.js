@@ -21,8 +21,15 @@ var TeacherSchema = new Schema({
 		type: String,
 		default: ''
 	},
-	//订单生效时间
+	is_show: {
+		type: Boolean,
+		default: true
+	},
 	creat_at: {
+		type: SchemaTypes.Long,
+		default: 0
+	},
+	update_at: {
 		type: SchemaTypes.Long,
 		default: 0
 	},

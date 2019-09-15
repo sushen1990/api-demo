@@ -2,6 +2,7 @@
 const util = require('util');
 const mongoose = require('mongoose')
 require('mongoose-long')(mongoose);
+const Promise = require('bluebird');
 
 const Schema = mongoose.Schema;
 const SchemaTypes = mongoose.Schema.Types;
@@ -35,8 +36,7 @@ const UserSchema = new Schema({
 });
 
 //访问user对象模型
-mongoose.model('User', UserSchema);
-const User = mongoose.model('User');
+const User = mongoose.model('User', UserSchema);
 
 // 保存对象
 exports.SaveNew = function(postData, callback) {
@@ -136,3 +136,10 @@ exports.findManyUsersBywhereStr = function(whereStr, callback) {
 		callback(null, doc);
 	});
 };
+
+// -------------------------------使用bluebird 
+//promise化user类及其方法
+Promise.promisifyAll(User);
+Promise.promisifyAll(User.prototype);
+
+module.exports = User;

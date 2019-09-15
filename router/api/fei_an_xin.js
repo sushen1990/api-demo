@@ -1,9 +1,11 @@
 'use strict';
 const express = require("express");
 const router = express.Router();
+const moment = require('moment');
 const FeiAnXinHelper = require('../../common/FeiAnXinHelper');
 const Helper = require('../../common/helper');
-const config = require("../../config.js");
+const config = require("../../config");
+const validator = require('../../validator/index');
 
 // 测试接口是否连通 
 router.get("/test", (req, res) => {
@@ -13,52 +15,67 @@ router.get("/test", (req, res) => {
 	})
 });
 
+router.post("/test", async (req, res) => {
+
+	res.json({
+		req: req.body,
+	})
+});
+
 // 新增电子围栏列表
 router.post("/fence_add", async (req, res) => {
 
-	let Scode = req.body.Scode;
-	let terminalMobile = req.body.terminalMobile;
-	let latitude = req.body.latitude;
-	let longitude = req.body.longitude;
-	let rang = req.body.rang;
-	let name = req.body.name;
 
-	//  1. 参数验证
-	if (Helper.checkReal(Scode) || Scode != config.Scode) {
-		console.log(config.Scode)
-		return res.status(400).json({
-			msg: "no",
-			data: "Scode错误"
+	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	// 1. 验证参数
+	let plan_param = {
+		'Scode': true,
+		'student_mobile': true,
+		'latitude': true,
+		'longitude': true,
+		'rang': true,
+		'name': true,
+	};
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_param, req.body);
+
+	if (!isValid) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: errors,
+			nowTime
+		})
+	};
+	// 1.1 验证range只能为100~2000的整数
+
+	let rang = trueList.rang;
+	let range_limit = rang >= 100 && rang <= 3000;
+
+	if (!range_limit) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: {
+				'err': 'range只能为100~3000'
+			},
+			nowTime
 		})
 	};
 
-	if (Helper.checkTel(terminalMobile)) {
-		return res.status(400).json({
-			msg: "no",
-			data: "terminalMobile手机号码需要为11位数字"
-		})
-	};
-
-	if (Helper.checkReal(latitude) || Helper.checkReal(longitude)) {
-		return res.status(400).json({
-			msg: "no",
-			data: "经纬度错误"
-		})
-	};
-
-	if (Helper.checkReal(rang) || Helper.checkReal(name)) {
-		return res.status(400).json({
-			msg: "no",
-			data: "范围或名字错误"
-		})
-	};
-
+	let student_mobile = trueList.student_mobile;
+	let latitude = trueList.latitude;
+	let longitude = trueList.longitude;
+	let name = trueList.name;
 
 	//  2. 获取定位时间段Id 
 	let postData1 = {
 		url: "locreport_lists.php",
 		form: {
-			"tnumber": terminalMobile, //终端手机号
+			"tnumber": student_mobile, //终端手机号
 		}
 	}
 
@@ -66,7 +83,7 @@ router.post("/fence_add", async (req, res) => {
 	let postData2 = {
 		url: "fence_add.php",
 		form: {
-			"tnumber": terminalMobile, //终端手机号
+			"tnumber": student_mobile, //终端手机号
 			"lrid": "", // 定位时段Id
 			"latitude": latitude, //经度
 			"longitude": longitude, //经度
@@ -76,10 +93,20 @@ router.post("/fence_add", async (req, res) => {
 		}
 	}
 
-
+	let result_err = null
 	try {
 		//  2.1 获取定位时段Id
 		let result1 = await FeiAnXinHelper.locationAPI(postData1);
+		if (result1.msg === '终端不存在') {
+			return res.json({
+				msg: 'no',
+				info: 'param_wrong',
+				data: {
+					'err': student_mobile + '终端不存在'
+				},
+				nowTime
+			})
+		}
 		let lrid = result1.result[0].id;
 
 		//  3.1 使用定位时段Id，添加电子围栏
@@ -90,15 +117,18 @@ router.post("/fence_add", async (req, res) => {
 		postData2.form.type = '1';
 		let result3 = await FeiAnXinHelper.locationAPI(postData2);
 
-
 		res.json({
 			msg: "ok",
-			data: result3
+			info: 'recently_saved',
+			data: result3,
+			nowTime
 		})
 	} catch (e) {
 		res.status(500).json({
 			msg: "no",
-			data: "服务器内部错误,请联系后台开发人员!!!" + e
+			result_err,
+			data: "服务器内部错误,请联系后台开发人员!!!" + e,
+			nowTime
 		})
 	};
 });

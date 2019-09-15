@@ -1,12 +1,14 @@
 'use strict';
 const express = require("express");
 const router = express.Router();
-const classDB = require("../../models/classModel.js")
-const schoolDB = require("../../models/schoolModel.js")
-const studentDB = require("../../models/studentModel.js")
-const userDB = require("../../models/userModel.js")
-const config = require("../../config.js")
+const moment = require('moment');
+const classDB = require("../../models/classModel")
+const schoolDB = require("../../models/schoolModel")
+const studentDB = require("../../models/studentModel")
+const userDB = require("../../models/userModel")
+const config = require("../../config")
 const Helper = require('../../common/helper');
+const validator = require('../../validator/index');
 
 // 保存学生
 router.post("/studentSave", (req, res) => {
@@ -436,6 +438,98 @@ router.post("/findOneAndUpdateStudent", (req, res) => {
 		};
 	});
 })
+
+// --------------------bluebird
+
+// 获取单个学生信息 Id mobile 至少有一个
+router.post('/student_info', (req, res) => {
+	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
+
+	// 1. 验证参数
+	// 1.1 计划要验证的参数、是否必须的
+	let plan_param = { // 
+		'Scode': true,
+		'student_id': false,
+		'student_mobile': false,
+	}
+
+	// 1.2 提交到validator
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_param, req.body)
+
+	// 1.3 获取 validator 的结果
+	if (!isValid) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: errors,
+			nowTime
+		})
+	}
+	let student_id = trueList.student_id;
+	let student_mobile = trueList.student_mobile;
+
+	// 1.4 Id mobile 至少有一个
+	if (student_id === '' && student_mobile === '') {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: trueList,
+			nowTime
+		})
+	}
+
+	// 2. 整理query参数
+	let and_list = [];
+	if (student_id != '') {
+		and_list.push({
+			'_id': student_id
+		})
+	}
+	if (student_mobile != '') {
+		and_list.push({
+			'mobile': student_mobile
+		})
+	}
+	let query = {
+		'$and': and_list
+	};
+
+	// 3.数据库查找
+	studentDB.findOne(query).then((student) => {
+		if (student === null) {
+			res.json({
+				msg: 'no',
+				info: 'not_extsis',
+				data: null,
+				nowTime
+			})
+		} else {
+			res.json({
+				msg: 'ok',
+				info: 'got_it',
+				data: {
+					student
+				},
+				nowTime
+			})
+		}
+
+	}).catch((err) => {
+
+		//  4. 记录err
+		res.json({
+			msg: 'no',
+			info: 'err',
+			data: err,
+			nowTime
+		});
+	})
+})
+
 
 
 module.exports = router;
