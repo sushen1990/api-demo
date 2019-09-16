@@ -1,39 +1,68 @@
-// const moment = require('moment')
+const soap = require('soap');
 const crypto = require('crypto');
-const FeiAnXinHelper = require('./common/FeiAnXinHelper');
 
-async function load() {
-	try {
+// 0. 手机号
+let msisdn = '17299516908';
+// 1. url 地址
+var url = 'http://211.142.198.14:8050/M2M/VoiceWhitelist/Service.asmx?wsdl';
+// var url = 'http://211.142.198.14:8050/M2M/VoiceWhitelist/Service.asmx';
+// 2. 时间戳
+var timestamp = Math.round(new Date().getTime() / 1000).toString()
+// 3. 账号
+var account = 'A10937';
+// 4. 签名秘钥
+var sign = 'O3QZgKaskM6wZAKKsd2utO2WET4';
+// 4.1 加密签名
+var md5 = crypto.createHash("md5");
+md5.update(sign + timestamp + account);
+var str = md5.digest('hex');
+sign = str.toUpperCase();
 
-		let userMobile = 15617719879;
-		let terminalMobile = 17299516908;
+var args = {
+	account,
+	timestamp,
+	sign,
+	msisdn,
+};
 
-		// 1. 添加终端的定位时段
-		let postData = {
-			url: "locreport_add.php",
-			form: {
-				"tnumber": terminalMobile, //终端手机号
-				"week": "1234567", //周几
-				"stime": "06:00", //每天开始定位时间
-				"etime": "22:00", //每天结束定位时间
-				"itime": "3", //定位间隔
-			}
+// soap.createClient(url, function(err, client) {
+// 	client.Query(args, function(err1, result) {
+// 		if (err1) {
+// 			console.log('服务器未连接')
+// 			return
+// 		}
+// 		result = JSON.stringify(result)
+// 		result = JSON.parse(result)
+// 		let info = result.QueryResult.ErrorInfo;
+// 		let err_code = result.QueryResult.ErrorCode;
+// 
+// 		if (err_code != 0) {
+// 			console.log('错误。' + err_code)
+// 			return
+// 		}
+// 		let data = result.QueryResult.Data;
+// 		console.log(data)
+// 	});
+// });
+
+soap.createClient(url, function(err, client) {
+	client.Query(args, function(err1, result) {
+		if (err1) {
+			console.log('服务器未连接')
+			return
 		}
-		// let result1 = await devicehelper.locationAPI(postData);
-		// console.log(result1);
+		result = JSON.stringify(result)
+		result = JSON.parse(result)
+		let info = result.QueryResult.ErrorInfo;
+		let err_code = result.QueryResult.ErrorCode;
 
-		// 2. 添加终端的的安全围栏
-		let postData1 = {
-			url: "locreport_lists.php",
-			form: {
-				"tnumber": terminalMobile, //终端手机号
-			}
+		if (err_code != 0) {
+			console.log('错误。' + err_code)
+			return
 		}
-		let result2 = await FeiAnXinHelper.locationAPI(postData1);
-		console.log(result2.result[0].id);
 
-	} catch (err) {
-		console.log(err);
-	}
-}
-load()
+		let data = result.QueryResult.Data.string;
+		console.log(data)
+
+	});
+});

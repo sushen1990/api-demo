@@ -99,3 +99,7 @@ app.use("/api/teacher", teacherAPI)
 //飞安信API整合
 const fei_an_xinAPI = require("./router/api/fei_an_xin")
 app.use("/api/fei_an_xin", fei_an_xinAPI)
+
+// app版本更新
+const app_versionAPI = require('./router/api/app_version')
+app.use("/api/app_version", app_versionAPI)
