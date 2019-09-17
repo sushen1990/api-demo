@@ -29,8 +29,8 @@ router.post("/test", (req, res) => {
 
 // 获取交易字符串，用来发起交易
 router.post("/getTradeString", (req, res) => {
-
-	// 复核字段
+	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	// 1. 检查参数
 	let Scode = req.body.Scode;
 	let out_trade_no = req.body.out_trade_no;
 	let goods_item = req.body.goods_item;
@@ -56,39 +56,47 @@ router.post("/getTradeString", (req, res) => {
 			data: "Scode错误"
 		})
 	};
-	// 新建订单会新建订单号，用户重新支付未支付订单，会仍然使用旧的订单号。
+	// 新建订单会新建订单号，用户重新支付未支付订单，会仍然使用旧的订单号。todo
 	if (out_trade_no == "" && trade_type == "alipay") {
 		out_trade_no = payHelper.getOrderByType("AL");
 	}
 
-	// 获取交易字符串
+	// 2. 获取交易字符串
 	let tradeString = payHelper.getAlipayTradeString(out_trade_no, subject, total_amount);
 
-	if (tradeString == "") {
+	if (tradeString === "") {
 		return res.status(403).json({
 			msg: "no",
-			data: "未能取得交易字符串"
+			data: "未能取得交易字符串",
+			nowTime
 		})
 	} else {
-		let postData = {
-			goods_item: goods_item,
-			trade_type: trade_type,
-			out_trade_no: out_trade_no,
-			userId: userId,
-			mobile: mobile,
-			studentId: studentId
-		};
-		orderDB.SaveNew(postData, function(err, doc) {
-			if (err) {
-				return res.status(500).json({
-					msg: "no",
-					data: "服务器内部错误,请联系后台开发人员!!!" + err
-				})
-			}
+
+
+		let newOrder = new orderDB();
+		newOrder.goods_item = goods_item;
+		newOrder.trade_type = trade_type;
+		newOrder.out_trade_no = out_trade_no;
+		newOrder.user_id = userId;
+		newOrder.user_mobile = mobile;
+
+		newOrder.save().then((result) => {
 			res.json({
-				msg: "ok",
-				data: tradeString
+				msg: 'ok',
+				info: 'got_it',
+				data: tradeString,
+				nowTime
 			})
+
+		}).catch((err) => {
+
+			//  4. 记录err
+			res.json({
+				msg: 'no',
+				info: err,
+				data: null,
+				nowTime
+			});
 		})
 	}
 });

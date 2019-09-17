@@ -71,6 +71,7 @@ router.post('/teacher_add', (req, res) => {
 
 // 修改老师信息
 router.post('/teacher_update', (req, res) => {
+	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 	let Scode = req.body.Scode === undefined ? '' : req.body.Scode.trim();
 	let mobile = req.body.mobile === undefined ? '' : req.body.mobile.trim();
 	let new_name = req.body.new_name === undefined ? '' : req.body.new_name.trim();
@@ -90,7 +91,6 @@ router.post('/teacher_update', (req, res) => {
 			data: '参数不合法'
 		})
 	};
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 	let condition = {
 		mobile,
 		'is_show': true
@@ -112,13 +112,15 @@ router.post('/teacher_update', (req, res) => {
 			return res.json({
 				msg: 'no',
 				info: 'no_data',
-				data: null
+				data: null,
+				nowTime
 			});
 		}
 		res.json({
 			msg: 'yes',
-			info: 'yes',
-			data: result
+			info: 'update_done',
+			data: result,
+			nowTime
 		});
 	}).catch((err) => {
 
@@ -127,8 +129,10 @@ router.post('/teacher_update', (req, res) => {
 			msg: 'no',
 			info: 'no',
 			data: null,
+			nowTime
 		});
 	})
 })
 
 module.exports = router;
+ 

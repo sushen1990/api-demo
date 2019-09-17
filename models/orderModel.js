@@ -31,26 +31,26 @@ var OrderSchema = new Schema({
 		default: '_created'
 	},
 	//订购人id
-	userId: {
+	user_id: {
 		type: String,
 		default: ''
 	},
 	//订购人手机号
-	mobile: {
+	user_mobile: {
 		type: SchemaTypes.Long,
 		default: 0
 	},
 	//学生id
-	studentId: {
+	student_id: {
 		type: String,
 		default: ''
 	},
 	//订购时间
-	creatTime: {
+	creat_at: {
 		type: SchemaTypes.Long
 	},
 	//订单生效时间
-	efftiveDate: {
+	efftive_at: {
 		type: SchemaTypes.Long,
 		default: 0
 	},
@@ -97,25 +97,6 @@ exports.SaveNew = function(postData, callback) {
 	// save订单信息 end   ↑
 }
 
-// 查询订单
-exports.findOrderBywhereStr = function(whereStr, callback) {
-
-	Order.findOne(whereStr, function(err, doc) {
-		if (err) {
-			return callback(err, null);
-		};
-		if (!doc) {
-			return callback(err, {
-				msg: 'no',
-				data: "数据库没有数据",
-			});
-		}
-		callback(null, result = {
-			msg: 'yes',
-			data: doc,
-		});
-	});
-}
 
 // 更新数据，默认这里的 condition 都是已经经过确认的！
 exports.updateOrderBywhereStr = function(condition, doc, callback) {
