@@ -1,5 +1,5 @@
 // const XiangDongHelper = require('../../common/XiangDongHelper')
-const XiangDongHelper = require('./common/XiangDongHelper')
+const XiangDongHelper = require('../common/XiangDongHelper')
 const moment = require('moment');
 // let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 
@@ -63,6 +63,5 @@ let postData = {
 // 	'msisdn': '17299517003',
 // 	'whiteNumber': '17597981099',
 // }
-voice_add(postData)
-// voice_list('17299517538')
- 
+// voice_add(postData)
+voice_list('17299517538')

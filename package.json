@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "gt-push-sdk": "^4.1.1",
+    "log4js": "^5.1.0",
     "moment": "^2.24.0",
     "mongoose": "^5.7.0",
     "mongoose-long": "^0.2.1",
