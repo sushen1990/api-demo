@@ -73,7 +73,13 @@ exports.randomStr = function(length) {
 // 生成日期字符串YYYY-MM-DD HH:mm:ss
 exports.getDateStringWithMoment = function() {
 	let time = moment.unix(Date.now() / 1000).format("YYYY-MM-DD HH:mm:ss");
-	return time; //随机数
+	return time;
+}
+
+// 生成日期字符串YYYY-MM-DD HH:mm:ss
+exports.NowTime = function() {
+	let time = moment.unix(Date.now() / 1000).format("YYYY-MM-DD HH:mm:ss.SSS");
+	return time;
 }
 
 // 生成日期字符串YYYY-MM-DD HH:mm:ss
