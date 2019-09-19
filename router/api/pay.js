@@ -36,9 +36,9 @@ router.post("/getTradeString", (req, res) => {
 	let goods_item = req.body.goods_item;
 	let trade_type = req.body.trade_type;
 
-	let userId = req.body.userId;
-	let mobile = req.body.mobile;
-	let studentId = req.body.studentId;
+	let user_id = req.body.user_id;
+	let user_mobile = req.body.user_mobile;
+	let student_id = req.body.student_id;
 
 	let subject = req.body.goods_item.subject;
 	let total_amount = req.body.goods_item.price;
@@ -77,8 +77,9 @@ router.post("/getTradeString", (req, res) => {
 		newOrder.goods_item = goods_item;
 		newOrder.trade_type = trade_type;
 		newOrder.out_trade_no = out_trade_no;
-		newOrder.user_id = userId;
-		newOrder.user_mobile = mobile;
+		newOrder.user_id = user_id;
+		newOrder.user_mobile = user_mobile;
+		newOrder.student_id = student_id;
 
 		newOrder.save().then((result) => {
 			res.json({
@@ -103,22 +104,19 @@ router.post("/getTradeString", (req, res) => {
 
 // 接受支付供应商异步通知
 router.post("/notify", (req, res) => {
+	// 1. 验签
 	const alipaySdk = new AlipaySdk({
 		appId: '2019082666450460',
 		privateKey: fs.readFileSync('./static/app_private_key.pem', 'ascii'),
 		alipayPublicKey: fs.readFileSync('./static/app_public_key.pem', 'ascii'),
 	});
-
 	let postdata = null;
 	postdata = req.body;
+	let checkResult = alipaySdk.checkNotifySign(postdata); // 返回true或false
 
-
-	let checkResult = alipaySdk.checkNotifySign(postdata);
+	// 2. 通过验签
 	if (checkResult) {
-		// 更新order 和 student
 		let out_trade_no = req.body.out_trade_no;
-
-		// 查找条件
 		let condition = {
 			"$and": [{
 					"out_trade_no": out_trade_no
@@ -131,15 +129,29 @@ router.post("/notify", (req, res) => {
 				}
 			]
 		};
-
-		// 待更新内容
 		let doc = {
 			status: "_paid",
 			pay_return: postdata,
 			efftiveDate: Date.now()
 		};
+		let return_new = {
+			'new': true
+		}
 
-		//更新订单，并且更新学生的设备时间
+		// 3. 更新订单，并且更新学生的设备可用时间		
+		orderDB.findOneAndUpdate(condition, doc, return_new).then((update_order) => { // 3.1 更新订单
+			if (update_order === null) {
+				// todo
+				throw new err('no_order')
+			}
+
+			let student_id = update_order.
+			studentDB.findOneAndUpdate
+
+
+		})
+
+
 		orderDB.updateOrderAndStudentDevice(condition, doc, function(err, result) {
 			if (err) {
 				return res.status(500).json({
