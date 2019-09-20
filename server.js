@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+const path = require("path")
 
 const port = 3000 // 阿里云ECS服务器
 const fs = require("fs") //文件
@@ -14,6 +15,10 @@ mongoose.Promise = Promise;
 
 app.use(cors()); //解决跨域
 
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 
 // 转换https服务
@@ -31,6 +36,12 @@ console.log(`https服务器运行在端口[${port}]`)
 app.get("/", (req, res) => {
 	res.send("hello q")
 })
+
+
+app.get("/app", (req, res) => {
+	res.render('index')
+})
+
 
 // 定时执行任务
 // Schedule.scheduleCronstyle()

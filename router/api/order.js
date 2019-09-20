@@ -10,6 +10,12 @@ const validator = require('../../validator/index');
 
 // 测试接口是否连通 start ↓
 router.get("/test", (req, res) => {
+
+
+
+	// res.download('config.js')
+	// res.render('index');
+
 	res.json({
 		msg: "hello order"
 	})
