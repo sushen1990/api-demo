@@ -1,0 +1,25 @@
+.info {
+	background: url(../img/bg-top.jpg) no-repeat center bottom;
+	background-size: cover;
+	color: #fff;
+	padding: 13.75% 0 12.8%;
+}
+
+.logo-btn {
+	width: 20%;
+	margin: 0 auto;
+	padding-bottom: 9.3%;
+	text-align: center;
+}
+
+.ok-btn {
+	width: 50%;
+	margin: 15% auto;
+	padding-bottom: 9.3%;
+	text-align: center;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}

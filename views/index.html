@@ -24,10 +24,8 @@
 		<!-- 下载区域 -->
 		<div>
 			<div class="ok-btn">
-				<a href="http://39.97.33.102/images/html/img/android-btn.png">
-					<img src="http://39.97.33.102/images/html/img/android-btn.png" alt="">
-				</a>
-				
+				<a href=""></a>
+				<img src="http://39.97.33.102/images/html/img/android-btn.png" alt="">
 			</div>
 
 		</div>
@@ -47,7 +45,7 @@
 			if (ua.indexOf("MicroMessenger") > -1) { // userAgent中检测到MicroMessenger关键字，是微信浏览器，弹出图片  
 				document.getElementById("tips").style.display = "block";
 				// 下面这行代码用于没有做好提示图片时的替代
-				// alert("这是微信浏览器");
+				alert("这是微信浏览器");
 			} else { // userAgent中没有检测到MicroMessenger关键字，不是微信浏览器
 				document.getElementById("tips").style.display = "none";
 			}
