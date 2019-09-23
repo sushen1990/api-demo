@@ -56,7 +56,7 @@ router.post("/getTradeString", (req, res) => {
 			data: "Scode错误"
 		})
 	};
-	// 新建订单会新建订单号，用户重新支付未支付订单，会仍然使用旧的订单号。todo
+	// 1. 新建订单会新建订单号，用户重新支付未支付订单，会仍然使用旧的订单号。todo
 	if (out_trade_no == "" && trade_type == "alipay") {
 		out_trade_no = payHelper.getOrderByType("AL");
 	}
@@ -138,36 +138,43 @@ router.post("/notify", (req, res) => {
 			'new': true
 		}
 
-		// 3. 更新订单，并且更新学生的设备可用时间		
-		orderDB.findOneAndUpdate(condition, doc, return_new).then((update_order) => { // 3.1 更新订单
+		// 3. 更新订单，并且更新学生的设备可用时间
+		orderDB.findOneAndUpdate(condition, doc, return_new).then((update_order) => {
+			// 3.1 更新订单
 			if (update_order === null) {
-				// todo
-				throw new err('no_order')
+				throw new err('fail')
 			}
 
-			let student_id = update_order.
-			studentDB.findOneAndUpdate
-
-
-		})
-
-
-		orderDB.updateOrderAndStudentDevice(condition, doc, function(err, result) {
-			if (err) {
-				return res.status(500).json({
-					msg: "no",
-					data: "服务器内部错误,请联系后台开发人员!!!" + err
-				})
+			// 3.2 更新学生的设备可用时间
+			condition = {
+				'_id': update_order.student_id
 			};
-			if (result.msg == "no") {
-				console.log("failure1")
-				return res.json("failure")
+
+			let addMonth = update_order.goods_item[0].month;
+			let existsExpireDate = update_order.expire_at; // 3.2.1 整理学生的有效期截止时间。新旧客户的处理方式不一样。
+			existsExpireDate = parseInt(existsExpireDate);
+			let expireDate = existsExpireDate == 0 ? Date.now() : existsExpireDate;
+			let nextExpireDate = moment(expireDate).add(addMonth, "month").valueOf();
+
+			doc = {
+				'expire_at': nextExpireDate,
+				'isInEffective': true
+			}
+			return studentDB.findOneAndUpdate(condition, doc, return_new);
+
+		}).then((update_student) => {
+			if (update_student === null) {
+				throw new err('fail')
 			}
 			console.log("success")
 			res.json("success")
+		}).catch((Error) => {
+			console.log("failure")
+			res.json("failure")
 		})
+
 	} else {
-		console.log("failure2")
+		console.log("failure")
 		res.json("failure")
 	}
 });

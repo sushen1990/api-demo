@@ -54,6 +54,11 @@ var OrderSchema = new Schema({
 		type: SchemaTypes.Long,
 		default: 0
 	},
+	//订单有效期截止
+	expire_at: {
+		type: SchemaTypes.Long,
+		default: 0
+	},
 	//支付订单号
 	out_trade_no: {
 		type: String,

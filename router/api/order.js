@@ -104,7 +104,7 @@ router.post("/order_list", (req, res) => {
 			throw new Error('no such order');
 		}
 		res.json({
-			msg: 'yes',
+			msg: 'ok',
 			info: 'got_it',
 			data: order,
 			nowTime,
