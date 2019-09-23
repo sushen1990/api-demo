@@ -80,25 +80,39 @@ router.post("/getTradeString", (req, res) => {
 		newOrder.user_id = user_id;
 		newOrder.user_mobile = user_mobile;
 		newOrder.student_id = student_id;
-
-		newOrder.save().then((result) => {
+		
+		newOrder.save((save_result)=>{
 			res.json({
 				msg: 'ok',
 				info: 'got_it',
 				data: tradeString,
-				nowTime
-			})
-
-		}).catch((err) => {
-
-			//  4. 记录err
-			res.json({
-				msg: 'no',
-				info: err,
-				data: null,
-				nowTime
-			});
+				nowTime,
+				order:save_result,
+				req: 
+				
+			})			
+			
 		})
+		
+
+		// newOrder.save().then((result) => {
+		// 	res.json({
+		// 		msg: 'ok',
+		// 		info: 'got_it',
+		// 		data: tradeString,
+		// 		nowTime
+		// 	})
+
+		// }).catch((err) => {
+
+		// 	//  4. 记录err
+		// 	res.json({
+		// 		msg: 'no',
+		// 		info: err,
+		// 		data: null,
+		// 		nowTime
+		// 	});
+		// })
 	}
 });
 
