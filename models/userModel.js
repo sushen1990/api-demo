@@ -96,7 +96,7 @@ exports.userLoginByCode = function(postData, callback) {
 					return callback(err1);
 				};
 				callback(null, {
-					"msg": "yes",
+					"msg": "ok",
 					"info": "already_exists",
 					"data": doc1
 				});
@@ -108,7 +108,7 @@ exports.userLoginByCode = function(postData, callback) {
 					return callback(err2);
 				};
 				callback(null, {
-					"msg": "yes",
+					"msg": "ok",
 					"info": "new_save",
 					"data": newUser
 				});

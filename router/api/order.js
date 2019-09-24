@@ -29,7 +29,6 @@ router.post("/order_list", (req, res) => {
 	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 
 	// 1. 验证参数
-	// 1. 验证参数
 
 	let plan_param = { // 1.1 计划要验证的参数和是为必须
 		'Scode': true,

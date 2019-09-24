@@ -19,7 +19,6 @@ module.exports = function validatorData(plan_list, post_body) {
 		}
 	}
 
-
 	// 1. 验证scode
 	post_Scode = data['Scode']['value'] === undefined ? '' : data['Scode']['value'].trim();
 	if (post_Scode != config.Scode) {
@@ -36,10 +35,13 @@ module.exports = function validatorData(plan_list, post_body) {
 	for (let key in data) {
 
 		// 3 可选参数，没有在post中提交，直接跳过
-		if (data[key]['value'] === undefined && data[key]['integral'] === false) {
+		if (data[key]['integral'] === false) {
 			trueList[key] = '';
 			continue;
 		} else {
+
+			console.log(key + '--' + data[key]['value'])
+
 			// 4 必须参数，一定得验证。可选参数提交的话，也得验证
 			if (isEmpty(data[key]['value'])) { // 4.1  验证数据真实性
 				errors[key] = key + '不合法';

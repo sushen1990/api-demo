@@ -49,11 +49,6 @@ var OrderSchema = new Schema({
 	creat_at: {
 		type: SchemaTypes.Long
 	},
-	//订单生效时间
-	efftive_at: {
-		type: SchemaTypes.Long,
-		default: 0
-	},
 	//订单有效期截止
 	expire_at: {
 		type: SchemaTypes.Long,

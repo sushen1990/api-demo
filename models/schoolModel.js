@@ -4,6 +4,9 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 const config = require('../config');
 const Schema = mongoose.Schema;
+const SchemaTypes = mongoose.Schema.Types;
+
+const Promise = require('bluebird');
 
 // 分页插件
 // const mongoosePaginate = require('mongoose-paginate');
@@ -14,26 +17,27 @@ const SchoolSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	schoolName: {
+	school_name: {
 		type: String,
 		default: null
 	},
 	//创建时间
-	createDate: {
-		type: Number
+	create_at: {
+		type: SchemaTypes.Long,
+		default: 0
 	},
 	//国标收货地址第一级地址
-	proviceFirstStageName: {
+	addres_first_stage: {
 		type: String,
 		default: null
 	},
 	//国标收货地址第二级地址
-	addressCitySecondStageName: {
+	addres_second_stage: {
 		type: String,
 		default: null
 	},
 	//国标收货地址第三级地址
-	addressCountiesThirdStageName: {
+	addres_third_stage: {
 		type: String,
 		default: null
 	},
@@ -43,17 +47,17 @@ const SchoolSchema = new Schema({
 		default: null
 	},
 	//联系人
-	contacts: {
+	contact: {
 		type: String,
 		default: null
 	},
 	//联系电话
-	contactsPhone: {
-		type: String,
-		default: null
+	contact_mobile: {
+		type: SchemaTypes.Long,
+		default: 0
 	},
 	//学校类别 map=['小学','初中','高中','中专','大学']
-	schoolType: {
+	school_type: {
 		type: Number,
 		default: null
 	},
@@ -62,36 +66,15 @@ const SchoolSchema = new Schema({
 		type: String,
 		default: null
 	},
-	//安全项目列表
-	safetyGoods: [{
-		safetyGoods_id: {
-			type: String,
-			default: ''
-		},
-		safetyGoods_title: {
-			type: String,
-			default: ''
-		},
-		startTime: {
-			type: Number,
-			default: 0
-		}
-	}],
 	//学校介绍
 	info: {
 		type: String,
 		default: ''
 	},
-	//学校照片
-	imageUrl: {
-		type: String,
-		default: ''
-	}
 });
 
 //访问school对象模型
-mongoose.model('school', SchoolSchema);
-const School = mongoose.model('school');
+const School = mongoose.model('school', SchoolSchema);
 
 
 // 创建新学校
@@ -99,7 +82,7 @@ exports.schoolSave = function(postData, callback) {
 	let newSchool = new School();
 	newSchool.isShow = true;
 	newSchool.schoolName = postData.schoolName;
-	newSchool.createDate = Date.now();	
+	newSchool.createDate = Date.now();
 	newSchool.proviceFirstStageName = postData.proviceFirstStageName;
 	newSchool.addressCitySecondStageName = postData.addressCitySecondStageName;
 	newSchool.addressCountiesThirdStageName = postData.addressCountiesThirdStageName;
@@ -144,9 +127,6 @@ exports.checkSchoolId = function(schoolId) {
 			return false;
 		});
 }
-
-
-
 
 //根据name查询学校
 exports.findSchoolByName = function(name, callback) {
@@ -211,3 +191,8 @@ exports.schoolRemove = function(schoolID, callback) {
 			callback(null, doc);
 		});
 }
+
+Promise.promisifyAll(School);
+Promise.promisifyAll(School.prototype);
+
+module.exports = School;

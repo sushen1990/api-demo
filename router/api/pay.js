@@ -80,39 +80,25 @@ router.post("/getTradeString", (req, res) => {
 		newOrder.user_id = user_id;
 		newOrder.user_mobile = user_mobile;
 		newOrder.student_id = student_id;
-		
-		newOrder.save((save_result)=>{
+
+		newOrder.save().then((result) => {
 			res.json({
 				msg: 'ok',
 				info: 'got_it',
 				data: tradeString,
-				nowTime,
-				order:save_result,
-				req: 
-				
-			})			
-			
+				nowTime
+			})
+
+		}).catch((err) => {
+
+			//  4. 记录err
+			res.json({
+				msg: 'no',
+				info: err,
+				data: null,
+				nowTime
+			});
 		})
-		
-
-		// newOrder.save().then((result) => {
-		// 	res.json({
-		// 		msg: 'ok',
-		// 		info: 'got_it',
-		// 		data: tradeString,
-		// 		nowTime
-		// 	})
-
-		// }).catch((err) => {
-
-		// 	//  4. 记录err
-		// 	res.json({
-		// 		msg: 'no',
-		// 		info: err,
-		// 		data: null,
-		// 		nowTime
-		// 	});
-		// })
 	}
 });
 
@@ -144,9 +130,9 @@ router.post("/notify", (req, res) => {
 			]
 		};
 		let doc = {
-			status: "_paid",
-			pay_return: postdata,
-			efftiveDate: Date.now()
+			'status': "_paid",
+			'pay_return': postdata,
+			'efftive_at': Date.now()			
 		};
 		let return_new = {
 			'new': true
@@ -171,7 +157,7 @@ router.post("/notify", (req, res) => {
 			let nextExpireDate = moment(expireDate).add(addMonth, "month").valueOf();
 
 			doc = {
-				'expire_at': nextExpireDate,
+				'expireDate': nextExpireDate,
 				'isInEffective': true
 			}
 			return studentDB.findOneAndUpdate(condition, doc, return_new);

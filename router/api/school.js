@@ -1,9 +1,10 @@
 'use strict';
 const express = require("express");
 const router = express.Router();
-const schoolDB = require("../../models/schoolModel.js")
-const config = require("../../config.js")
+const schoolDB = require("../../models/schoolModel")
+const config = require("../../config")
 const Helper = require('../../common/helper');
+const validator = require('../../validator/index');
 
 // 测试接口是否连通
 router.get("/test", (req, res) => {
@@ -11,6 +12,160 @@ router.get("/test", (req, res) => {
 		msg: "hello school"
 	})
 })
+
+// 添加学校
+router.post('/school_add', (req, res) => {
+
+	let nowTime = Helper.NowTime();
+
+	// 1. 验证参数	
+	let plan_param = { // 1.1 计划要验证的参数和是为必须
+		'Scode': true,
+		'school_name': true,
+		'address': true,
+		'contact': true,
+		'contact_mobile': true,
+		'addres_first_stage': true,
+		'addres_second_stage': true,
+		'addres_third_stage': true,
+	}
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_param, req.body);
+
+	// 2. 判断参数
+	if (!isValid) {
+		return res.json({
+			'msg': 'no',
+			'info': 'param_wrong',
+			'data': errors,
+			nowTime
+		})
+	}
+
+	let school_name = trueList['school_name'];
+	let address = trueList['address'];
+	let contact = trueList['contact'];
+	let contact_mobile = trueList['contact_mobile'];
+	let addres_first_stage = trueList['addres_first_stage'];
+	let addres_second_stage = trueList['addres_second_stage'];
+	let addres_third_stage = trueList['addres_third_stage'];
+
+	// 2. 通过学校名查询是否已注册
+	let query = {
+		school_name
+	};
+	let info = '';
+
+	schoolDB.findOne(query).then((find_school) => {
+		if (find_school != null) { // 2.1 已经注册，获取已注册的学校信息
+			info = 'already_exists';
+			throw new Error('already_exists')
+		}
+		let newSchool = new schoolDB(); // 2.2 没有注册，注册新学校
+		newSchool.school_name = school_name;
+		newSchool.address = address;
+		newSchool.contact = contact;
+		newSchool.contact_mobile = contact_mobile;
+		newSchool.addres_first_stage = addres_first_stage;
+		newSchool.addres_second_stage = addres_second_stage;
+		newSchool.addres_third_stage = addres_third_stage;
+		newSchool.create_at = Date.now();
+		newSchool.isShow = true;
+
+		info = 'recently_saved';
+		return newSchool.save();
+
+	}).then((result) => {
+
+		// 3. 返回数据
+		res.json({
+			'msg': 'ok',
+			info,
+			'data': result,
+			nowTime
+		});
+	}).catch((err) => {
+
+		//  4. 记录err
+		res.json({
+			msg: 'no',
+			info: info === '' ? err : info,
+			data: null,
+			nowTime
+		});
+	})
+})
+
+
+// 学校分页查询
+router.post('/school_list_page', (req, res) => {
+	let nowTime = Helper.NowTime();
+	// 1. 验证参数
+	let plan_param = { // 1.1 计划要验证的参数和是为必须
+		'Scode': true,
+		'size': 5,
+		'page': 1,
+	}
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_param, req.body);
+
+	// 2. 判断参数
+	if (!isValid) {
+		return res.json({
+			'msg': 'no',
+			'info': 'param_wrong',
+			'data': errors,
+			nowTime
+		})
+	};
+	let size = parseInt(trueList['size']);
+	let page = parseInt(trueList['page']);
+
+	if (size % 1 != 0 || page % 1 != 0 || page === 0 || size === 0) {
+		return res.json({
+			'msg': 'no',
+			'info': 'param_wrong',
+			'data': 'page、size 必须为int',
+			nowTime
+		})
+	}
+
+
+	// 3. 查询
+	let query = {
+		'isShow': true
+	};
+	let info = '';
+	schoolDB.find(query).limit(size).skip((page - 1) * size).sort({
+		_id: -1
+	}).then((result) => {
+		res.json({
+			'msg': 'ok',
+			'info': 'got_it',
+			'data': result,
+			'count': result.length,
+			'int': size % 1 != 0,
+			nowTime
+		})
+	}).catch((err) => {
+
+		//  4. 记录err
+		res.json({
+			'msg': 'no',
+			'info': info === '' ? err : info,
+			'data': null,
+			nowTime
+		});
+	})
+
+})
+
 
 
 // 新增学校
@@ -185,7 +340,7 @@ router.post("/schoolRemove", (req, res) => {
 	if (Helper.checkReal(schoolID)) {
 		return res.status(400).json({
 			msg: "no",
-			data: "schoolID错误"			
+			data: "schoolID错误"
 		})
 	}
 

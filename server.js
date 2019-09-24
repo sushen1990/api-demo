@@ -16,9 +16,6 @@ mongoose.Promise = Promise;
 app.use(cors()); //解决跨域
 
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
 
 // 转换https服务
@@ -28,10 +25,17 @@ var options = {
 	cert: fs.readFileSync('./static/2301701_www.sushen1990.cn.pem')
 }
 
+https.createServer(options, app).listen(port, function(result) {
+	console.log(`https服务器运行在端口[${port}]`)
+	console.log(result)
+})
 
-https.createServer(options, app).listen(port, )
-console.log(`https服务器运行在端口[${port}]`)
+// var httpsServer = https.createServer(options, app);
+// httpsServer.listen(port, function() {
+// 	console.log('HTTP Server is running on: %s', port);
+// });
 
+// console.log(httpsServer)
 // 访问页面内容
 app.get("/", (req, res) => {
 	res.send("hello q")
@@ -50,10 +54,11 @@ app.get("/app", (req, res) => {
 
 mongoRUI = config.mongoRUI;
 const DB = mongoRUI;
-mongoose.connect(DB, {
-		useNewUrlParser: true,
-		useFindAndModify: false
-	})
+mongoose.connect(DB)
+ // {
+	// 	useNewUrlParser: true,
+	// 	useFindAndModify: false
+	// }
 	.then(() => console.log("数据库连接成功"))
 	.catch(err => console.log(err))
 
@@ -62,6 +67,11 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }))
 app.use(bodyParser.json())
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 
 // 用户相关
 const userAPI = require("./router/api/user")

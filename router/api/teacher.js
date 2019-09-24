@@ -4,7 +4,7 @@ const router = express.Router();
 const moment = require('moment');
 const config = require('../../config.js')
 const Helper = require('../../common/helper');
-var teacherDB = require('../../models/teacherModel')
+const teacherDB = require('../../models/teacherModel')
 
 
 // 添加老师
@@ -54,7 +54,7 @@ router.post('/teacher_add', (req, res) => {
 
 		// 3. 返回数据
 		res.json({
-			msg: 'yes',
+			msg: 'ok',
 			info,
 			data: result
 		});
@@ -117,7 +117,7 @@ router.post('/teacher_update', (req, res) => {
 			});
 		}
 		res.json({
-			msg: 'yes',
+			msg: 'ok',
 			info: 'update_done',
 			data: result,
 			nowTime
@@ -135,4 +135,4 @@ router.post('/teacher_update', (req, res) => {
 })
 
 module.exports = router;
- 
+  
