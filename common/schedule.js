@@ -1,6 +1,6 @@
 const schedule = require('node-schedule');
-const FeiAnXinHelper = require('./common/FeiAnXinHelper');
-const OrderDB = require('/models/orderModel.js')
+const FeiAnXinHelper = require('./FeiAnXinHelper');
+// const OrderDB = require('/models/orderModel.js')
 
 exports.scheduleCronstyle = function() {
 	//每分钟的第30秒定时执行一次:
@@ -23,7 +23,7 @@ exports.scheduleFenceNotify = async function() {
 					"tnumber": terminalMobile, //终端手机号
 				}
 			}
-			let result = await devicehelper.locationAPI(postData);
+			// let result = await devicehelper.locationAPI(postData);
 			let info = result.result[0];
 
 		});
@@ -36,20 +36,20 @@ exports.scheduleFenceNotify = async function() {
 // 定时清除未支付订单
 exports.scheduleFenceNotify = async function() {
 
-	try {
-		// let time = Date.now() - 86400000; // 24h之前
-		let time = Date.now() - 60000; // 1分钟之前
-		OrderDB.find({
-				"creatTime": {
-					"$gt": time
-				},
-				"status": "_created"
-			).then((orders) => {
-				if(!orders||order)
-			})
-		}
-		catch (e) {
-			//TODO handle the exception
-		}
-	}
+	// try {
+	// 	// let time = Date.now() - 86400000; // 24h之前
+	// 	let time = Date.now() - 60000; // 1分钟之前
+	// 	OrderDB.find({
+	// 			"creatTime": {
+	// 				"$gt": time
+	// 			},
+	// 			"status": "_created"
+	// 		).then((orders) => {
+	// 			if(!orders||order)
+	// 		})
+	// 	}
+	// 	catch (e) {
+	// 		//TODO handle the exception
+	// 	}
+	// }
 }
