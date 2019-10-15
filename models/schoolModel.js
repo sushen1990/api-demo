@@ -6,7 +6,6 @@ const config = require('../config');
 const Schema = mongoose.Schema;
 const SchemaTypes = mongoose.Schema.Types;
 
-const Promise = require('bluebird');
 
 // 分页插件
 // const mongoosePaginate = require('mongoose-paginate');
@@ -103,96 +102,96 @@ exports.schoolSave = function(postData, callback) {
 }
 
 //根据id查询学校
-exports.findSchoolById = function(schoolId, callback) {
-	School.findById(
-		schoolId,
-		function(err, doc) {
-			if (err) {
-				return callback(err, null);
-			}
-			callback(null, doc);
-		});
-}
+// exports.findSchoolById = function(schoolId, callback) {
+// 	School.findById(
+// 		schoolId,
+// 		function(err, doc) {
+// 			if (err) {
+// 				return callback(err, null);
+// 			}
+// 			callback(null, doc);
+// 		});
+// }
 
-//检查schoolId是否存在。数据正常返回true 数据错误返回false
-exports.checkSchoolId = function(schoolId) {
-	School.find({
-			_id: schoolId,
-			isShow: true
-		},
-		function(err, doc) {
-			if (doc) {
-				return true;
-			}
-			return false;
-		});
-}
+// //检查schoolId是否存在。数据正常返回true 数据错误返回false
+// exports.checkSchoolId = function(schoolId) {
+// 	School.find({
+// 			_id: schoolId,
+// 			isShow: true
+// 		},
+// 		function(err, doc) {
+// 			if (doc) {
+// 				return true;
+// 			}
+// 			return false;
+// 		});
+// }
 
-//根据name查询学校
-exports.findSchoolByName = function(name, callback) {
-	School.findOne({
-		schoolName: name,
-		isShow: true
-	}, function(err, doc) {
-		if (err) {
-			return callback(err, null);
-		}
-		callback(null, doc);
-	});
-}
+// //根据name查询学校
+// exports.findSchoolByName = function(name, callback) {
+// 	School.findOne({
+// 		schoolName: name,
+// 		isShow: true
+// 	}, function(err, doc) {
+// 		if (err) {
+// 			return callback(err, null);
+// 		}
+// 		callback(null, doc);
+// 	});
+// }
 
-// 获取学校列表
-exports.getSchoolList = function(callback) {
-	School.find({
-		isShow: true
-	}, function(err, doc) {
-		if (err) {
-			return callback(err, null);
-		}
-		callback(null, doc);
-	});
-}
+// // 获取学校列表
+// exports.getSchoolList = function(callback) {
+// 	School.find({
+// 		isShow: true
+// 	}, function(err, doc) {
+// 		if (err) {
+// 			return callback(err, null);
+// 		}
+// 		callback(null, doc);
+// 	});
+// }
 
-// 分页获取学校测试
-exports.getSchoolListPaginate = function(page, size, callback) {
+// // 分页获取学校测试
+// exports.getSchoolListPaginate = function(page, size, callback) {
 
-	School.find({
-		isShow: true
-	}, function(err1, doc) {
-		if (err1) {
-			return callback(err1, null);
-		}
-		School.countDocuments({
-			isShow: true
-		}, function(err2, total) {
-			if (err2) {
-				return callback(err2, null);
-			}
-			let newDoc = {
-				data: doc,
-				total: total
-			}
-			callback(null, newDoc);
-		})
-	}).limit(parseInt(size)).skip((page - 1) * size).sort({
-		_id: -1
-	});
-}
+// 	School.find({
+// 		isShow: true
+// 	}, function(err1, doc) {
+// 		if (err1) {
+// 			return callback(err1, null);
+// 		}
+// 		School.countDocuments({
+// 			isShow: true
+// 		}, function(err2, total) {
+// 			if (err2) {
+// 				return callback(err2, null);
+// 			}
+// 			let newDoc = {
+// 				data: doc,
+// 				total: total
+// 			}
+// 			callback(null, newDoc);
+// 		})
+// 	}).limit(parseInt(size)).skip((page - 1) * size).sort({
+// 		_id: -1
+// 	});
+// }
 
-// 删除学校列表
-exports.schoolRemove = function(schoolID, callback) {
-	School.findByIdAndUpdate(schoolID, {
-			isShow: false
-		},
-		function(err, doc) {
-			if (err) {
-				return callback(err, null);
-			}
-			callback(null, doc);
-		});
-}
+// // 删除学校列表
+// exports.schoolRemove = function(schoolID, callback) {
+// 	School.findByIdAndUpdate(schoolID, {
+// 			isShow: false
+// 		},
+// 		function(err, doc) {
+// 			if (err) {
+// 				return callback(err, null);
+// 			}
+// 			callback(null, doc);
+// 		});
+// }
 
-Promise.promisifyAll(School);
-Promise.promisifyAll(School.prototype);
+// Promise.promisifyAll(School);
+// Promise.promisifyAll(School.prototype);
 
-module.exports = School;
+// module.exports = School;

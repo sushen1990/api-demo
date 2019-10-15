@@ -18,6 +18,7 @@ app.use(cors()); //解决跨域
 
 //  1. 连接数据库
 const DB = require('./config/keys').mongoURI;
+// const DB = require('./config/keys').localMongoURI;
 mongoose
 	.connect(
 		DB, {
@@ -40,17 +41,22 @@ var options = {
 	key: fs.readFileSync('./static/2301701_www.sushen1990.cn.key'),
 	cert: fs.readFileSync('./static/2301701_www.sushen1990.cn.pem')
 }
+const httpsServer = https.createServer(options, app);
 
-app.listen(port, function(result) {
-	console.log(`https服务器运行在端口[${port}]`)
+app.listen(port, (result) => {
+	console.log(`http服务器运行在端口[${port}]`)
 })
+
+// httpsServer.listen(port, function() {
+// console.log(`https服务器运行在端口[${port}]`)
+// });
 
 // 4. app下载页面
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.get("/app", (req, res) => {
 	res.render('index')
-}) 
+})
 
 // 5. 定时执行任务
 // Schedule.scheduleCronstyle()
@@ -106,8 +112,8 @@ app.use('/api/admin', admin);
 // app.use("/api/parent", parentAPI)
 
 // //教师相关
-// const teacherAPI = require('./router/api/teacher')
-// app.use("/api/teacher", teacherAPI)
+const teacherAPI = require('./router/api/teacher')
+app.use("/api/teacher", teacherAPI)
 
 // //飞安信API整合
 // const fei_an_xinAPI = require("./router/api/fei_an_xin")

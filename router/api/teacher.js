@@ -2,35 +2,40 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+
 const config = require('../../config.js')
 const Helper = require('../../common/helper');
+const validator = require('../../validator/index');
+
 const teacherDB = require('../../models/teacherModel')
 
 
 // 添加老师
 router.post('/teacher_add', (req, res) => {
-	let Scode = req.body.Scode === undefined ? '' : req.body.Scode.trim();
-	let mobile = req.body.mobile === undefined ? '' : req.body.mobile.trim();
-	let name = req.body.name === undefined ? '' : req.body.name.trim();
-
-
-	// 1. 验证参数
-	if (Helper.checkReal(Scode) || Scode != config.Scode) { // 1. 参数验证 
+	let nowTime = Helper.NowTime();
+	// 0. 参数验证
+	let plan_list = { // 计划要验证的参数和是否必须
+		'name': true,
+		'mobile': true,
+		'Scode': true
+	};
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_list, req.body)
+	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
-			data: 'Scode错误'
+			data: errors,
+			nowTime
 		})
-	};
-	if (Helper.checkTel(mobile) || Helper.checkReal(name)) {
-		return res.json({
-			msg: 'no',
-			info: 'param_wrong',
-			data: '参数不合法'
-		})
-	};
+	}
 
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
+	let mobile = trueList.mobile;
+	let name = trueList.name;
+
 	let query = {
 		mobile
 	};
@@ -51,7 +56,7 @@ router.post('/teacher_add', (req, res) => {
 		return newTeacher.save();
 
 	}).then((result) => { // ！此处的result，是上面两种情况依据实际二选一返回的数据。
-
+		console.log(result)
 		// 3. 返回数据
 		res.json({
 			msg: 'ok',
@@ -69,28 +74,94 @@ router.post('/teacher_add', (req, res) => {
 	})
 })
 
+// 获取教师分页信息
+router.post('/teacher_list_page', (req, res) => {
+	let nowTime = Helper.NowTime();
+	
+	// 0. 参数验证
+	let plan_list = { // 计划要验证的参数和是否必须
+		'Scode': true,
+		'size': true,
+		'page': true,
+	};
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_list, req.body)
+	if (!isValid) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: errors,
+			nowTime
+		})
+	}
+	// 0.1 必须可以转换为int类型
+	let size = parseInt(trueList['size']);
+	let page = parseInt(trueList['page']);
+	if (size % 1 != 0 || page % 1 != 0 || page === 0 || size === 0) {
+		return res.json({
+			'msg': 'no',
+			'info': 'param_wrong',
+			'data': 'page、size 必须为int',
+			nowTime
+		})
+	}
+
+	
+	// 1. 查询
+	let query = {
+		'is_show': true
+	};
+	
+	teacherDB.find(query).limit(size).skip((page - 1) * size).sort({
+		_id: -1
+	}).then((result) => {
+		res.json({
+			'msg': 'ok',
+			'info': 'got_it',
+			'data': result,
+			'count': result.length,
+			nowTime
+		})
+	}).catch((err) => {
+	
+		//  4. 记录err
+		res.json({
+			'msg': 'no',
+			'info': info === '' ? err : info,
+			'data': null,
+			nowTime
+		});
+	})
+})
+
 // 修改老师信息
 router.post('/teacher_update', (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
-	let Scode = req.body.Scode === undefined ? '' : req.body.Scode.trim();
-	let mobile = req.body.mobile === undefined ? '' : req.body.mobile.trim();
-	let new_name = req.body.new_name === undefined ? '' : req.body.new_name.trim();
+	let nowTime = Helper.NowTime();
+	// 0. 参数验证
+	let plan_list = { // 计划要验证的参数和是否必须
+		'new_name': true,
+		'mobile': true,
+		'Scode': true
+	};
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_list, req.body)
+	if (!isValid) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: errors,
+			nowTime
+		})
+	}
 
-	// 1. 验证参数
-	if (Helper.checkReal(Scode) || Scode != config.Scode) { // 1. 参数验证 
-		return res.json({
-			msg: 'no',
-			info: 'param_wrong',
-			data: 'Scode错误'
-		})
-	};
-	if (Helper.checkTel(mobile) || Helper.checkReal(new_name)) {
-		return res.json({
-			msg: 'no',
-			info: 'param_wrong',
-			data: '参数不合法'
-		})
-	};
+	let mobile = trueList.mobile;
+	let new_name = trueList.new_name;
 	let condition = {
 		mobile,
 		'is_show': true
@@ -134,5 +205,8 @@ router.post('/teacher_update', (req, res) => {
 	})
 })
 
+
+
+
+
 module.exports = router;
-  

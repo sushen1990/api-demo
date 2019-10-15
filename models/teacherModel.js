@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 require('mongoose-long')(mongoose);
 const Schema = mongoose.Schema;
 const SchemaTypes = mongoose.Schema.Types;
-const Promise = require('bluebird');
+// const Promise = require('bluebird');
 
 //定义Order对象模型
 var TeacherSchema = new Schema({
@@ -38,7 +38,7 @@ var TeacherSchema = new Schema({
 var Teacher = mongoose.model("Teacher", TeacherSchema);
 
 //promise化user类及其方法
-Promise.promisifyAll(Teacher);
-Promise.promisifyAll(Teacher.prototype);
+// Promise.promisifyAll(Teacher);
+// Promise.promisifyAll(Teacher.prototype);
 
 module.exports = Teacher;

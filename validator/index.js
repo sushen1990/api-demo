@@ -1,7 +1,7 @@
 // const Validator = require('validator');
 const isEmpty = require("./is-empty");
 const isPhoneNum = require("./is-phoneNum");
-const config = require('../config.js');
+const config = require('../config/keys');
 
 
 module.exports = function validatorData(plan_list, post_body) {
@@ -21,7 +21,7 @@ module.exports = function validatorData(plan_list, post_body) {
 
 	// 1. 验证scode
 	post_Scode = data['Scode']['value'] === undefined ? '' : data['Scode']['value'].trim();
-	if (post_Scode != config.Scode) {
+	if (!config.Scode.includes(post_Scode)) {
 		errors['Scode'] = 'Scode不合法';
 		trueList['Scode'] = post_Scode;
 		return {
@@ -31,7 +31,7 @@ module.exports = function validatorData(plan_list, post_body) {
 		}
 	}
 
-	// 2. 根据key的值和是否必须去检查数据
+	// 2. 根据key的值和[是否必须]去检查数据
 	for (let key in data) {
 
 		// 3 可选参数，没有在post中提交，直接跳过
@@ -40,7 +40,7 @@ module.exports = function validatorData(plan_list, post_body) {
 			continue;
 		} else {
 
-			console.log(key + '--' + data[key]['value'])
+			// console.log(key + '--' + data[key]['value'])
 
 			// 4 必须参数，一定得验证。可选参数提交的话，也得验证
 			if (isEmpty(data[key]['value'])) { // 4.1  验证数据真实性

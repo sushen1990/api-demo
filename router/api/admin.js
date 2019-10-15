@@ -94,6 +94,7 @@ router.post('/login', (req, res) => {
 	let plan_list = { // 计划要验证的参数和是否必须
 		'name': true,
 		'password': true,
+		'Scode': true
 	};
 	const {
 		errors,
