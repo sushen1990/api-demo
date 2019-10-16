@@ -53,7 +53,8 @@ module.exports = function validatorData(plan_list, post_body) {
 					break;
 				}
 			}
-			trueList[key] = data[key]['value'].trim();
+			// trueList[key] = data[key]['value'].trim();
+			trueList[key] = data[key]['value'];
 		}
 	}
 

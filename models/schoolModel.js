@@ -46,7 +46,7 @@ const SchoolSchema = new Schema({
 		default: null
 	},
 	//联系人
-	contact: {
+	contact_name: {
 		type: String,
 		default: null
 	},
@@ -77,29 +77,29 @@ const School = mongoose.model('school', SchoolSchema);
 
 
 // 创建新学校
-exports.schoolSave = function(postData, callback) {
-	let newSchool = new School();
-	newSchool.isShow = true;
-	newSchool.schoolName = postData.schoolName;
-	newSchool.createDate = Date.now();
-	newSchool.proviceFirstStageName = postData.proviceFirstStageName;
-	newSchool.addressCitySecondStageName = postData.addressCitySecondStageName;
-	newSchool.addressCountiesThirdStageName = postData.addressCountiesThirdStageName;
-	newSchool.address = postData.address;
-	newSchool.contacts = postData.contacts;
-	newSchool.contactsPhone = postData.contactsPhone;
-	newSchool.schoolType = postData.schoolType;
-	newSchool.position = postData.position;
-	newSchool.info = postData.info;
-	newSchool.imageUrl = postData.imageUrl;
-	newSchool.save(function(err) {
-		if (err) {
-			return callback(err);
-		} else {
-			return callback(null, newSchool);
-		}
-	});
-}
+// exports.schoolSave = function(postData, callback) {
+// 	let newSchool = new School();
+// 	newSchool.isShow = true;
+// 	newSchool.schoolName = postData.schoolName;
+// 	newSchool.createDate = Date.now();
+// 	newSchool.proviceFirstStageName = postData.proviceFirstStageName;
+// 	newSchool.addressCitySecondStageName = postData.addressCitySecondStageName;
+// 	newSchool.addressCountiesThirdStageName = postData.addressCountiesThirdStageName;
+// 	newSchool.address = postData.address;
+// 	newSchool.contacts = postData.contacts;
+// 	newSchool.contactsPhone = postData.contactsPhone;
+// 	newSchool.schoolType = postData.schoolType;
+// 	newSchool.position = postData.position;
+// 	newSchool.info = postData.info;
+// 	newSchool.imageUrl = postData.imageUrl;
+// 	newSchool.save(function(err) {
+// 		if (err) {
+// 			return callback(err);
+// 		} else {
+// 			return callback(null, newSchool);
+// 		}
+// 	});
+// }
 
 //根据id查询学校
 // exports.findSchoolById = function(schoolId, callback) {
@@ -194,4 +194,4 @@ exports.schoolSave = function(postData, callback) {
 // Promise.promisifyAll(School);
 // Promise.promisifyAll(School.prototype);
 
-// module.exports = School;
+module.exports = School;

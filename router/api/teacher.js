@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 
-const config = require('../../config.js')
+const config = require('../../config')
 const Helper = require('../../common/helper');
 const validator = require('../../validator/index');
 

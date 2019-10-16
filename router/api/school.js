@@ -23,7 +23,7 @@ router.post('/school_add', (req, res) => {
 		'Scode': true,
 		'school_name': true,
 		'address': true,
-		'contact': true,
+		'contact_name': true,
 		'contact_mobile': true,
 		'addres_first_stage': true,
 		'addres_second_stage': true,
@@ -47,7 +47,7 @@ router.post('/school_add', (req, res) => {
 
 	let school_name = trueList['school_name'];
 	let address = trueList['address'];
-	let contact = trueList['contact'];
+	let contact_name = trueList['contact_name'];
 	let contact_mobile = trueList['contact_mobile'];
 	let addres_first_stage = trueList['addres_first_stage'];
 	let addres_second_stage = trueList['addres_second_stage'];
@@ -67,7 +67,7 @@ router.post('/school_add', (req, res) => {
 		let newSchool = new schoolDB(); // 2.2 没有注册，注册新学校
 		newSchool.school_name = school_name;
 		newSchool.address = address;
-		newSchool.contact = contact;
+		newSchool.contact_name = contact_name;
 		newSchool.contact_mobile = contact_mobile;
 		newSchool.addres_first_stage = addres_first_stage;
 		newSchool.addres_second_stage = addres_second_stage;
