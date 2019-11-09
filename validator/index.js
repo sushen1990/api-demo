@@ -1,4 +1,3 @@
-// const Validator = require('validator');
 const isEmpty = require("./is-empty");
 const isPhoneNum = require("./is-phoneNum");
 const config = require('../config/keys');
@@ -7,7 +6,7 @@ const config = require('../config/keys');
 module.exports = function validatorData(plan_list, post_body) {
 
 	let errors = {}; // 错误的原因
-	let trueList = {}; // 真实的数据会记录并返回的
+	let true_list = {}; // 真实的数据会记录并返回的
 
 	// 0. 整理数据
 	let data = {};
@@ -19,15 +18,15 @@ module.exports = function validatorData(plan_list, post_body) {
 		}
 	}
 
-	// 1. 验证scode
+	// 1. 验证Scode, Scode的判定为includes。即当前提交的Scode是否在预定的Scode组合里面。
 	post_Scode = data['Scode']['value'] === undefined ? '' : data['Scode']['value'].trim();
 	if (!config.Scode.includes(post_Scode)) {
 		errors['Scode'] = 'Scode不合法';
-		trueList['Scode'] = post_Scode;
+		true_list['Scode'] = post_Scode;
 		return {
 			errors: errors,
 			isValid: isEmpty(errors), // errors 无数据返回true ,errors 有数据返回 false
-			trueList
+			true_list
 		}
 	}
 
@@ -36,32 +35,38 @@ module.exports = function validatorData(plan_list, post_body) {
 
 		// 3 可选参数，没有在post中提交，直接跳过
 		if (data[key]['integral'] === false) {
-			trueList[key] = '';
+			true_list[key] = '';
 			continue;
 		} else {
-
-			// console.log(key + '--' + data[key]['value'])
 
 			// 4 必须参数，一定得验证。可选参数提交的话，也得验证
 			if (isEmpty(data[key]['value'])) { // 4.1  验证数据真实性
 				errors[key] = key + '不合法';
-				break;
+				// break;
 			}
 			if (key.includes('mobile') || key.includes('phone')) { // 4.2 如果手机号，验证手机号
 				if (!isPhoneNum(data[key]['value'])) {
 					errors[key] = key + '必须为11数字'
-					break;
+					// break;
 				}
 			}
-			// trueList[key] = data[key]['value'].trim();
-			trueList[key] = data[key]['value'];
+			if(key.includes('admin_code')){
+				if(data[key]['value']!=='DklJ^8Km$C6gdWHsWRKp'){// 4.3 如果admin_code, 验证admin_code
+					errors[key] = key + '错误'
+					// break;
+				}
+			}
+				
+			
+			
+			true_list[key] = data[key]['value'];
 		}
 	}
 
 	return {
 		errors: errors,
 		isValid: isEmpty(errors), // errors 无数据返回true ,errors 有数据返回 false
-		trueList
+		true_list
 	}
 
 }

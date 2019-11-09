@@ -6,11 +6,16 @@ const soap = require('soap');
 const crypto = require('crypto');
 const moment = require('moment');
 const Core = require('@alicloud/pop-core'); // 阿里短信sdk
+
+
 const Helper = require('../../common/helper');
 const config = require("../../config");
+const config2 = require('../../config/keys');
+const validator = require('../../validator/index');
 const veryfiCodeDB = require("../../models/veryfiCodeModel");
-const studentDB = require("../../models/studentModel")
-const userDB = require("../../models/userModel")
+const studentDB = require("../../models/studentModel");
+const userDB = require("../../models/userModel");
+const adminDB = require("../../models/adminModel");
 
 // 测试
 router.get("/test", (req, res) => {
@@ -146,145 +151,91 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 
 
 
-// //  预设家长手机号获取验证码
-// router.post("/sendVeryfiCodeInLogin", (req, res) => {
-// 
-// 	let mobile = req.body.mobile;
-// 	let Scode = req.body.Scode;
-// 
-// 	// 1. 参数验证
-// 	if (Helper.checkTel(mobile)) {
-// 		return res.json({
-// 			msg: 'no',
-// 			info: 'param_wrong ',
-// 			data: {
-// 				'err_msg': '手机号码需要为11位数字'
-// 			},
-// 			nowTime: Helper.NowTime()
-// 		})
-// 	};
-// 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
-// 		return res.json({
-// 			msg: 'no',
-// 			info: 'param_wrong ',
-// 			data: {
-// 				'err_msg': '手机号码需要为Scode错误位数字'
-// 			},
-// 			nowTime: Helper.NowTime()
-// 		})
-// 	};
-// 
-// 	let query = {
-// 		isShow: true,
-// 		preParentsPhones: mobile
-// 	};
-// 	let veryfiCode = Helper.int6();
-// 
-// 	// 2. 验证手机号是否为学生预设家长手机号
-// 	let err_info = '';
-// 	let err_msg = ''; // 错误的信息，方便客户端弹窗用
-// 	studentDB.find(query).then((result_student) => {
-// 
-// 		err_msg = result_student;
-// 		throw new err('')
-// 
-// 
-// 
-// 		if (result_student === []) { // 2.1 手机号不在预设家长手机号内，
-// 			err_info = 'not_extsis';
-// 			err_msg = '您的手机号尚未获取邀请。\n 请联系您的业务员或管理员家长！。';
-// 			throw new err('')
-// 		};
-// 
-// 		// 3. 更新验证码，如果数据库中未创建数据，创建新数据
-// 		query = {
-// 			mobile
-// 		};
-// 		let return_new = {
-// 			'new': true
-// 		};
-// 		let condition = {
-// 			'veryfiCode': veryfiCode,
-// 			'mobile': mobile,
-// 			'time': new Date().getTime() + 15 * 60 * 1000,
-// 		}
-// 		veryfiCodeDB.findOneAndUpdate(query, condition, return_new).then((result_veryfiCode) => {
-// 
-// 			err_msg = result_veryfiCode;
-// 			throw new err('')
-// 
-// 			// if (result_veryfiCode === null) { // 3.1 数据库没有数据，需要新建
-// 			// 	let newData = new veryfiCodeDB();
-// 			// 	newData.veryfiCode = veryfiCode;
-// 			// 	newData.mobile = mobile;
-// 			// 	newData.time = new Date().getTime() + 15 * 60 * 1000;
-// 			// 	return newData.save()
-// 			// } else { // 3.2 数据库存在数据，已更新
-// 			// 	return result_veryfiCode;
-// 			// }
-// 		})
-// 	}).then((result) => {
-// 
-// 
-// 		// var client = new Core({
-// 		// 	accessKeyId: config.accessKeyId,
-// 		// 	accessKeySecret: config.accessKeySecret,
-// 		// 	endpoint: 'https://dysmsapi.aliyuncs.com',
-// 		// 	apiVersion: '2017-05-25'
-// 		// });
-// 		// var params = {
-// 		// 	"RegionId": "default",
-// 		// 	"PhoneNumbers": mobile,
-// 		// 	"SignName": "信天游",
-// 		// 	"TemplateCode": "SMS_163480790",
-// 		// 	"TemplateParam": JSON.stringify({
-// 		// 		"code": veryfiCode
-// 		// 	})
-// 		// }
-// 		// 
-// 		// var requestOption = {
-// 		// 	method: 'POST'
-// 		// };
-// 		// //  4. SendSms 发送短信的正确方式
-// 		// client.request('SendSms', params, requestOption).then((result) => {
-// 		// 	res.json({
-// 		// 		msg: "ok",
-// 		// 		data: result
-// 		// 	})
-// 		// }, (ex) => {
-// 		// 	return res.status(500).json({
-// 		// 		msg: "no",
-// 		// 		data: "后端API错误！" + ex
-// 		// 	})
-// 		// });
-// 
-// 
-// 
-// 
-// 
-// 		res.json({
-// 			msg: 'yes',
-// 			info: 'got_it',
-// 			data: result,
-// 			nowTime: Helper.NowTime()
-// 		})
-// 
-// 	}).catch((err) => {
-// 
-// 		res.json({
-// 			msg: 'no',
-// 			info: err_info === '' ? err : err_info,
-// 			data: err_msg === '' ? null : {
-// 				err_msg
-// 			},
-// 			nowTime: Helper.NowTime()
-// 		});
-// 	})
-// 
-// 
-// 
-// })
-// 
+// @route  POST api/veryfiCode/parent_login
+// @desc   家长登录
+// @access public
+
+router.post('/parent_login', (req, res) => {
+	let nowTime = Helper.NowTime();
+	// 0. 参数验证
+	let plan_list = { // 计划要验证的参数和是否必须
+		'Scode': true,
+		'admin_name': true,
+		'veryfi_code': true,
+		'mobile': true,
+	};
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_list, req.body)
+	if (!isValid) {
+		return res.json({
+			msg: 'no',
+			info: 'param_wrong',
+			data: errors,
+			nowTime
+		})
+	}
+
+	let admin_name = trueList.admin_name;
+	let veryfi_code = trueList.veryfi_code;
+	let mobile = trueList.mobile;
+	let err_info = '';
+	adminDB.findOne({
+			'name': admin_name
+		})
+		.then(admin => {
+			if (!admin) {
+				err_info = 'not_extsis'
+				throw new Error('not_extsis');
+			}
+			var newVeryfiCode = new veryfiCodeDB();
+
+			newVeryfiCode.veryfiCode = veryfi_code;
+			newVeryfiCode.mobile = mobile;
+			newVeryfiCode.time = new Date().getTime() + 5 * 60 * 1000;
+
+
+			return newVeryfiCode.save();
+		})
+		.then(result => {
+			// let result = result;
+
+
+			// return adminDB.findOne({
+			// 	admin_name
+			// });
+
+
+			res.json({ // 4. 正常返回数据
+				msg: 'ok',
+				info: 'recently_saved',
+				data: result,
+				nowTime,
+			})
+		})
+		.catch(err => {
+			// console.log(typeof(err));
+
+			console.log(err.toString())
+			console.log(err)
+
+			return res.json({
+				msg: 'no',
+				info: err_info === '' ? 'err' : err_info,
+				data: err.toString(),
+				nowTime,
+			});
+
+			return res.json({
+				err: str1.ReferenceError
+			})
+		})
+})
+
+
+
 //  用户获取验证码
 router.post("/sendVeryfiCode", (req, res) => {
 

@@ -414,42 +414,37 @@ router.post('/parent_delete', (req, res) => {
 // 登录的时候验证验证码
 router.post("/login_by_veryfiCode", (req, res) => {
 
-	let Scode = req.body.Scode === undefined ? '' : req.body.Scode.trim();
-	let mobile = req.body.mobile === undefined ? '' : req.body.mobile.trim();
-	let truename = req.body.truename === undefined ? '' : req.body.truename.trim();
-	let veryfiCode = req.body.veryfiCode === undefined ? '' : req.body.veryfiCode.trim();
-	let cid = req.body.cid === undefined ? '' : req.body.cid.trim();
 
 	// 1. 验证参数
-	if (Helper.checkReal(Scode) || Scode != config.Scode) {
-		return res.json({
-			msg: "no",
-			data: "Scode错误"
-		})
+	let plan_param = {
+		'Scode': true,
+		'mobile': true,
+		'truename': true,
+		'veryfiCode': true,
+		'cid': true,
 	};
-	if (Helper.checkTel(mobile)) {
+	const {
+		errors,
+		isValid,
+		trueList
+	} = validator(plan_param, req.body);
+	if (!isValid) {
 		return res.json({
-			msg: "no",
-			data: "手机号码需要为11位数字"
+			msg: 'no',
+			info: 'param_wrong',
+			data: errors,
+			nowTime
 		})
-	};
-	if (Helper.checkVeryfiCode(veryfiCode)) {
-		return res.json({
-			msg: "no",
-			data: "验证码需要为6位数字"
-		})
-	};
-	if (Helper.checkReal(cid)) {
-		return res.json({
-			msg: "no",
-			data: "cid错误"
-		})
-	};
-	if (Helper.checkReal(truename)) {
-		truename = "家长";
 	};
 
-	// 2. 复核验证码
+	// 2. 整理trueList
+	let student_id = trueList.student_id;
+	let mobile = trueList.mobile;
+	let truename = trueList.truename;
+	let veryfiCode = trueList.veryfiCode;
+	let cid = trueList.cid;
+
+	// 3. 复核验证码
 	let query = {
 		mobile
 	};
@@ -476,20 +471,20 @@ router.post("/login_by_veryfiCode", (req, res) => {
 			throw new Error('no such veryfiCode');
 		}
 
-		// 3. 验证码通过，根据手机号查找用户
+		// 4. 验证码通过，根据手机号查找用户
 		query = {
 			mobile,
 			'isShow': true
 		};
 		return userDB.findOne(query);
 	}).then((user) => {
-		if (user != null) { // 3.1 用户已注册。更新cid
+		if (user != null) { // 4.1 用户已注册。更新cid
 			return userDB.findOneAndUpdate(query, {
 				'clientId': cid
 			}, {
 				'new': true
 			})
-		} else { // 3.2 用户未注册，此时注册
+		} else { // 4.2 用户未注册，此时注册
 			let newUser = new User();
 			newUser.roleName = "学生家长";
 			newUser.isShow = true;
@@ -506,7 +501,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 		}
 		cur_user = user;
 
-		// 4. 查找名下学生
+		// 5. 查找名下学生
 		query = {
 			"preParentsPhones": mobile
 		}
@@ -514,7 +509,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 	}).then((students) => {
 		cur_students = students;
 
-		// 5. 更新普通家长信息
+		// 6. 更新普通家长信息
 		query_parent = { // 只更新没有与用户关联的学生信息
 			"$and": [{
 					"preParentsPhones": mobile
@@ -534,7 +529,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 		return studentDB.updateMany(query_parent, doc);
 	}).then((update_parent) => {
 
-		// 6. 更新管理员家长
+		// 7. 更新管理员家长
 		query_parent = { // 只更新没有与用户关联、并且没有管理员的的学生信息
 			"$and": [{
 					"preParentsPhones": mobile

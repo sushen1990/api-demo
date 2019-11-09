@@ -53,15 +53,26 @@ async function voice_add(postData) {
 }
 
 
-let postData = {
-	'operType': 1,
-	'msisdn': '17299517690',
-	'whiteNumber': '18503796066',
-}
+// let postData = {
+// 	'operType': 1,
+// 	'msisdn': '17299517690',
+// 	'whiteNumber': '18503796066',
+// }
 // let postData = {
 // 	'operType': 1,
 // 	'msisdn': '17299517003',
 // 	'whiteNumber': '17597981099',
 // }
 // voice_add(postData)
-voice_list('17299518018')
+
+// 1.查询白名单列表
+// voice_list(17299517015)
+
+// 2.添加白名单
+// let postData = {
+// 	'operType': 1,
+// 	'msisdn': '17299517015',
+// 	'whiteNumber': '13353997393',
+// }
+// voice_add(postData)
+voice_list(17299517015)

@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -13,43 +14,42 @@ const config = require('../../config/keys')
 // @desc   测试是否联通
 // @access public
 router.get('/', (req, res) => {
-	let nowTime = Helper.NowTime();
 	res.json({
-		'msg': 'ok',
+		'msg': 'success',
 		'info': 'got_it',
 		'data': null,
-		nowTime,
+		'now_time': Helper.NowTime(),
 	})
 })
 
 // @route  POST api/admin/regi
-// @desc   注册管理员
+// @desc   注册管理员，只有顶级管理员方可注册账号，所以增加一个admin_code验证
 // @access public
 
 router.post('/regi', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	// 0. 参数验证
 	let plan_list = { // 计划要验证的参数和是否必须
 		'name': true,
 		'password': true,
-		'Scode': true
+		'Scode': true,
+		'admin_code': true
 	};
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_list, req.body)
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
-
-	let name = trueList.name;
-	let password = trueList.password;
+	let name = true_list.name;
+	let password = true_list.password;
 	let err_info = ''
 	adminDB.findOne({
 			name
@@ -69,18 +69,18 @@ router.post('/regi', (req, res) => {
 		})
 		.then(result => {
 			res.json({ // 4. 正常返回数据
-				msg: 'ok',
+				msg: 'success',
 				info: 'recently_saved',
 				data: result,
-				nowTime,
+				now_time,
 			})
 		})
 		.catch(err => {
 			return res.json({
-				msg: 'no',
+				msg: 'fail',
 				info: err_info === '' ? 'err' : err_info,
 				data: err,
-				nowTime,
+				now_time,
 			})
 		})
 })

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Helper = require('../common/helper');
 const config = require("../config");
-const Promise = require('bluebird');
+// const Promise = require('bluebird');
 
 //定义VerificationCode对象模型
 const VerificationCodeSchema = new Schema({
@@ -152,7 +152,7 @@ exports.checkVeryfiCodeByWhereStr1 = function(whereStr, code) {
 
 // -------------------------------使用bluebird 
 //promise化user类及其方法
-Promise.promisifyAll(VerificationCode);
-Promise.promisifyAll(VerificationCode.prototype);
+// Promise.promisifyAll(VerificationCode);
+// Promise.promisifyAll(VerificationCode.prototype);
 
 module.exports = VerificationCode;

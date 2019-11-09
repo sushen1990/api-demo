@@ -69,7 +69,7 @@ app.get("/", (req, res) => {
 
 
 const admin = require('./router/api/admin');
-app.use('/api/admin', admin);
+app.use('/api/v1/admin', admin);
 
 // // 用户相关
 // const userAPI = require("./router/api/user")
@@ -83,9 +83,9 @@ app.use('/api/admin', admin);
 // const locationApi = require("./router/api/location")
 // app.use("/api/location", locationApi)
 
-// // 获取验证码
-// const veryfiCodeApi = require("./router/api/veryfiCode")
-// app.use("/api/veryfiCode", veryfiCodeApi)
+// 获取验证码
+const veryfiCodeApi = require("./router/api/veryfiCode")
+app.use("/api/veryfiCode", veryfiCodeApi)
 
 // // 订单相关
 // const orderApi = require("./router/api/order")
