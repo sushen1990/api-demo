@@ -5,7 +5,7 @@ const path = require("path")
 const port = 3000 // 阿里云ECS服务器
 const fs = require("fs") //文件
 const cors = require('cors'); //跨域
-const mongoose = require("mongoose")
+const mongoose = require("mongoose") 
 const bodyParser = require("body-parser")
 const passport = require('passport'); // 验证token
 
@@ -68,8 +68,12 @@ app.get("/", (req, res) => {
 })
 
 
-const admin = require('./router/api/admin');
-app.use('/api/v1/admin', admin);
+const adminAPI = require('./router/api/admin'); 
+app.use('/api/v1/admin', adminAPI);
+
+//学校相关
+const schoolAPI = require("./router/api/school")
+app.use("/api/v1/school", schoolAPI)
 
 // // 用户相关
 // const userAPI = require("./router/api/user")
@@ -95,9 +99,7 @@ app.use("/api/veryfiCode", veryfiCodeApi)
 // const payAPI = require("./router/api/pay")
 // app.use("/api/pay", payAPI)
 
-//学校相关
-const schoolAPI = require("./router/api/school")
-app.use("/api/school", schoolAPI)
+
 
 // //班级相关
 // const classlAPI = require("./router/api/class")

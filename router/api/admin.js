@@ -99,7 +99,7 @@ router.post('/login', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_list, req.body)
 	if (!isValid) {
 		return res.json({
@@ -110,8 +110,8 @@ router.post('/login', (req, res) => {
 		})
 	}
 
-	let name = trueList.name;
-	let password = trueList.password;
+	let name = true_list.name;
+	let password = true_list.password;
 	let err_info = ''
 	adminDB.findOne({
 			name,

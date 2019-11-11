@@ -56,9 +56,7 @@ module.exports = function validatorData(plan_list, post_body) {
 					// break;
 				}
 			}
-				
-			
-			
+									
 			true_list[key] = data[key]['value'];
 		}
 	}
