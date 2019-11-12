@@ -89,7 +89,7 @@ router.post('/regi', (req, res) => {
 // @desc   返回token jwt passport
 // @access public
 router.post('/login', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	// 0. 参数验证
 	let plan_list = { // 计划要验证的参数和是否必须
 		'name': true,
@@ -106,7 +106,7 @@ router.post('/login', (req, res) => {
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 
@@ -145,7 +145,7 @@ router.post('/login', (req, res) => {
 				data: {
 					'token': 'Bearer ' + token
 				},
-				nowTime,
+				now_time,
 			})
 
 		})
@@ -154,7 +154,7 @@ router.post('/login', (req, res) => {
 				msg: 'no',
 				info: err_info === '' ? 'err' : err_info,
 				data: err,
-				nowTime,
+				now_time,
 			})
 		})
 

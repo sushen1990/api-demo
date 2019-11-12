@@ -12,7 +12,7 @@ const teacherDB = require('../../models/teacherModel')
 
 // 添加老师
 router.post('/teacher_add', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	// 0. 参数验证
 	let plan_list = { // 计划要验证的参数和是否必须
 		'name': true,
@@ -22,19 +22,19 @@ router.post('/teacher_add', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_list, req.body)
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 
-	let mobile = trueList.mobile;
-	let name = trueList.name;
+	let mobile = true_list.mobile;
+	let name = true_list.name;
 
 	let query = {
 		mobile
@@ -76,7 +76,7 @@ router.post('/teacher_add', (req, res) => {
 
 // 获取教师分页信息
 router.post('/teacher_list_page', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	
 	// 0. 参数验证
 	let plan_list = { // 计划要验证的参数和是否必须
@@ -87,25 +87,25 @@ router.post('/teacher_list_page', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_list, req.body)
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 	// 0.1 必须可以转换为int类型
-	let size = parseInt(trueList['size']);
-	let page = parseInt(trueList['page']);
+	let size = parseInt(true_list['size']);
+	let page = parseInt(true_list['page']);
 	if (size % 1 != 0 || page % 1 != 0 || page === 0 || size === 0) {
 		return res.json({
 			'msg': 'no',
 			'info': 'param_wrong',
 			'data': 'page、size 必须为int',
-			nowTime
+			now_time
 		})
 	}
 
@@ -123,7 +123,7 @@ router.post('/teacher_list_page', (req, res) => {
 			'info': 'got_it',
 			'data': result,
 			'count': result.length,
-			nowTime
+			now_time
 		})
 	}).catch((err) => {
 	
@@ -132,14 +132,14 @@ router.post('/teacher_list_page', (req, res) => {
 			'msg': 'no',
 			'info': info === '' ? err : info,
 			'data': null,
-			nowTime
+			now_time
 		});
 	})
 })
 
 // 修改老师信息
 router.post('/teacher_update', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	// 0. 参数验证
 	let plan_list = { // 计划要验证的参数和是否必须
 		'new_name': true,
@@ -149,19 +149,19 @@ router.post('/teacher_update', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_list, req.body)
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 
-	let mobile = trueList.mobile;
-	let new_name = trueList.new_name;
+	let mobile = true_list.mobile;
+	let new_name = true_list.new_name;
 	let condition = {
 		mobile,
 		'is_show': true
@@ -184,14 +184,14 @@ router.post('/teacher_update', (req, res) => {
 				msg: 'no',
 				info: 'no_data',
 				data: null,
-				nowTime
+				now_time
 			});
 		}
 		res.json({
 			msg: 'ok',
 			info: 'update_done',
 			data: result,
-			nowTime
+			now_time
 		});
 	}).catch((err) => {
 
@@ -200,7 +200,7 @@ router.post('/teacher_update', (req, res) => {
 			msg: 'no',
 			info: 'no',
 			data: null,
-			nowTime
+			now_time
 		});
 	})
 })

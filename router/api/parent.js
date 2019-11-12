@@ -196,7 +196,7 @@ router.post("/parentDelete", (req, res) => {
 
 // 根据手机号添加家长
 router.post('/parent_add', (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
 	// 1. 验证参数
 	let plan_param = {
@@ -207,20 +207,20 @@ router.post('/parent_add', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	};
 
-	// 2. 整理trueList
-	let student_id = trueList.student_id;
-	let parent_mobile = trueList.parent_mobile;
+	// 2. 整理true_list
+	let student_id = true_list.student_id;
+	let parent_mobile = true_list.parent_mobile;
 
 	// 3. 整理query参数
 	let query = {
@@ -283,7 +283,7 @@ router.post('/parent_add', (req, res) => {
 				msg: 'ok',
 				info: 'update_done',
 				data: result,
-				nowTime,
+				now_time,
 			});
 		}
 	}).catch((err) => {
@@ -295,7 +295,7 @@ router.post('/parent_add', (req, res) => {
 			data: {
 				'err': err_data === '' ? err : err_data
 			},
-			nowTime,
+			now_time,
 		});
 	})
 
@@ -303,7 +303,7 @@ router.post('/parent_add', (req, res) => {
 
 // 根据手机号移除家长
 router.post('/parent_delete', (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
 	// 1. 验证参数
 	let plan_param = {
@@ -314,20 +314,20 @@ router.post('/parent_delete', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	};
 
-	// 2. 整理trueList
-	let student_id = trueList.student_id;
-	let parent_mobile = trueList.parent_mobile;
+	// 2. 整理true_list
+	let student_id = true_list.student_id;
+	let parent_mobile = true_list.parent_mobile;
 
 	// 3. 整理query参数
 	let query = {
@@ -390,7 +390,7 @@ router.post('/parent_delete', (req, res) => {
 				msg: 'ok',
 				info: 'update_done',
 				data: result,
-				nowTime,
+				now_time,
 			});
 		}
 	}).catch((err) => {
@@ -402,7 +402,7 @@ router.post('/parent_delete', (req, res) => {
 			data: {
 				'err': err_data === '' ? err : err_data
 			},
-			nowTime,
+			now_time,
 		});
 	})
 
@@ -426,23 +426,23 @@ router.post("/login_by_veryfiCode", (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	};
 
-	// 2. 整理trueList
-	let student_id = trueList.student_id;
-	let mobile = trueList.mobile;
-	let truename = trueList.truename;
-	let veryfiCode = trueList.veryfiCode;
-	let cid = trueList.cid;
+	// 2. 整理true_list
+	let student_id = true_list.student_id;
+	let mobile = true_list.mobile;
+	let truename = true_list.truename;
+	let veryfiCode = true_list.veryfiCode;
+	let cid = true_list.cid;
 
 	// 3. 复核验证码
 	let query = {
@@ -450,7 +450,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 	};
 	let err_info = '';
 	let date_info = '';
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 	let cur_user = null;
 	let cur_students = null;
 	let query_parent = '';
@@ -555,7 +555,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 				parent: cur_user,
 				student: cur_students
 			},
-			nowTime,
+			now_time,
 		})
 
 	}).catch((Error) => {
@@ -565,7 +565,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 			data: {
 				Error: date_info === '' ? Error : date_info
 			},
-			nowTime,
+			now_time,
 		})
 	})
 
@@ -573,7 +573,7 @@ router.post("/login_by_veryfiCode", (req, res) => {
 
 // 根据家长信息获取名下所有学生的信息
 router.post('/students_list', (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
 	// 1. 验证参数
 	let plan_param = {
@@ -584,26 +584,26 @@ router.post('/students_list', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 
-	// 2. 整理trueList
-	let parent_id = trueList.parent_id;
-	let parent_mobile = trueList.parent_mobile;
+	// 2. 整理true_list
+	let parent_id = true_list.parent_id;
+	let parent_mobile = true_list.parent_mobile;
 	if (parent_id === '' && parent_mobile === '') {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
-			data: trueList,
-			nowTime
+			data: true_list,
+			now_time
 		})
 	}
 
@@ -631,7 +631,7 @@ router.post('/students_list', (req, res) => {
 				msg: 'no',
 				info: 'not_extsis',
 				data: null,
-				nowTime
+				now_time
 			})
 		} else {
 			res.json({
@@ -640,7 +640,7 @@ router.post('/students_list', (req, res) => {
 				data: {
 					students
 				},
-				nowTime
+				now_time
 			})
 		}
 
@@ -651,7 +651,7 @@ router.post('/students_list', (req, res) => {
 			msg: 'no',
 			info: 'err',
 			data: err,
-			nowTime
+			now_time
 		});
 	})
 

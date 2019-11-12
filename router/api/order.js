@@ -26,7 +26,7 @@ router.post("/order_list", (req, res) => {
 
 	// 只获取生效的订单 "status" : "_paid"
 	// studnet_id 必选；user_mobile 可选
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 
 	// 1. 验证参数
 
@@ -39,7 +39,7 @@ router.post("/order_list", (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 
 	// 2. 判断参数
@@ -48,15 +48,15 @@ router.post("/order_list", (req, res) => {
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 
 	// 3. 整理参数
-	let Scode = trueList['Scode'];
-	let studnet_id = trueList['studnet_id']; // 学生Id 必填
-	let studnet_mobile = 'studnet_mobile' in trueList ? trueList['studnet_mobile'] : ''; // 学生手机号 选填
-	let user_mobile = 'user_mobile' in trueList ? trueList['user_mobile'] : ''; // 家长手机号 可选
+	let Scode = true_list['Scode'];
+	let studnet_id = true_list['studnet_id']; // 学生Id 必填
+	let studnet_mobile = 'studnet_mobile' in true_list ? true_list['studnet_mobile'] : ''; // 学生手机号 选填
+	let user_mobile = 'user_mobile' in true_list ? true_list['user_mobile'] : ''; // 家长手机号 可选
 
 	// 4. 整理查找学生query参数
 	let query_list = [];
@@ -106,7 +106,7 @@ router.post("/order_list", (req, res) => {
 			msg: 'ok',
 			info: 'got_it',
 			data: order,
-			nowTime,
+			now_time,
 		})
 
 	}).catch((Error) => {
@@ -114,7 +114,7 @@ router.post("/order_list", (req, res) => {
 			msg: 'no',
 			info: err_info === '' ? 'err' : err_info,
 			data: Error,
-			nowTime,
+			now_time,
 		})
 	})
 

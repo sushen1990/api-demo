@@ -29,7 +29,7 @@ router.post("/test", (req, res) => {
 
 // 获取交易字符串，用来发起交易
 router.post("/getTradeString", (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 	// 1. 检查参数
 	let Scode = req.body.Scode;
 	let out_trade_no = req.body.out_trade_no;
@@ -68,7 +68,7 @@ router.post("/getTradeString", (req, res) => {
 		return res.status(403).json({
 			msg: "no",
 			data: "未能取得交易字符串",
-			nowTime
+			now_time
 		})
 	} else {
 
@@ -86,7 +86,7 @@ router.post("/getTradeString", (req, res) => {
 				msg: 'ok',
 				info: 'got_it',
 				data: tradeString,
-				nowTime
+				now_time
 			})
 
 		}).catch((err) => {
@@ -96,7 +96,7 @@ router.post("/getTradeString", (req, res) => {
 				msg: 'no',
 				info: err,
 				data: null,
-				nowTime
+				now_time
 			});
 		})
 	}

@@ -37,7 +37,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 			data: {
 				'err_msg': '手机号码需要为11位数字'
 			},
-			nowTime: Helper.NowTime()
+			now_time: Helper.NowTime()
 		})
 	};
 	if (Helper.checkReal(Scode) || Scode != config.Scode) {
@@ -47,7 +47,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 			data: {
 				'err_msg': '手机号码需要为Scode错误位数字'
 			},
-			nowTime: Helper.NowTime()
+			now_time: Helper.NowTime()
 		})
 	};
 
@@ -117,7 +117,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 				msg: 'ok',
 				info: 'got_it',
 				data: result,
-				nowTime: Helper.NowTime()
+				now_time: Helper.NowTime()
 			});
 		}, (ex) => {
 			err_info = 'err';
@@ -130,7 +130,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 		// 	msg: 'ok',
 		// 	info: 'got_it',
 		// 	data: result,
-		// 	nowTime: Helper.NowTime()
+		// 	now_time: Helper.NowTime()
 		// });
 
 
@@ -141,7 +141,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 			msg: 'no',
 			info: err_info === '' ? Error : err_info,
 			data: err_info === '' ? Error : err_msg,
-			nowTime: Helper.NowTime()
+			now_time: Helper.NowTime()
 		});
 	})
 
@@ -156,7 +156,7 @@ router.post("/sendVeryfiCodeInLogin", (req, res) => {
 // @access public
 
 router.post('/parent_login', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	// 0. 参数验证
 	let plan_list = { // 计划要验证的参数和是否必须
 		'Scode': true,
@@ -167,20 +167,20 @@ router.post('/parent_login', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_list, req.body)
 	if (!isValid) {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
 
-	let admin_name = trueList.admin_name;
-	let veryfi_code = trueList.veryfi_code;
-	let mobile = trueList.mobile;
+	let admin_name = true_list.admin_name;
+	let veryfi_code = true_list.veryfi_code;
+	let mobile = true_list.mobile;
 	let err_info = '';
 	adminDB.findOne({
 			'name': admin_name
@@ -212,7 +212,7 @@ router.post('/parent_login', (req, res) => {
 				msg: 'ok',
 				info: 'recently_saved',
 				data: result,
-				nowTime,
+				now_time,
 			})
 		})
 		.catch(err => {
@@ -225,7 +225,7 @@ router.post('/parent_login', (req, res) => {
 				msg: 'no',
 				info: err_info === '' ? 'err' : err_info,
 				data: err.toString(),
-				nowTime,
+				now_time,
 			});
 
 			return res.json({

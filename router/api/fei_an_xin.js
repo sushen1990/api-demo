@@ -26,7 +26,7 @@ router.post("/test", async (req, res) => {
 router.post("/fence_add", async (req, res) => {
 
 
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 	// 1. 验证参数
 	let plan_param = {
 		'Scode': true,
@@ -39,7 +39,7 @@ router.post("/fence_add", async (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 
 	if (!isValid) {
@@ -47,12 +47,12 @@ router.post("/fence_add", async (req, res) => {
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	};
 	// 1.1 验证range只能为100~2000的整数
 
-	let rang = trueList.rang;
+	let rang = true_list.rang;
 	let range_limit = rang >= 100 && rang <= 3000;
 
 	if (!range_limit) {
@@ -62,14 +62,14 @@ router.post("/fence_add", async (req, res) => {
 			data: {
 				'err': 'range只能为100~3000'
 			},
-			nowTime
+			now_time
 		})
 	};
 
-	let student_mobile = trueList.student_mobile;
-	let latitude = trueList.latitude;
-	let longitude = trueList.longitude;
-	let name = trueList.name;
+	let student_mobile = true_list.student_mobile;
+	let latitude = true_list.latitude;
+	let longitude = true_list.longitude;
+	let name = true_list.name;
 
 	//  2. 获取定位时间段Id 
 	let postData1 = {
@@ -104,7 +104,7 @@ router.post("/fence_add", async (req, res) => {
 				data: {
 					'err': student_mobile + '终端不存在'
 				},
-				nowTime
+				now_time
 			})
 		}
 		let lrid = result1.result[0].id;
@@ -121,14 +121,14 @@ router.post("/fence_add", async (req, res) => {
 			msg: "ok",
 			info: 'recently_saved',
 			data: result3,
-			nowTime
+			now_time
 		})
 	} catch (e) {
 		res.status(500).json({
 			msg: "no",
 			result_err,
 			data: "服务器内部错误,请联系后台开发人员!!!" + e,
-			nowTime
+			now_time
 		})
 	};
 });

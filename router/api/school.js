@@ -16,7 +16,7 @@ router.get("/test", (req, res) => {
 // 添加学校
 router.post('/school_add', (req, res) => {
 
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 
 	// 1. 验证参数	
 	let plan_param = { // 1.1 计划要验证的参数和是为必须
@@ -32,7 +32,7 @@ router.post('/school_add', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 
 	// 2. 判断参数
@@ -41,17 +41,17 @@ router.post('/school_add', (req, res) => {
 			'msg': 'no',
 			'info': 'param_wrong',
 			'data': errors,
-			nowTime
+			now_time
 		})
 	}
 
-	let school_name = trueList['school_name'];
-	let address = trueList['address'];
-	let contact_name = trueList['contact_name'];
-	let contact_mobile = trueList['contact_mobile'];
-	let addres_first_stage = trueList['addres_first_stage'];
-	let addres_second_stage = trueList['addres_second_stage'];
-	let addres_third_stage = trueList['addres_third_stage'];
+	let school_name = true_list['school_name'];
+	let address = true_list['address'];
+	let contact_name = true_list['contact_name'];
+	let contact_mobile = true_list['contact_mobile'];
+	let addres_first_stage = true_list['addres_first_stage'];
+	let addres_second_stage = true_list['addres_second_stage'];
+	let addres_third_stage = true_list['addres_third_stage'];
 
 	// 2. 通过学校名查询是否已注册
 	let query = {
@@ -85,7 +85,7 @@ router.post('/school_add', (req, res) => {
 			'msg': 'ok',
 			info,
 			'data': result,
-			nowTime
+			now_time
 		});
 	}).catch((err) => {
 
@@ -94,7 +94,7 @@ router.post('/school_add', (req, res) => {
 			msg: 'no',
 			info: info === '' ? err : info,
 			data: null,
-			nowTime
+			now_time
 		});
 	})
 })
@@ -102,7 +102,7 @@ router.post('/school_add', (req, res) => {
 
 // 学校分页查询
 router.post('/school_list_page', (req, res) => {
-	let nowTime = Helper.NowTime();
+	let now_time = Helper.NowTime();
 	// 1. 验证参数
 	let plan_param = { // 1.1 计划要验证的参数和是为必须
 		'Scode': true,
@@ -112,27 +112,27 @@ router.post('/school_list_page', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body);
 
 	// 2. 判断参数
 	if (!isValid) {
 		return res.json({
-			'msg': 'no',
+			now_time,
+			'msg': 'fail',
 			'info': 'param_wrong',
 			'data': errors,
-			nowTime
 		})
 	};
-	let size = parseInt(trueList['size']);
-	let page = parseInt(trueList['page']);
+	let size = parseInt(true_list['size']);
+	let page = parseInt(true_list['page']);
 
 	if (size % 1 != 0 || page % 1 != 0 || page === 0 || size === 0) {
 		return res.json({
-			'msg': 'no',
+			now_time,
+			'msg': 'fail',
 			'info': 'param_wrong',
 			'data': 'page、size 必须为int',
-			nowTime
 		})
 	}
 
@@ -146,21 +146,20 @@ router.post('/school_list_page', (req, res) => {
 		_id: -1
 	}).then((result) => {
 		res.json({
-			'msg': 'ok',
+			now_time,
+			'msg': 'success',
 			'info': 'got_it',
+			'data_count': result.length,
 			'data': result,
-			'count': result.length,
-			'int': size % 1 != 0,
-			nowTime
 		})
 	}).catch((err) => {
 
 		//  4. 记录err
 		res.json({
-			'msg': 'no',
+			now_time,
+			'msg': 'fail',
 			'info': info === '' ? err : info,
 			'data': null,
-			nowTime
 		});
 	})
 

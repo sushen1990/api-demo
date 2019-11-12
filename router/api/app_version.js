@@ -15,7 +15,7 @@ router.get("/test", (req, res) => {
 
 // 测试检查是否需要更新
 router.post("/update", (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
 	// 1. 检查参数
 	let Scode = req.body.Scode;
@@ -26,7 +26,7 @@ router.post("/update", (req, res) => {
 			data: {
 				'err_data': Scode
 			},
-			nowTime
+			now_time
 		})
 	};
 	let appid = req.body.appid === undefined ? '' : req.body.appid.toString().trim();
@@ -39,7 +39,7 @@ router.post("/update", (req, res) => {
 				appid,
 				version
 			},
-			nowTime
+			now_time
 		})
 	};
 

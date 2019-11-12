@@ -3,15 +3,23 @@ const isPhoneNum = require("./is-phoneNum");
 const config = require('../config/keys');
 
 
-module.exports = function validatorData(plan_list, post_body) {
+module.exports = function validatorData(plan_list, post_body_untrim) {
 
 	let errors = {}; // 错误的原因
 	let true_list = {}; // 真实的数据会记录并返回的
+	
+	
+	// 0.1 优化post_body 进行trim处理
+	let post_body = {};	
+	for(let key in post_body_untrim){
+		post_body[key.trim().toString()] = post_body_untrim[key].toString().trim();
+	}
 
-	// 0. 整理数据
+	// 0.2 整理数据
 	let data = {};
 
 	for (let key in plan_list) {
+		console.log(post_body[key])
 		data[key] = {
 			'value': post_body[key], // 如果req.body中没有这个key，按照undefined处理
 			'integral': plan_list[key] // 是否必要参数

@@ -443,7 +443,7 @@ router.post("/findOneAndUpdateStudent", (req, res) => {
 
 // 获取单个学生信息 Id mobile 至少有一个
 router.post('/student_info', (req, res) => {
-	let nowTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
+	let now_time = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
 
 	// 1. 验证参数
 	// 1.1 计划要验证的参数、是否必须的
@@ -457,7 +457,7 @@ router.post('/student_info', (req, res) => {
 	const {
 		errors,
 		isValid,
-		trueList
+		true_list
 	} = validator(plan_param, req.body)
 
 	// 1.3 获取 validator 的结果
@@ -466,19 +466,19 @@ router.post('/student_info', (req, res) => {
 			msg: 'no',
 			info: 'param_wrong',
 			data: errors,
-			nowTime
+			now_time
 		})
 	}
-	let student_id = trueList.student_id;
-	let student_mobile = trueList.student_mobile;
+	let student_id = true_list.student_id;
+	let student_mobile = true_list.student_mobile;
 
 	// 1.4 Id mobile 至少有一个
 	if (student_id === '' && student_mobile === '') {
 		return res.json({
 			msg: 'no',
 			info: 'param_wrong',
-			data: trueList,
-			nowTime
+			data: true_list,
+			now_time
 		})
 	}
 
@@ -505,7 +505,7 @@ router.post('/student_info', (req, res) => {
 				msg: 'no',
 				info: 'not_extsis',
 				data: null,
-				nowTime
+				now_time
 			})
 		} else {
 			res.json({
@@ -514,7 +514,7 @@ router.post('/student_info', (req, res) => {
 				data: {
 					student
 				},
-				nowTime
+				now_time
 			})
 		}
 
@@ -525,7 +525,7 @@ router.post('/student_info', (req, res) => {
 			msg: 'no',
 			info: 'err',
 			data: err,
-			nowTime
+			now_time
 		});
 	})
 })
