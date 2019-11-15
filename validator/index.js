@@ -19,7 +19,7 @@ module.exports = function validatorData(plan_list, post_body_untrim) {
 	let data = {};
 
 	for (let key in plan_list) {
-		console.log(post_body[key])
+		// console.log(post_body[key])
 		data[key] = {
 			'value': post_body[key], // 如果req.body中没有这个key，按照undefined处理
 			'integral': plan_list[key] // 是否必要参数

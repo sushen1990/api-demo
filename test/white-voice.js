@@ -75,4 +75,4 @@ async function voice_add(postData) {
 // 	'whiteNumber': '13353997393',
 // }
 // voice_add(postData)
-voice_list(17299517015)
+voice_list('17299517015')

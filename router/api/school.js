@@ -5,9 +5,17 @@ const schoolDB = require("../../models/schoolModel")
 const config = require("../../config")
 const Helper = require('../../common/helper');
 const validator = require('../../validator/index');
-
+const log4 = require('../../test/log4');
+const logger = log4.getLogger("error");
 // 测试接口是否连通
 router.get("/test", (req, res) => {
+
+	let now_time = Helper.NowTime();
+	// logger.error('123')
+	logger.error({
+		now_time,
+		content: '1231232'
+	})
 	res.json({
 		msg: "hello school"
 	})
@@ -153,6 +161,11 @@ router.post('/school_list_page', (req, res) => {
 			'data': result,
 		})
 	}).catch((err) => {
+
+		logger.error({
+			now_time,
+			err
+		})
 
 		//  4. 记录err
 		res.json({

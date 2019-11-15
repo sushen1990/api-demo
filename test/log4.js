@@ -1,31 +1,24 @@
 var log4js = require('log4js');
 log4js.configure({
 	appenders: {
-		debug: {
-			type: 'dateFile',
-			filename: '../logs/debug/',
-			pattern: 'yyyy-MM-dd.log',
-			alwaysIncludePattern: true
-		},
-
 		info: {
 			type: 'dateFile',
-			filename: '../logs/info/',
+			filename: './logs/info/',
 			pattern: 'yyyy-MM-dd.log',
 			alwaysIncludePattern: true
 		},
 
 		error: {
 			type: 'dateFile',
-			filename: '../logs/error/',
+			filename: './logs/error/',
 			pattern: 'yyyy-MM-dd.log',
 			alwaysIncludePattern: true
 		},
 	},
 	categories: {
 		default: {
-			appenders: ['debug'],
-			level: 'debug'
+			appenders: ['error'],
+			level: 'error'
 		},
 		info: {
 			appenders: ['info'],
@@ -39,12 +32,6 @@ log4js.configure({
 	}
 });
 
-var logger = log4js.getLogger('error');
-var logger1 = log4js.getLogger('info');
-let data = {
-	obj: '添加失败',
-	msg: '原因'
+exports.getLogger = function(name) { //name取categories项
+	return log4js.getLogger(name || 'info')
 }
-
-// logger.error(data);
-logger1.info(data);
